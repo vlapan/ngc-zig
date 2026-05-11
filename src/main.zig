@@ -47,8 +47,11 @@ pub fn main(init: std.process.Init) void {
     var v4_countries: usize = 0;
     var v6_countries: usize = 0;
 
+    var static_v4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
+    var static_v6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
+
     if (config.static_file) |static_path| {
-        static_stats = appendStaticFile(init.io, static_path, writer) catch |err| {
+        static_stats = appendStaticFile(init.io, static_path, writer, alloc, &static_v4_ranges, &static_v6_ranges) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("Static file not found: '{s}'", .{static_path});
             } else {
@@ -84,6 +87,12 @@ pub fn main(init: std.process.Init) void {
                 std.process.exit(1);
             };
         }
+        for (static_v4_ranges.items) |r| {
+            trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, ip_mod.HOLE) catch |err| {
+                std.log.err("Failed to insert static IPv4 hole: {}", .{err});
+                std.process.exit(1);
+            };
+        }
         trie_v4.optimize(1);
         v4_cidrs = trie_v4.dump(1, 0, 0) catch |err| {
             std.log.err("Failed to write IPv4 output: {}", .{err});
@@ -115,6 +124,12 @@ pub fn main(init: std.process.Init) void {
             };
             trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, c_idx) catch |err| {
                 std.log.err("Failed to insert IPv6 range: {}", .{err});
+                std.process.exit(1);
+            };
+        }
+        for (static_v6_ranges.items) |r| {
+            trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, ip_mod.HOLE) catch |err| {
+                std.log.err("Failed to insert static IPv6 hole: {}", .{err});
                 std.process.exit(1);
             };
         }
@@ -156,7 +171,7 @@ pub fn main(init: std.process.Init) void {
     });
 }
 
-fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer) !Stats {
+fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: std.mem.Allocator, static_v4: *std.ArrayList(ip_mod.IPv4Range), static_v6: *std.ArrayList(ip_mod.IPv6Range)) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
     var in_buf: [65536]u8 = undefined;
@@ -181,6 +196,46 @@ fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer) !Stats
         try writer.writeAll(final_line);
         try writer.writeAll("\n");
         stats.lines_parsed += 1;
+
+        var tokenizer = std.mem.tokenizeAny(u8, final_line, " \t;");
+        if (tokenizer.next()) |token| {
+            if (std.mem.eql(u8, token, "default")) continue;
+
+            var ip_part = token;
+            var prefix_part: ?[]const u8 = null;
+            if (std.mem.indexOfScalar(u8, token, '/')) |slash_idx| {
+                ip_part = token[0..slash_idx];
+                prefix_part = token[slash_idx + 1 ..];
+            }
+
+            if (std.Io.net.IpAddress.parseIp4(ip_part, 0)) |ip4| {
+                const ip_val = std.mem.readInt(u32, &ip4.ip4.bytes, .big);
+                const prefix = if (prefix_part) |p| std.fmt.parseInt(u8, p, 10) catch 32 else 32;
+                if (prefix <= 32) {
+                    const mask: u32 = if (prefix == 0) 0 else ~(@as(u32, 0)) << @intCast(32 - prefix);
+                    try static_v4.append(alloc, .{
+                        .start = ip_val & mask,
+                        .end = (ip_val & mask) | ~mask,
+                        .country = "",
+                        .size = 0,
+                    });
+                }
+            } else |_| {
+                if (std.Io.net.IpAddress.parseIp6(ip_part, 0)) |ip6| {
+                    const ip_val = std.mem.readInt(u128, &ip6.ip6.bytes, .big);
+                    const prefix = if (prefix_part) |p| std.fmt.parseInt(u8, p, 10) catch 128 else 128;
+                    if (prefix <= 128) {
+                        const mask: u128 = if (prefix == 0) 0 else ~(@as(u128, 0)) << @intCast(128 - prefix);
+                        try static_v6.append(alloc, .{
+                            .start = ip_val & mask,
+                            .end = (ip_val & mask) | ~mask,
+                            .country = "",
+                            .size = 0,
+                        });
+                    }
+                } else |_| {}
+            }
+        }
     }
     return stats;
 }
