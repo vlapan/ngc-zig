@@ -251,8 +251,8 @@ pub fn IpTrie(comptime T: type) type {
             }
         }
 
-        pub fn dump(self: *IpTrie(T), node_idx: u32, ip: T, depth: u8) !void {
-            if (node_idx == 0) return;
+        pub fn dump(self: *IpTrie(T), node_idx: u32, ip: T, depth: u8) !usize {
+            if (node_idx == 0) return 0;
 
             const c = self.nodes.items[node_idx].country_idx;
             if (c != MIXED) {
@@ -260,25 +260,29 @@ pub fn IpTrie(comptime T: type) type {
                     if (T == u32) {
                         if (!isPrivateIPv4(@intCast(ip))) {
                             try formatIPv4(self.writer, @intCast(ip), depth, self.countries.items[c]);
+                            return 1;
                         }
                     } else {
                         try formatIPv6(self.writer, @intCast(ip), depth, self.countries.items[c]);
+                        return 1;
                     }
                 }
-                return;
+                return 0;
             }
 
+            var count: usize = 0;
             const left_idx = self.nodes.items[node_idx].left;
             if (left_idx != 0) {
-                try self.dump(left_idx, ip, depth + 1);
+                count += try self.dump(left_idx, ip, depth + 1);
             }
 
             const right_idx = self.nodes.items[node_idx].right;
             if (right_idx != 0) {
                 const shift: u8 = @as(u8, @intCast(@bitSizeOf(T))) - 1 - depth;
                 const right_ip = ip | (@as(T, 1) << @intCast(shift));
-                try self.dump(right_idx, right_ip, depth + 1);
+                count += try self.dump(right_idx, right_ip, depth + 1);
             }
+            return count;
         }
     };
 }
@@ -301,13 +305,13 @@ test "IPv4 Trie formatting and basic insertion" {
 
     // Insert 0.0.0.0/0 -> US
     try trie.insertRange(1, 0, std.math.maxInt(u32), 0, std.math.maxInt(u32), us_idx);
-    
+
     // Insert 128.0.0.0/1 -> CA (size: 2^31)
     const mid = std.math.maxInt(u32) / 2;
     try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), ca_idx);
 
     trie.optimize(1);
-    try trie.dump(1, 0, 0);
+    _ = try trie.dump(1, 0, 0);
 
     const expected = "0.0.0.0/1 US;\n128.0.0.0/1 CA;\n";
     try testing.expectEqualStrings(expected, aw.writer.buffered());
@@ -332,7 +336,7 @@ test "IPv4 Trie optimization of siblings" {
     try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), fr_idx);
 
     trie.optimize(1);
-    try trie.dump(1, 0, 0);
+    _ = try trie.dump(1, 0, 0);
 
     // They should merge perfectly into 0.0.0.0/0
     const expected = "0.0.0.0/0 FR;\n";

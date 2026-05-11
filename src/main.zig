@@ -6,11 +6,6 @@ const build_options = @import("options");
 pub const Stats = struct {
     lines_parsed: usize = 0,
     lines_skipped: usize = 0,
-
-    pub fn add(self: *Stats, other: Stats) void {
-        self.lines_parsed += other.lines_parsed;
-        self.lines_skipped += other.lines_skipped;
-    }
 };
 
 pub fn main(init: std.process.Init) void {
@@ -44,10 +39,16 @@ pub fn main(init: std.process.Init) void {
     var out_file_writer = out_file.writer(init.io, &out_buf);
     const writer = &out_file_writer.interface;
 
-    var total_stats = Stats{};
+    var static_stats = Stats{};
+    var v4_stats = Stats{};
+    var v6_stats = Stats{};
+    var v4_cidrs: usize = 0;
+    var v6_cidrs: usize = 0;
+    var v4_countries: usize = 0;
+    var v6_countries: usize = 0;
 
     if (config.static_file) |static_path| {
-        const stats = appendStaticFile(init.io, static_path, writer) catch |err| {
+        static_stats = appendStaticFile(init.io, static_path, writer) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("Static file not found: '{s}'", .{static_path});
             } else {
@@ -55,11 +56,10 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
-        total_stats.add(stats);
     }
 
     var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-    const v4_stats = parseFile(u32, init.io, config.ipv4_csv, &ipv4_ranges, alloc) catch |err| {
+    v4_stats = parseFile(u32, init.io, config.ipv4_csv, &ipv4_ranges, alloc) catch |err| {
         if (err == error.FileNotFound) {
             std.log.err("IPv4 CSV file not found: '{s}'", .{config.ipv4_csv});
         } else {
@@ -67,7 +67,6 @@ pub fn main(init: std.process.Init) void {
         }
         std.process.exit(1);
     };
-    total_stats.add(v4_stats);
     ip_mod.sortRangesBySizeDesc(u32, ipv4_ranges.items);
 
     var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
@@ -85,13 +84,14 @@ pub fn main(init: std.process.Init) void {
         };
     }
     trie_v4.optimize(1);
-    trie_v4.dump(1, 0, 0) catch |err| {
+    v4_cidrs = trie_v4.dump(1, 0, 0) catch |err| {
         std.log.err("Failed to write IPv4 output: {}", .{err});
         std.process.exit(1);
     };
+    v4_countries = trie_v4.countries.items.len - 1;
 
     var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
-    const v6_stats = parseFile(u128, init.io, config.ipv6_csv, &ipv6_ranges, alloc) catch |err| {
+    v6_stats = parseFile(u128, init.io, config.ipv6_csv, &ipv6_ranges, alloc) catch |err| {
         if (err == error.FileNotFound) {
             std.log.err("IPv6 CSV file not found: '{s}'", .{config.ipv6_csv});
         } else {
@@ -99,7 +99,6 @@ pub fn main(init: std.process.Init) void {
         }
         std.process.exit(1);
     };
-    total_stats.add(v6_stats);
     ip_mod.sortRangesBySizeDesc(u128, ipv6_ranges.items);
 
     var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
@@ -117,10 +116,11 @@ pub fn main(init: std.process.Init) void {
         };
     }
     trie_v6.optimize(1);
-    trie_v6.dump(1, 0, 0) catch |err| {
+    v6_cidrs = trie_v6.dump(1, 0, 0) catch |err| {
         std.log.err("Failed to write IPv6 output: {}", .{err});
         std.process.exit(1);
     };
+    v6_countries = trie_v6.countries.items.len - 1;
 
     out_file_writer.flush() catch |err| {
         std.log.err("Failed to flush output file: {}", .{err});
@@ -130,10 +130,25 @@ pub fn main(init: std.process.Init) void {
     const ts_end = std.Io.Timestamp.now(init.io, .real).nanoseconds;
     const elapsed_ms = @divTrunc(ts_end - ts_start, 1_000_000);
 
-    std.debug.print("Done in {} ms. Lines parsed: {}, Lines skipped: {}\n", .{
-        elapsed_ms,
-        total_stats.lines_parsed,
-        total_stats.lines_skipped,
+    const total_skipped = static_stats.lines_skipped + v4_stats.lines_skipped + v6_stats.lines_skipped;
+    const total_cidrs = static_stats.lines_parsed + v4_cidrs + v6_cidrs;
+
+    std.debug.print("Done in {} ms.\n", .{elapsed_ms});
+    std.debug.print("  Inputs (ranges parsed): IPv4: {}, IPv6: {}, Static: {}, Skipped: {}\n", .{
+        v4_stats.lines_parsed,
+        v6_stats.lines_parsed,
+        static_stats.lines_parsed,
+        total_skipped,
+    });
+    std.debug.print("  Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
+        v4_countries,
+        v6_countries,
+    });
+    std.debug.print("  Outputs (networks generated): IPv4: {}, IPv6: {}, Static: {}, Total: {}\n", .{
+        v4_cidrs,
+        v6_cidrs,
+        static_stats.lines_parsed,
+        total_cidrs,
     });
 }
 
