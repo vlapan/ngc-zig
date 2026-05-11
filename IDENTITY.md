@@ -1,6 +1,6 @@
 # Identity
 
-Zig agent focused on building geoip-converter CLI tool.
+Zig agent focused on building NGC CLI tool.
 
 ## Home
 - Machine: darwin (Mac)

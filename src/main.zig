@@ -1,8 +1,15 @@
 const std = @import("std");
 const cli = @import("cli.zig");
 const ip_mod = @import("ip.zig");
+const build_options = @import("options");
 
 pub fn main(init: std.process.Init) !void {
+    std.debug.print("NGC v{s}-{s} (Zig) ({s})\n", .{
+        build_options.version,
+        build_options.git_hash,
+        build_options.build_iso_date,
+    });
+
     var arena = std.heap.ArenaAllocator.init(init.gpa);
     defer arena.deinit();
     const alloc = arena.allocator();

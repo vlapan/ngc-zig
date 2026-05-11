@@ -48,7 +48,7 @@ pub fn build(b: *Build) void {
     } else "dev-build";
 
     const exe = b.addExecutable(.{
-        .name = "geoip-converter",
+        .name = "NGC",
         .version = std.SemanticVersion.parse(zon.version) catch unreachable,
         .root_module = b.createModule(.{
             .root_source_file = .{ .cwd_relative = "src/main.zig" },
@@ -80,6 +80,6 @@ pub fn build(b: *Build) void {
         run_cmd.addArgs(args);
     }
 
-    const step = b.step("run", "Run the geoip-converter");
+    const step = b.step("run", "Run NGC");
     step.dependOn(&run_cmd.step);
 }

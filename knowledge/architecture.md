@@ -2,7 +2,7 @@
 Updated: 2026-05-12
 
 ## Overview
-The `geoip-converter` CLI processes raw GeoIP CSV files, normalizes overlapping blocks, and outputs a mathematically flat and perfectly aggregated format for the Nginx Geo module.
+The `NGC` CLI processes raw GeoIP CSV files, normalizes overlapping blocks, and outputs a mathematically flat and perfectly aggregated format for the Nginx Geo module.
 
 ## Core Mechanism: Radix Trie
 1. **Input Sorting**: Raw IP blocks are loaded and sorted by `size` DESCENDING (`sortRangesBySizeDesc`). This mimics the producer's specific priority overlay (`GeoFeed > Whois > ASN`). The massive generalized ASN blocks form the "base," while specific GeoFeed overrides rewrite blocks inside the trie later.

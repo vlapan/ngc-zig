@@ -8,7 +8,7 @@ SHELL := /opt/homebrew/bin/zsh
 all: build clean run compare
 
 
-BINARY := zig-out/bin/geoip-converter
+BINARY := zig-out/bin/NGC
 SOURCES := $(shell find . -name "*.zig")
 
 $(BINARY): $(SOURCES)
@@ -20,7 +20,7 @@ $(BINARY): $(SOURCES)
 build: $(BINARY)
 
 run: $(BINARY) clean
-	@echo "MAKE:INFO: Executing './zig-out/bin/geoip-converter' binary..."
+	@echo "MAKE:INFO: Executing './zig-out/bin/NGC' binary..."
 	/usr/bin/time -al ${BINARY} --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt 2>&1
 	@echo "MAKE:INFO: Done!"
 
