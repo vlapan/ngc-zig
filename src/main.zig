@@ -40,6 +40,7 @@ pub fn main(init: std.process.Init) !void {
     var out_file_writer = out_file.writer(io, &out_buf);
     try writeIPv4Ranges(ipv4_ranges.items, &out_file_writer.interface, alloc);
     try writeIPv6Ranges(ipv6_ranges.items, &out_file_writer.interface, alloc);
+    try out_file_writer.flush();
 }
 
 fn writeIPv4Ranges(ranges: []const IPv4Range, writer: *std.Io.Writer, alloc: mem.Allocator) !void {
@@ -128,12 +129,15 @@ fn rangeToCIDRsIPv4(range: IPv4Range, alloc: mem.Allocator) ![]const []const u8 
     }
     var start = range.start;
     while (start <= range.end) {
-        const remaining: u32 = range.end -% start;
-        const prefix: u6 = if (remaining == 0) @as(u6, 32) else @as(u6, 32 -% @clz(remaining));
-        const block_size: u32 = if (prefix == 0) 1 else @as(u32, 1) << @intCast(prefix);
+        const remaining: u32 = range.end -% start + 1;
+        const ctz_start: u5 = @intCast(@ctz(start));
+        const clz_rem: u5 = if (remaining <= 1) @as(u5, 0) else @intCast(@clz(remaining - 1));
+        const prefix: u5 = if (ctz_start < clz_rem) ctz_start else clz_rem;
+        const block_size: u32 = @as(u32, 1) << @intCast(prefix);
 
-        const mask: u32 = if (prefix == 32) 0 else (~@as(u32, 0)) << @intCast(32 -% prefix);
-        const network: u32 = start & ~mask;
+        const shift_val: u6 = @as(u6, 32) -% prefix;
+        const mask: u32 = if (prefix == 0) 0 else (~@as(u32, 0)) << @intCast(shift_val);
+        const network: u32 = start & mask;
 
         const cidr = try fmt.allocPrint(alloc, "{d}.{d}.{d}.{d}/{d}", .{
             (network >> 24) & 0xFF,

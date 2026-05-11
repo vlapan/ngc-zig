@@ -10,7 +10,6 @@ pub fn build(b: *Build) void {
         .root_source_file = .{ .cwd_relative = "src/main.zig" },
         .optimize = optimize_mode,
         .target = b.standardTargetOptions(.{}),
-        .link_libc = true,
     }),
     });
 
