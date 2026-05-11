@@ -58,69 +58,73 @@ pub fn main(init: std.process.Init) void {
         };
     }
 
-    var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-    v4_stats = parseFile(u32, init.io, config.ipv4_csv, &ipv4_ranges, alloc) catch |err| {
-        if (err == error.FileNotFound) {
-            std.log.err("IPv4 CSV file not found: '{s}'", .{config.ipv4_csv});
-        } else {
-            std.log.err("Failed to process IPv4 CSV file '{s}': {}", .{ config.ipv4_csv, err });
+    if (config.ipv4_csv) |v4_path| {
+        var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
+        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc) catch |err| {
+            if (err == error.FileNotFound) {
+                std.log.err("IPv4 CSV file not found: '{s}'", .{v4_path});
+            } else {
+                std.log.err("Failed to process IPv4 CSV file '{s}': {}", .{ v4_path, err });
+            }
+            std.process.exit(1);
+        };
+        ip_mod.sortRangesBySizeDesc(u32, ipv4_ranges.items);
+
+        var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
+            std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
+            std.process.exit(1);
+        };
+        for (ipv4_ranges.items) |r| {
+            const c_idx = trie_v4.getCountryIdx(r.country) catch |err| {
+                std.log.err("Failed to map country '{s}': {}", .{ r.country, err });
+                std.process.exit(1);
+            };
+            trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, c_idx) catch |err| {
+                std.log.err("Failed to insert IPv4 range: {}", .{err});
+                std.process.exit(1);
+            };
         }
-        std.process.exit(1);
-    };
-    ip_mod.sortRangesBySizeDesc(u32, ipv4_ranges.items);
-
-    var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
-        std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
-        std.process.exit(1);
-    };
-    for (ipv4_ranges.items) |r| {
-        const c_idx = trie_v4.getCountryIdx(r.country) catch |err| {
-            std.log.err("Failed to map country '{s}': {}", .{ r.country, err });
+        trie_v4.optimize(1);
+        v4_cidrs = trie_v4.dump(1, 0, 0) catch |err| {
+            std.log.err("Failed to write IPv4 output: {}", .{err});
             std.process.exit(1);
         };
-        trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, c_idx) catch |err| {
-            std.log.err("Failed to insert IPv4 range: {}", .{err});
-            std.process.exit(1);
-        };
+        v4_countries = trie_v4.countries.items.len - 1;
     }
-    trie_v4.optimize(1);
-    v4_cidrs = trie_v4.dump(1, 0, 0) catch |err| {
-        std.log.err("Failed to write IPv4 output: {}", .{err});
-        std.process.exit(1);
-    };
-    v4_countries = trie_v4.countries.items.len - 1;
 
-    var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
-    v6_stats = parseFile(u128, init.io, config.ipv6_csv, &ipv6_ranges, alloc) catch |err| {
-        if (err == error.FileNotFound) {
-            std.log.err("IPv6 CSV file not found: '{s}'", .{config.ipv6_csv});
-        } else {
-            std.log.err("Failed to process IPv6 CSV file '{s}': {}", .{ config.ipv6_csv, err });
+    if (config.ipv6_csv) |v6_path| {
+        var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
+        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc) catch |err| {
+            if (err == error.FileNotFound) {
+                std.log.err("IPv6 CSV file not found: '{s}'", .{v6_path});
+            } else {
+                std.log.err("Failed to process IPv6 CSV file '{s}': {}", .{ v6_path, err });
+            }
+            std.process.exit(1);
+        };
+        ip_mod.sortRangesBySizeDesc(u128, ipv6_ranges.items);
+
+        var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
+            std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
+            std.process.exit(1);
+        };
+        for (ipv6_ranges.items) |r| {
+            const c_idx = trie_v6.getCountryIdx(r.country) catch |err| {
+                std.log.err("Failed to map country '{s}': {}", .{ r.country, err });
+                std.process.exit(1);
+            };
+            trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, c_idx) catch |err| {
+                std.log.err("Failed to insert IPv6 range: {}", .{err});
+                std.process.exit(1);
+            };
         }
-        std.process.exit(1);
-    };
-    ip_mod.sortRangesBySizeDesc(u128, ipv6_ranges.items);
-
-    var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
-        std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
-        std.process.exit(1);
-    };
-    for (ipv6_ranges.items) |r| {
-        const c_idx = trie_v6.getCountryIdx(r.country) catch |err| {
-            std.log.err("Failed to map country '{s}': {}", .{ r.country, err });
+        trie_v6.optimize(1);
+        v6_cidrs = trie_v6.dump(1, 0, 0) catch |err| {
+            std.log.err("Failed to write IPv6 output: {}", .{err});
             std.process.exit(1);
         };
-        trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, c_idx) catch |err| {
-            std.log.err("Failed to insert IPv6 range: {}", .{err});
-            std.process.exit(1);
-        };
+        v6_countries = trie_v6.countries.items.len - 1;
     }
-    trie_v6.optimize(1);
-    v6_cidrs = trie_v6.dump(1, 0, 0) catch |err| {
-        std.log.err("Failed to write IPv6 output: {}", .{err});
-        std.process.exit(1);
-    };
-    v6_countries = trie_v6.countries.items.len - 1;
 
     out_file_writer.flush() catch |err| {
         std.log.err("Failed to flush output file: {}", .{err});

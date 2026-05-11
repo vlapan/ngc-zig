@@ -1,8 +1,8 @@
 const std = @import("std");
 
 pub const Config = struct {
-    ipv4_csv: []const u8,
-    ipv6_csv: []const u8,
+    ipv4_csv: ?[]const u8 = null,
+    ipv6_csv: ?[]const u8 = null,
     output: []const u8,
     static_file: ?[]const u8 = null,
 };
@@ -30,14 +30,19 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
         }
     }
 
-    if (ipv4 == null or ipv6 == null or out == null) {
-        std.debug.print("Usage: ngc --ipv4 <file> --ipv6 <file> --output <file> [--static <file>]\n", .{});
+    if (out == null) {
+        std.debug.print("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] --output <file>\n", .{});
+        return error.InvalidArgs;
+    }
+
+    if (ipv4 == null and ipv6 == null and static_f == null) {
+        std.log.err("At least one input file (--ipv4, --ipv6, or --static) must be provided.\n", .{});
         return error.InvalidArgs;
     }
 
     return Config{
-        .ipv4_csv = try alloc.dupe(u8, ipv4.?),
-        .ipv6_csv = try alloc.dupe(u8, ipv6.?),
+        .ipv4_csv = if (ipv4) |f| try alloc.dupe(u8, f) else null,
+        .ipv6_csv = if (ipv6) |f| try alloc.dupe(u8, f) else null,
         .output = try alloc.dupe(u8, out.?),
         .static_file = if (static_f) |f| try alloc.dupe(u8, f) else null,
     };
