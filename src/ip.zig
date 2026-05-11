@@ -30,8 +30,10 @@ pub const IpSet = struct {
 pub fn sortRanges(comptime T: type, ranges: []IPRange(T)) void {
     std.mem.sort(IPRange(T), ranges, {}, struct {
         fn less(_: void, a: IPRange(T), b: IPRange(T)) bool {
+            // Sort exactly like the reference bash script:
+            // sort -n -t, -k3,3 -k1,1 (End IP ascending, then Size ascending)
+            if (a.end != b.end) return a.end < b.end;
             if (a.size != b.size) return a.size < b.size;
-            if (a.start != b.start) return a.start < b.start;
             return std.mem.order(u8, a.country, b.country) == .lt;
         }
     }.less);
