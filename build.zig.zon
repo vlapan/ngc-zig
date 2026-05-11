@@ -1,8 +1,8 @@
 .{
-    .name = .NGC,
+    .name = .ngc,
     .version = "0.1.0",
     .minimum_zig_version = "0.16.0",
-    .fingerprint = 0xd5a8b0305004ab76,
+    .fingerprint = 0x430ff2ba2e35b600,
     .paths = .{
         "build.zig",
         "build.zig.zon",

@@ -31,7 +31,7 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
     }
 
     if (ipv4 == null or ipv6 == null or out == null) {
-        std.debug.print("Usage: NGC --ipv4 <file> --ipv6 <file> --output <file> [--static <file>]\n", .{});
+        std.debug.print("Usage: ngc --ipv4 <file> --ipv6 <file> --output <file> [--static <file>]\n", .{});
         return error.InvalidArgs;
     }
 

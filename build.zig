@@ -48,7 +48,7 @@ pub fn build(b: *Build) void {
     } else "dev-build";
 
     const exe = b.addExecutable(.{
-        .name = "NGC",
+        .name = "ngc",
         .version = std.SemanticVersion.parse(zon.version) catch unreachable,
         .root_module = b.createModule(.{
             .root_source_file = .{ .cwd_relative = "src/main.zig" },

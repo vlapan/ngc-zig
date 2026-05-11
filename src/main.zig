@@ -33,7 +33,7 @@ pub fn main(init: std.process.Init) !void {
     var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     try parseFile(u32, init.io, config.ipv4_csv, &ipv4_ranges, alloc);
     ip_mod.sortRangesBySizeDesc(u32, ipv4_ranges.items);
-    
+
     var trie_v4 = try ip_mod.IpTrie(u32).init(alloc, writer);
     for (ipv4_ranges.items) |r| {
         const c_idx = try trie_v4.getCountryIdx(r.country);
@@ -86,13 +86,13 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
 
     while (try reader.takeDelimiter('\n')) |line| {
         if (line.len == 0) continue;
-        
+
         const comma1 = std.mem.indexOfScalar(u8, line, ',') orelse continue;
         const comma2 = std.mem.indexOfScalarPos(u8, line, comma1 + 1, ',') orelse continue;
 
         const start_str = line[0..comma1];
         const end_str = line[comma1 + 1 .. comma2];
-        
+
         var country = line[comma2 + 1 ..];
         if (country.len > 0 and country[country.len - 1] == '\r') {
             country = country[0 .. country.len - 1];
