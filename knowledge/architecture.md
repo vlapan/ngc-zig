@@ -1,5 +1,5 @@
 # Architecture
-Updated: 2026-05-11
+Updated: 2026-05-12
 
 ## Overview
 The `geoip-converter` CLI processes raw GeoIP CSV files, normalizes overlapping blocks, and outputs a mathematically flat and perfectly aggregated format for the Nginx Geo module.

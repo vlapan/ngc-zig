@@ -1,10 +1,14 @@
 # Zig 0.16.0 API Notes
-Updated: 2026-05-11
+Updated: 2026-05-12
 
 ## Process & IO Init
 - `pub fn main(init: std.process.Init) !void`
 - Access io via `init.io`, allocator via `init.gpa`
 - Args via `init.minimal.args.iterate()` (returns iterator)
+- `std.process.run(b.allocator, b.graph.io, ...)` (replaces deprecated `std.process.Child.run`)
+
+## Time
+- `std.Io.Timestamp.now(b.graph.io, .real)` (replaces deprecated `std.time.milliTimestamp`)
 
 ## File/Directory Operations
 - `std.Io.Dir.cwd()` - get current working directory
