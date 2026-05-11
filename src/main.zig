@@ -31,7 +31,9 @@ pub fn main(init: std.process.Init) !void {
 
     mem.sort(IPv4Range, ipv4_ranges.items, {}, struct {
         fn less(_: void, a: IPv4Range, b: IPv4Range) bool {
-            return a.start < b.start;
+            if (a.size != b.size) return a.size < b.size;
+            if (a.start != b.start) return a.start < b.start;
+            return mem.order(u8, a.country, b.country) == .lt;
         }
     }.less);
 
@@ -48,11 +50,11 @@ pub fn main(init: std.process.Init) !void {
     var out_file_writer = out_file.writer(io, &out_buf);
     const writer = &out_file_writer.interface;
 
-    try writer.print("\t127.0.0.0/8 RFC1918;\n", .{});
-    try writer.print("\t169.254.0.0/16 RFC1918;\n", .{});
-    try writer.print("\t10.0.0.0/8 RFC1918;\n", .{});
-    try writer.print("\t172.16.0.0/12 RFC1918;\n", .{});
-    try writer.print("\t192.168.0.0/16 RFC1918;\n", .{});
+    try writer.print("127.0.0.0/8 RFC1918;\n", .{});
+    try writer.print("169.254.0.0/16 RFC1918;\n", .{});
+    try writer.print("10.0.0.0/8 RFC1918;\n", .{});
+    try writer.print("172.16.0.0/12 RFC1918;\n", .{});
+    try writer.print("192.168.0.0/16 RFC1918;\n", .{});
 
     try writeIPv4Ranges(ipv4_ranges.items, writer, alloc, seen);
 
@@ -60,25 +62,40 @@ pub fn main(init: std.process.Init) !void {
     defer ipv6_ranges.deinit(alloc);
     try parseIPv6File(std.Io.Dir.cwd(), io, ipv6_path, &ipv6_ranges, alloc);
 
+    mem.sort(IPv6Range, ipv6_ranges.items, {}, struct {
+        fn less(_: void, a: IPv6Range, b: IPv6Range) bool {
+            if (a.size != b.size) return a.size < b.size;
+            if (mem.order(u8, &a.start, &b.start) != .eq) {
+                return mem.order(u8, &a.start, &b.start) == .lt;
+            }
+            return mem.order(u8, a.country, b.country) == .lt;
+        }
+    }.less);
+
     try writeIPv6Ranges(ipv6_ranges.items, writer, alloc, seen);
     try out_file_writer.flush();
+}
+
+fn isPrivateIPv4(ip: u32) bool {
+    if (ip >= 2130706432 and ip <= 2147483647) return true;
+    if (ip >= 2851995648 and ip <= 2852061183) return true;
+    if (ip >= 167772160 and ip <= 184549375) return true;
+    if (ip >= 2886729728 and ip <= 2887778303) return true;
+    if (ip >= 3232235520 and ip <= 3232301055) return true;
+    return false;
 }
 
 fn writeIPv4Ranges(ranges: []const IPv4Range, writer: *std.Io.Writer, alloc: mem.Allocator, seen: *std.hash_map.StringHashMapUnmanaged(void)) !void {
     for (ranges) |range| {
         var start = range.start;
         while (start <= range.end) {
-            var prefix: u6 = 32;
-            while (prefix > 0) {
-                const bits: u6 = @intCast(32 -% prefix +% 1);
-                const block_size: u32 = @as(u32, 1) << @intCast(bits);
-                const alignment_check: u32 = block_size - 1;
-
-                if (start & alignment_check != 0) break;
-                if (start +% block_size -% 1 > range.end) break;
-
-                prefix -%= 1;
+            var bits: u6 = @intCast(@ctz(start));
+            while (bits > 0) {
+                const max_diff: u32 = if (bits == 32) std.math.maxInt(u32) else (@as(u32, 1) << @intCast(bits)) - 1;
+                if (max_diff <= range.end - start) break;
+                bits -= 1;
             }
+            const prefix: u6 = 32 - bits;
 
             const cidr = try fmt.allocPrint(alloc, "{d}.{d}.{d}.{d}/{d}", .{
                 (start >> 24) & 0xFF,
@@ -88,16 +105,20 @@ fn writeIPv4Ranges(ranges: []const IPv4Range, writer: *std.Io.Writer, alloc: mem
                 prefix,
             });
 
-            const bits: u6 = @intCast(32 -% prefix);
-            const block_size: u32 = if (bits == 32) 1 else @as(u32, 1) << @intCast(bits);
-            start +%= block_size;
-
-            if (seen.contains(cidr)) {
+            if (!isPrivateIPv4(start)) {
+                if (seen.contains(cidr)) {
+                    alloc.free(cidr);
+                } else {
+                    try seen.put(alloc, cidr, {});
+                    try writer.print("{s} {s};\n", .{ cidr, range.country });
+                }
+            } else {
                 alloc.free(cidr);
-                continue;
             }
-            try seen.put(alloc, cidr, {});
-            try writer.print("\t{s} {s};\n", .{ cidr, range.country });
+
+            if (bits == 32) break; // Reached end of IPv4 space
+            const block_size: u32 = @as(u32, 1) << @intCast(bits);
+            start +%= block_size;
         }
     }
 }
@@ -107,16 +128,13 @@ fn writeIPv6Ranges(ranges: []const IPv6Range, writer: *std.Io.Writer, alloc: mem
         var start = parseIPv6Bytes(range.start);
         const end = parseIPv6Bytes(range.end);
         while (start <= end) {
-            var prefix: u8 = 128;
-            while (prefix > 0) {
-                const block_bits: u8 = @intCast(128 -% prefix +% 1);
-                const block_size: u128 = @as(u128, 1) << @intCast(block_bits);
-
-                if (start & (block_size - 1) != 0) break;
-                if (start +% block_size -% 1 > end) break;
-
-                prefix -%= 1;
+            var bits: u8 = @intCast(@ctz(start));
+            while (bits > 0) {
+                const max_diff: u128 = if (bits == 128) std.math.maxInt(u128) else (@as(u128, 1) << @intCast(bits)) - 1;
+                if (max_diff <= end - start) break;
+                bits -= 1;
             }
+            const prefix: u8 = 128 - bits;
 
             const cidr = try ipv6ToString(start, prefix, alloc);
 
@@ -124,11 +142,11 @@ fn writeIPv6Ranges(ranges: []const IPv6Range, writer: *std.Io.Writer, alloc: mem
                 alloc.free(cidr);
             } else {
                 try seen.put(alloc, cidr, {});
-                try writer.print("\t{s} {s};\n", .{ cidr, range.country });
+                try writer.print("{s} {s};\n", .{ cidr, range.country });
             }
 
-            const block_bits: u8 = @intCast(128 -% prefix);
-            const block_size: u128 = if (block_bits == 128) 1 else @as(u128, 1) << @intCast(block_bits);
+            const block_size: u128 = if (bits == 128) std.math.maxInt(u128) else @as(u128, 1) << @intCast(bits);
+            if (bits == 128) break; // If we consumed the entire space, we are done
             start +%= block_size;
         }
     }
@@ -144,35 +162,16 @@ fn parseIPv6Bytes(bytes: [16]u8) u128 {
 }
 
 fn ipv6ToString(ip: u128, prefix: u8, alloc: mem.Allocator) ![]u8 {
-    var hex = try fmt.allocPrint(alloc, "{x}", .{ip});
-    defer alloc.free(hex);
-
-    while (hex.len < 32) {
-        hex = try fmt.allocPrint(alloc, "0{s}", .{hex});
-        defer alloc.free(hex);
-    }
-
-    var result_parts: [8]u16 = undefined;
-    inline for (0..8) |i| {
-        const start_idx = (7 - i) * 4;
-        const chunk = hex[start_idx..start_idx + 4];
-        result_parts[i] = try fmt.parseInt(u16, chunk, 16);
-    }
-
-    var str_parts: [8][]u8 = undefined;
-    defer for (str_parts, 0..) |p, i| {
-        if (p.len > 0) alloc.free(p);
-        _ = i;
-    };
-
-    inline for (result_parts, 0..) |part, i| {
-        str_parts[i] = try fmt.allocPrint(alloc, "{x}", .{part});
-    }
-
-    return fmt.allocPrint(alloc, "{s}:{s}:{s}:{s}:{s}:{s}:{s}:{s}/{d}", .{
-        str_parts[0], str_parts[1], str_parts[2], str_parts[3],
-        str_parts[4], str_parts[5], str_parts[6], str_parts[7],
-        prefix
+    return fmt.allocPrint(alloc, "{x}:{x}:{x}:{x}:{x}:{x}:{x}:{x}/{d}", .{
+        @as(u16, @truncate(ip >> 112)),
+        @as(u16, @truncate(ip >> 96)),
+        @as(u16, @truncate(ip >> 80)),
+        @as(u16, @truncate(ip >> 64)),
+        @as(u16, @truncate(ip >> 48)),
+        @as(u16, @truncate(ip >> 32)),
+        @as(u16, @truncate(ip >> 16)),
+        @as(u16, @truncate(ip)),
+        prefix,
     });
 }
 
