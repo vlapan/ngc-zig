@@ -37,12 +37,12 @@ pub fn main(init: std.process.Init) !void {
     defer out_file.close(io);
 
     var out_buf: [4096]u8 = undefined;
-    var out_writer = out_file.writer(io, &out_buf);
-    try writeIPv4Ranges(ipv4_ranges.items, &out_writer, alloc);
-    try writeIPv6Ranges(ipv6_ranges.items, &out_writer, alloc);
+    var out_file_writer = out_file.writer(io, &out_buf);
+    try writeIPv4Ranges(ipv4_ranges.items, &out_file_writer.interface, alloc);
+    try writeIPv6Ranges(ipv6_ranges.items, &out_file_writer.interface, alloc);
 }
 
-fn writeIPv4Ranges(ranges: []const IPv4Range, writer: *std.Io.File.Writer, alloc: mem.Allocator) !void {
+fn writeIPv4Ranges(ranges: []const IPv4Range, writer: *std.Io.Writer, alloc: mem.Allocator) !void {
     for (ranges) |range| {
         const cidrs = try rangeToCIDRsIPv4(range, alloc);
         defer {
@@ -55,7 +55,7 @@ fn writeIPv4Ranges(ranges: []const IPv4Range, writer: *std.Io.File.Writer, alloc
     }
 }
 
-fn writeIPv6Ranges(ranges: []const IPv6Range, writer: *std.Io.File.Writer, alloc: mem.Allocator) !void {
+fn writeIPv6Ranges(ranges: []const IPv6Range, writer: *std.Io.Writer, alloc: mem.Allocator) !void {
     for (ranges) |range| {
         const cidrs = try rangeToCIDRsIPv6(range, alloc);
         defer {
@@ -120,35 +120,38 @@ fn parseIPv6Uint(s: []const u8) ![16]u8 {
     return buf;
 }
 
-fn rangeToCIDRsIPv4(range: IPv4Range, alloc: mem.Allocator) ![][:0]const u8 {
-    var cidrs = std.ArrayList([:0]const u8).empty;
-    defer cidrs.deinit(alloc);
+fn rangeToCIDRsIPv4(range: IPv4Range, alloc: mem.Allocator) ![]const []const u8 {
+    var cidrs = std.ArrayList([]const u8).empty;
+    defer {
+        for (cidrs.items) |cidr| alloc.free(cidr);
+        cidrs.deinit(alloc);
+    }
     var start = range.start;
     while (start <= range.end) {
-        const max_size: u6 = if (start == 0) 32 else @as(u6, @ctz(start));
-        const remaining = range.end - start;
-        const size: u6 = if (remaining == 0) 32 else @as(u6, @clz(remaining ^ (remaining - 1)) ^ 31);
-        const prefix = @min(max_size, size);
+        const remaining: u32 = range.end -% start;
+        const prefix: u6 = if (remaining == 0) @as(u6, 32) else @as(u6, 32 -% @clz(remaining));
+        const block_size: u32 = if (prefix == 0) 1 else @as(u32, 1) << @intCast(prefix);
 
-        const mask: u32 = if (prefix == 0) 0 else (~@as(u32, 0)) << @as(u6, 32 - prefix);
-        const network: u32 = start & mask;
+        const mask: u32 = if (prefix == 32) 0 else (~@as(u32, 0)) << @intCast(32 -% prefix);
+        const network: u32 = start & ~mask;
 
-        const cidr = try fmt.allocPrintZ(alloc, "{d}.{d}.{d}.{d}/{d}", .{
+        const cidr = try fmt.allocPrint(alloc, "{d}.{d}.{d}.{d}/{d}", .{
             (network >> 24) & 0xFF,
             (network >> 16) & 0xFF,
             (network >> 8) & 0xFF,
             network & 0xFF,
             prefix,
         });
-        try cidrs.append(cidr);
+        try cidrs.append(alloc, cidr);
 
-        start += @as(u32, 1) << @as(u6, prefix);
+        start +%= block_size;
     }
-    return try cidrs.toOwnedSlice();
+    return try cidrs.toOwnedSlice(alloc);
 }
 
-fn rangeToCIDRsIPv6(range: IPv6Range, alloc: mem.Allocator) ![][:0]const u8 {
+fn rangeToCIDRsIPv6(range: IPv6Range, alloc: mem.Allocator) ![]const []const u8 {
     _ = range;
     _ = alloc;
-    return &.{};
+    const result: []const []const u8 = &.{};
+    return result;
 }

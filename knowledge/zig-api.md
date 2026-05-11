@@ -37,3 +37,8 @@ Updated: 2026-05-11
 - Prefix 0-32 for IPv4, 0-128 for IPv6
 - u5 can only hold 0-31, use u6 for values up to 64
 - Shift operations require u6 for 32-bit shifts
+
+## Input Data Format
+- CSV: start_ip, end_ip, country_code
+- IPv4: numeric format (e.g., `16777216,16777471,AU`)
+- IPv6: numeric format (big integers up to ~2^128)

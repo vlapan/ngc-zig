@@ -1,0 +1,3 @@
+.zig-cache/*
+zig-out
+DO_NOT_READ.md
