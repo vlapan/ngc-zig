@@ -12,9 +12,6 @@ pub fn main(init: std.process.Init) !void {
         return err;
     };
 
-    var seen = ip_mod.IpSet.init();
-    try seen.ensureTotalCapacity(alloc, 500000);
-
     const out_file = try std.Io.Dir.cwd().createFile(init.io, config.output, .{});
     defer out_file.close(init.io);
 
@@ -28,14 +25,28 @@ pub fn main(init: std.process.Init) !void {
 
     var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     try parseFile(u32, init.io, config.ipv4_csv, &ipv4_ranges, alloc);
-    ip_mod.sortRanges(u32, ipv4_ranges.items);
-    try writeRanges(u32, ipv4_ranges.items, writer, alloc, &seen);
+    ip_mod.sortRangesBySizeDesc(u32, ipv4_ranges.items);
+    
+    var trie_v4 = try ip_mod.IpTrie(u32).init(alloc, writer);
+    for (ipv4_ranges.items) |r| {
+        const c_idx = try trie_v4.getCountryIdx(r.country);
+        try trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, c_idx);
+    }
+    trie_v4.optimize(1);
+    try trie_v4.dump(1, 0, 0);
 
     var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
     try parseFile(u128, init.io, config.ipv6_csv, &ipv6_ranges, alloc);
-    ip_mod.sortRanges(u128, ipv6_ranges.items);
-    try writeRanges(u128, ipv6_ranges.items, writer, alloc, &seen);
-    
+    ip_mod.sortRangesBySizeDesc(u128, ipv6_ranges.items);
+
+    var trie_v6 = try ip_mod.IpTrie(u128).init(alloc, writer);
+    for (ipv6_ranges.items) |r| {
+        const c_idx = try trie_v6.getCountryIdx(r.country);
+        try trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, c_idx);
+    }
+    trie_v6.optimize(1);
+    try trie_v6.dump(1, 0, 0);
+
     try out_file_writer.flush();
 }
 
@@ -90,35 +101,5 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
             .country = try alloc.dupe(u8, country),
             .size = size,
         });
-    }
-}
-
-fn writeRanges(comptime T: type, ranges: []const ip_mod.IPRange(T), writer: *std.Io.Writer, alloc: std.mem.Allocator, seen: *ip_mod.IpSet) !void {
-    for (ranges) |range| {
-        var start = range.start;
-        while (start <= range.end) {
-            const bits = ip_mod.findBlockBits(T, start, range.end);
-            const prefix: u8 = @as(u8, @intCast(@bitSizeOf(T))) - bits;
-
-            if (T == u32 and ip_mod.isPrivateIPv4(start)) {
-                if (bits == @bitSizeOf(T)) break;
-                start +%= @as(T, 1) << @intCast(bits);
-                continue;
-            }
-
-            const ip_key = if (T == u32) @as(u128, start) else start;
-            const duplicate = try seen.checkAndMark(alloc, ip_key, prefix);
-            
-            if (!duplicate) {
-                if (T == u32) {
-                    try ip_mod.formatIPv4(writer, start, prefix, range.country);
-                } else {
-                    try ip_mod.formatIPv6(writer, start, prefix, range.country);
-                }
-            }
-
-            if (bits == @bitSizeOf(T)) break;
-            start +%= @as(T, 1) << @intCast(bits);
-        }
     }
 }
