@@ -1,80 +1,64 @@
 const std = @import("std");
-const mem = std.mem;
-
-fn IPRange(comptime T: type) type {
-    return struct { start: T, end: T, country: []const u8, size: T };
-}
-const IPv4Range = IPRange(u32);
-const IPv6Range = IPRange(u128);
-
-const SeenKey = struct { ip: u128, prefix: u8 };
+const cli = @import("cli.zig");
+const ip_mod = @import("ip.zig");
 
 pub fn main(init: std.process.Init) !void {
-    const io = init.io;
-
     var arena = std.heap.ArenaAllocator.init(init.gpa);
     defer arena.deinit();
     const alloc = arena.allocator();
 
-    var args = init.minimal.args.iterate();
-    _ = args.next();
-
-    const ipv4_path = args.next() orelse {
-        std.debug.print("Usage: geoip-converter <ipv4_csv> <ipv6_csv> <output_file>\n", .{});
-        return error.InvalidArgs;
-    };
-    const ipv6_path = args.next() orelse {
-        std.debug.print("Usage: geoip-converter <ipv4_csv> <ipv6_csv> <output_file>\n", .{});
-        return error.InvalidArgs;
-    };
-    const output_path = args.next() orelse {
-        std.debug.print("Usage: geoip-converter <ipv4_csv> <ipv6_csv> <output_file>\n", .{});
-        return error.InvalidArgs;
+    const config = cli.parseArgs(init, alloc) catch |err| {
+        if (err == error.InvalidArgs) return;
+        return err;
     };
 
-    var ipv4_ranges = std.ArrayList(IPv4Range).empty;
-    try parseFile(u32, io, ipv4_path, &ipv4_ranges, alloc);
-    sortRanges(u32, ipv4_ranges.items);
+    var seen = ip_mod.IpSet.init();
+    try seen.ensureTotalCapacity(alloc, 500000);
 
-    var seen_unmanaged = std.hash_map.AutoHashMapUnmanaged(SeenKey, void){};
-    try seen_unmanaged.ensureTotalCapacity(alloc, 500000);
-
-    const seen: *std.hash_map.AutoHashMapUnmanaged(SeenKey, void) = &seen_unmanaged;
-
-    const out_file = try std.Io.Dir.cwd().createFile(io, output_path, .{});
-    defer out_file.close(io);
+    const out_file = try std.Io.Dir.cwd().createFile(init.io, config.output, .{});
+    defer out_file.close(init.io);
 
     var out_buf: [4096]u8 = undefined;
-    var out_file_writer = out_file.writer(io, &out_buf);
+    var out_file_writer = out_file.writer(init.io, &out_buf);
     const writer = &out_file_writer.interface;
 
-    try writer.print("127.0.0.0/8 RFC1918;\n", .{});
-    try writer.print("169.254.0.0/16 RFC1918;\n", .{});
-    try writer.print("10.0.0.0/8 RFC1918;\n", .{});
-    try writer.print("172.16.0.0/12 RFC1918;\n", .{});
-    try writer.print("192.168.0.0/16 RFC1918;\n", .{});
+    if (config.static_file) |static_path| {
+        try appendStaticFile(init.io, static_path, writer);
+    }
 
-    try writeRanges(u32, ipv4_ranges.items, writer, alloc, seen);
+    var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
+    try parseFile(u32, init.io, config.ipv4_csv, &ipv4_ranges, alloc);
+    ip_mod.sortRanges(u32, ipv4_ranges.items);
+    try writeRanges(u32, ipv4_ranges.items, writer, alloc, &seen);
 
-    var ipv6_ranges = std.ArrayList(IPv6Range).empty;
-    try parseFile(u128, io, ipv6_path, &ipv6_ranges, alloc);
-    sortRanges(u128, ipv6_ranges.items);
-
-    try writeRanges(u128, ipv6_ranges.items, writer, alloc, seen);
+    var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
+    try parseFile(u128, init.io, config.ipv6_csv, &ipv6_ranges, alloc);
+    ip_mod.sortRanges(u128, ipv6_ranges.items);
+    try writeRanges(u128, ipv6_ranges.items, writer, alloc, &seen);
+    
     try out_file_writer.flush();
 }
 
-fn sortRanges(comptime T: type, ranges: []IPRange(T)) void {
-    mem.sort(IPRange(T), ranges, {}, struct {
-        fn less(_: void, a: IPRange(T), b: IPRange(T)) bool {
-            if (a.size != b.size) return a.size < b.size;
-            if (a.start != b.start) return a.start < b.start;
-            return mem.order(u8, a.country, b.country) == .lt;
+fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer) !void {
+    var file = try std.Io.Dir.cwd().openFile(io, path, .{});
+    defer file.close(io);
+    var in_buf: [4096]u8 = undefined;
+    var file_reader = file.reader(io, &in_buf);
+    const reader = &file_reader.interface;
+
+    while (try reader.takeDelimiter('\n')) |line| {
+        if (line.len == 0) continue;
+        var final_line = line;
+        if (final_line[final_line.len - 1] == '\r') {
+            final_line = final_line[0 .. final_line.len - 1];
         }
-    }.less);
+        if (final_line.len == 0) continue;
+        try writer.writeAll(final_line);
+        try writer.writeAll("\n");
+    }
 }
 
-fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(IPRange(T)), alloc: mem.Allocator) !void {
+fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator) !void {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
@@ -84,10 +68,17 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
 
     while (try reader.takeDelimiter('\n')) |line| {
         if (line.len == 0) continue;
-        var parts = mem.tokenizeAny(u8, line, ",\r");
-        const start_str = parts.next() orelse continue;
-        const end_str = parts.next() orelse continue;
-        const country = parts.next() orelse continue;
+        
+        const comma1 = std.mem.indexOfScalar(u8, line, ',') orelse continue;
+        const comma2 = std.mem.indexOfScalarPos(u8, line, comma1 + 1, ',') orelse continue;
+
+        const start_str = line[0..comma1];
+        const end_str = line[comma1 + 1 .. comma2];
+        
+        var country = line[comma2 + 1 ..];
+        if (country.len > 0 and country[country.len - 1] == '\r') {
+            country = country[0 .. country.len - 1];
+        }
 
         const start = try std.fmt.parseInt(T, start_str, 10);
         const end = try std.fmt.parseInt(T, end_str, 10);
@@ -102,46 +93,27 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
     }
 }
 
-fn isPrivateIPv4(ip: u32) bool {
-    if (ip >= 2130706432 and ip <= 2147483647) return true;
-    if (ip >= 2851995648 and ip <= 2852061183) return true;
-    if (ip >= 167772160 and ip <= 184549375) return true;
-    if (ip >= 2886729728 and ip <= 2887778303) return true;
-    if (ip >= 3232235520 and ip <= 3232301055) return true;
-    return false;
-}
-
-fn findBlockBits(comptime T: type, start: T, end: T) u8 {
-    if (start == 0 and end == std.math.maxInt(T)) return @bitSizeOf(T);
-    var bits: u8 = @intCast(@ctz(start));
-    while (bits > 0) {
-        const max_diff: T = if (bits == @bitSizeOf(T)) std.math.maxInt(T) else (@as(T, 1) << @intCast(bits)) - 1;
-        if (max_diff <= end - start) break;
-        bits -= 1;
-    }
-    return bits;
-}
-
-fn writeRanges(comptime T: type, ranges: []const IPRange(T), writer: *std.Io.Writer, alloc: mem.Allocator, seen: *std.hash_map.AutoHashMapUnmanaged(SeenKey, void)) !void {
+fn writeRanges(comptime T: type, ranges: []const ip_mod.IPRange(T), writer: *std.Io.Writer, alloc: std.mem.Allocator, seen: *ip_mod.IpSet) !void {
     for (ranges) |range| {
         var start = range.start;
         while (start <= range.end) {
-            const bits = findBlockBits(T, start, range.end);
+            const bits = ip_mod.findBlockBits(T, start, range.end);
             const prefix: u8 = @as(u8, @intCast(@bitSizeOf(T))) - bits;
 
-            if (T == u32 and isPrivateIPv4(start)) {
+            if (T == u32 and ip_mod.isPrivateIPv4(start)) {
                 if (bits == @bitSizeOf(T)) break;
                 start +%= @as(T, 1) << @intCast(bits);
                 continue;
             }
 
-            const key = SeenKey{ .ip = if (T == u32) @as(u128, start) else start, .prefix = prefix };
-            const entry = try seen.getOrPut(alloc, key);
-            if (!entry.found_existing) {
+            const ip_key = if (T == u32) @as(u128, start) else start;
+            const duplicate = try seen.checkAndMark(alloc, ip_key, prefix);
+            
+            if (!duplicate) {
                 if (T == u32) {
-                    try writer.print("{d}.{d}.{d}.{d}/{d} {s};\n", .{ (start >> 24) & 0xFF, (start >> 16) & 0xFF, (start >> 8) & 0xFF, start & 0xFF, prefix, range.country });
+                    try ip_mod.formatIPv4(writer, start, prefix, range.country);
                 } else {
-                    try writer.print("{x}:{x}:{x}:{x}:{x}:{x}:{x}:{x}/{d} {s};\n", .{ @as(u16, @truncate(start >> 112)), @as(u16, @truncate(start >> 96)), @as(u16, @truncate(start >> 80)), @as(u16, @truncate(start >> 64)), @as(u16, @truncate(start >> 48)), @as(u16, @truncate(start >> 32)), @as(u16, @truncate(start >> 16)), @as(u16, @truncate(start)), prefix, range.country });
+                    try ip_mod.formatIPv6(writer, start, prefix, range.country);
                 }
             }
 
