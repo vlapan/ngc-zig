@@ -7,7 +7,7 @@ fi
 
 BINARY="$1"
 CMD="$*"
-RATE="100000"
+RATE="1000000"
 
 parse() {
 	# 1. JQ: Your original logic (with -rs for stream safety)
@@ -17,7 +17,7 @@ parse() {
 		($t.frameTable.address[$t.stackTable.frame[$t.samples.stack[$i]]]) as $addr |
 		.[($addr + 4294967296) | tostring] += $t.samples.weight[$i]
 	) | 
-	to_entries[] | "\(.value) \($tp) \(.key)"' | sort -rn | head -n 30)"
+	to_entries[] | "\(.value) \($tp) \(.key)"' | sort -rn | head -n 100)"
 
 	# Print Header
 	printf "%-12s %-12s %-8s %-12s %s\n" "TIME (ms)" "PROBES" "REL %" "OFFSET" "SYMBOL / SOURCE LINE (INLINED)"

@@ -29,6 +29,11 @@ profile: $(BINARY)
 	@bash test/profile.sh ${BINARY} --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt
 	@echo "MAKE:INFO: Done!"
 
+profile2: $(BINARY)
+	@echo "MAKE:INFO: Profiling binary..."
+	@bash test/profile2.sh ${BINARY} --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt
+	@echo "MAKE:INFO: Done!"
+
 release:
 	@echo "MAKE:INFO: Compiling the project (optimised stamped/release version)..."
 	@# rm -rf .zig-cache zig-out 2>&1
