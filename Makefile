@@ -47,3 +47,8 @@ clean:
 	@echo "MAKE:INFO: Cleaning zig output directories..."
 	rm -rf .zig-cache zig-out 2>&1
 	@echo "MAKE:INFO: Cleaning done!"
+
+fmt:
+	@echo "MAKE:INFO: Formatting Zig source files..."
+	zig fmt src/*.zig build.zig
+	@echo "MAKE:INFO: Formatting done!"

@@ -82,4 +82,17 @@ pub fn build(b: *Build) void {
 
     const step = b.step("run", "Run NGC");
     step.dependOn(&run_cmd.step);
+
+    const test_exe = b.addTest(.{
+        .root_module = b.createModule(.{
+            .root_source_file = .{ .cwd_relative = "src/main.zig" },
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    test_exe.root_module.addOptions("options", options);
+
+    const test_run = b.addRunArtifact(test_exe);
+    const test_step = b.step("test", "Run unit tests");
+    test_step.dependOn(&test_run.step);
 }
