@@ -1,0 +1,474 @@
+TIME (ms)    PROBES       REL %    OFFSET       SYMBOL / SOURCE LINE (INLINED)
+---------    ------       -----    ------       ------------------------------
+35.34ms      35336        7.0%     0x1000008dc  ip.IpTrie(u32).allocNode (in geoip-converter) (ip.zig:154)
+                                                ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:186)
+                                                
+--------------------------------------------------------------------------------
+24.29ms      24289        4.8%     0x10003dfe0  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:632)
+                                                
+--------------------------------------------------------------------------------
+21.10ms      21102        4.2%     0x10003e7ac  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:686)
+                                                
+--------------------------------------------------------------------------------
+17.63ms      17634        3.5%     0x1000012f4  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:197)
+                                                
+--------------------------------------------------------------------------------
+11.15ms      11150        2.2%     0x10003fef8  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                sort.block.swap__anon_20773 (in geoip-converter) (block.zig:1072)
+                                                
+--------------------------------------------------------------------------------
+11.09ms      11088        2.2%     0x10000133c  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+11.05ms      11055        2.2%     0x10003e640  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:662)
+                                                
+--------------------------------------------------------------------------------
+10.00ms      10000        2.0%     0x1000400c0  math.mul__anon_20902 (in geoip-converter) (math.zig:556)
+                                                fmt.parseIntWithSign__anon_20892 (in geoip-converter) (fmt.zig:445)
+                                                fmt.parseIntWithGenericCharacter__anon_20886 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_3099 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+9.66ms       9655         1.9%     0x100001230  ip.IpTrie(u128).allocNode (in geoip-converter) (ip.zig:154)
+                                                ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:186)
+                                                
+--------------------------------------------------------------------------------
+8.42ms       8423         1.7%     0x100004670  mem.eqlBytes (in geoip-converter) (mem.zig:776)
+                                                mem.eql__anon_2614 (in geoip-converter) (mem.zig:736)
+                                                ip.IpTrie(u32).getCountryIdx (in geoip-converter) (ip.zig:146)
+                                                main.main (in geoip-converter) (main.zig:32)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+8.38ms       8383         1.7%     0x1000400dc  math.add__anon_20906 (in geoip-converter) (math.zig:564)
+                                                fmt.parseIntWithSign__anon_20892 (in geoip-converter) (fmt.zig:453)
+                                                fmt.parseIntWithGenericCharacter__anon_20886 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_3099 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+7.76ms       7757         1.5%     0x100004684  ip.IpTrie(u32).getCountryIdx (in geoip-converter) (ip.zig:146)
+                                                main.main (in geoip-converter) (main.zig:32)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+7.40ms       7398         1.5%     0x10000fbfc  array_hash_map.IndexHeader.findBitIndex (in geoip-converter) (array_hash_map.zig:1671)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).ensureTotalCapacityContext (in geoip-converter) (array_hash_map.zig:429)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).getOrPutContextAdapted__anon_12654 (in geoip-converter) (array_hash_map.zig:320)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).getOrPutContext (in geoip-converter) (array_hash_map.zig:308)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).getOrPut (in geoip-converter) (array_hash_map.zig:305)
+                                                debug.MachOFile.getDwarfForAddress (in geoip-converter) (MachOFile.zig:276)
+                                                debug.SelfInfo.MachO.getSymbols (in geoip-converter) (MachO.zig:54)
+                                                
+--------------------------------------------------------------------------------
+7.34ms       7340         1.4%     0x100001300  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+7.10ms       7096         1.4%     0x10000132c  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:198)
+                                                
+--------------------------------------------------------------------------------
+7.00ms       6997         1.4%     0x10000112c  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:167)
+                                                
+--------------------------------------------------------------------------------
+6.54ms       6540         1.3%     0x1000008bc  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:189)
+                                                
+--------------------------------------------------------------------------------
+6.49ms       6487         1.3%     0x10003bb68  ip.IpTrie(u128).optimize (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+5.90ms       5897         1.2%     0x10003bc38  ip.IpTrie(u128).optimize (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+5.64ms       5638         1.1%     0x100003474  mem.eqlBytes (in geoip-converter) (mem.zig:781)
+                                                mem.eql__anon_2614 (in geoip-converter) (mem.zig:736)
+                                                array_hash_map.eqlString (in geoip-converter) (array_hash_map.zig:37)
+                                                process.Environ.Map.eqlKeys (in geoip-converter) (Environ.zig:139)
+                                                process.Environ.Map.EnvNameHashContext.eql (in geoip-converter) (Environ.zig:134)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).checkedEql__anon_18117 (in geoip-converter) (array_hash_map.zig:1476)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutInternal__anon_21960 (in geoip-converter) (array_hash_map.zig:1327)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutAssumeCapacityAdapted__anon_21948 (in geoip-converter) (array_hash_map.zig:396)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutContextAdapted__anon_21935 (in geoip-converter) (array_hash_map.zig:332)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutContext (in geoip-converter) (array_hash_map.zig:308)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPut (in geoip-converter) (array_hash_map.zig:305)
+                                                process.Environ.Map.put (in geoip-converter) (Environ.zig:261)
+                                                process.Environ.Map.putPosixBlock (in geoip-converter) (Environ.zig:194)
+                                                process.Environ.createMap (in geoip-converter) (Environ.zig:518)
+                                                start.callMain (in geoip-converter) (start.zig:730)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+5.45ms       5449         1.1%     0x1000010ec  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:159)
+                                                
+--------------------------------------------------------------------------------
+5.40ms       5398         1.1%     0x10000098c  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:198)
+                                                
+--------------------------------------------------------------------------------
+5.34ms       5341         1.1%     0x100000a74  ip.IpTrie(u32).dump (in geoip-converter) (ip.zig:249)
+                                                
+--------------------------------------------------------------------------------
+5.30ms       5300         1.0%     0x1000007a4  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:160)
+                                                
+--------------------------------------------------------------------------------
+5.17ms       5172         1.0%     0x100004634  ip.IpTrie(u32).getCountryIdx (in geoip-converter) (ip.zig:0)
+                                                main.main (in geoip-converter) (main.zig:32)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+4.83ms       4834         1.0%     0x1000051e4  mem.eqlBytes (in geoip-converter) (mem.zig:776)
+                                                mem.eql__anon_2614 (in geoip-converter) (mem.zig:736)
+                                                ip.IpTrie(u128).getCountryIdx (in geoip-converter) (ip.zig:146)
+                                                main.main (in geoip-converter) (main.zig:44)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+4.52ms       4520         0.9%     0x1000008b4  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:184)
+                                                
+--------------------------------------------------------------------------------
+4.29ms       4293         0.8%     0x1000009b4  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:200)
+                                                
+--------------------------------------------------------------------------------
+4.23ms       4226         0.8%     0x1000013c4  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+4.13ms       4127         0.8%     0x100003418  array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutInternal__anon_21958 (in geoip-converter) (array_hash_map.zig:1332)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutAssumeCapacityAdapted__anon_21948 (in geoip-converter) (array_hash_map.zig:394)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutContextAdapted__anon_21935 (in geoip-converter) (array_hash_map.zig:332)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutContext (in geoip-converter) (array_hash_map.zig:308)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPut (in geoip-converter) (array_hash_map.zig:305)
+                                                process.Environ.Map.put (in geoip-converter) (Environ.zig:261)
+                                                process.Environ.Map.putPosixBlock (in geoip-converter) (Environ.zig:194)
+                                                process.Environ.createMap (in geoip-converter) (Environ.zig:518)
+                                                start.callMain (in geoip-converter) (start.zig:730)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+4.02ms       4015         0.8%     0x1000007c8  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:167)
+                                                
+--------------------------------------------------------------------------------
+3.96ms       3959         0.8%     0x100000a24  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+3.95ms       3950         0.8%     0x10003dff0  sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:844)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:632)
+                                                
+--------------------------------------------------------------------------------
+3.91ms       3907         0.8%     0x100004650  ip.IpTrie(u32).getCountryIdx (in geoip-converter) (ip.zig:0)
+                                                main.main (in geoip-converter) (main.zig:32)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+3.88ms       3881         0.8%     0x100000ac0  ip.IpTrie(u32).dump (in geoip-converter) (ip.zig:236)
+                                                
+--------------------------------------------------------------------------------
+3.65ms       3651         0.7%     0x10004009c  fmt.parseIntWithSign__anon_20892 (in geoip-converter) (fmt.zig:444)
+                                                fmt.parseIntWithGenericCharacter__anon_20886 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_3099 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+3.51ms       3509         0.7%     0x1000008d8  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:197)
+                                                
+--------------------------------------------------------------------------------
+3.47ms       3465         0.7%     0x100040084  fmt.parseIntWithSign__anon_20892 (in geoip-converter) (fmt.zig:441)
+                                                fmt.parseIntWithGenericCharacter__anon_20886 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_3099 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+3.41ms       3406         0.7%     0x10000134c  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:201)
+                                                
+--------------------------------------------------------------------------------
+3.38ms       3384         0.7%     0x100004644  ip.IpTrie(u32).getCountryIdx (in geoip-converter) (ip.zig:145)
+                                                main.main (in geoip-converter) (main.zig:32)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+3.26ms       3262         0.6%     0x100001218  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:184)
+                                                
+--------------------------------------------------------------------------------
+3.26ms       3261         0.6%     0x100001220  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:189)
+                                                
+--------------------------------------------------------------------------------
+3.23ms       3226         0.6%     0x1000008c8  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:195)
+                                                
+--------------------------------------------------------------------------------
+3.16ms       3164         0.6%     0x1000009a4  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:198)
+                                                
+--------------------------------------------------------------------------------
+3.05ms       3047         0.6%     0x10004007c  fmt.parseIntWithSign__anon_20892 (in geoip-converter) (fmt.zig:441)
+                                                fmt.parseIntWithGenericCharacter__anon_20886 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_3099 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+2.90ms       2897         0.6%     0x1000051a8  ip.IpTrie(u128).getCountryIdx (in geoip-converter) (ip.zig:0)
+                                                main.main (in geoip-converter) (main.zig:44)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+2.82ms       2817         0.6%     0x100001328  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:198)
+                                                
+--------------------------------------------------------------------------------
+2.75ms       2745         0.5%     0x100040090  fmt.charToDigit (in geoip-converter) (fmt.zig:571)
+                                                fmt.parseIntWithSign__anon_20892 (in geoip-converter) (fmt.zig:443)
+                                                fmt.parseIntWithGenericCharacter__anon_20886 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_3099 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+2.68ms       2679         0.5%     0x10000147c  ip.IpTrie(u128).dump (in geoip-converter) (ip.zig:236)
+                                                
+--------------------------------------------------------------------------------
+2.60ms       2595         0.5%     0x1000051f8  ip.IpTrie(u128).getCountryIdx (in geoip-converter) (ip.zig:146)
+                                                main.main (in geoip-converter) (main.zig:44)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+2.52ms       2519         0.5%     0x10000141c  ip.IpTrie(u128).dump (in geoip-converter) (ip.zig:249)
+                                                
+--------------------------------------------------------------------------------
+2.50ms       2504         0.5%     0x100043f78  math.add__anon_21117 (in geoip-converter) (math.zig:564)
+                                                fmt.parseIntWithSign__anon_21106 (in geoip-converter) (fmt.zig:453)
+                                                fmt.parseIntWithGenericCharacter__anon_21096 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_2901 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+2.48ms       2478         0.5%     0x10003e750  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                mem.reverse__anon_20870 (in geoip-converter) (mem.zig:3916)
+                                                mem.rotate__anon_20777 (in geoip-converter) (mem.zig:4050)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:678)
+                                                
+--------------------------------------------------------------------------------
+2.39ms       2391         0.5%     0x100001224  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:189)
+                                                
+--------------------------------------------------------------------------------
+2.27ms       2272         0.4%     0x100001330  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:198)
+                                                
+--------------------------------------------------------------------------------
+2.25ms       2245         0.4%     0x1000010e8  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:159)
+                                                
+--------------------------------------------------------------------------------
+2.19ms       2192         0.4%     0x1000009bc  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:201)
+                                                
+--------------------------------------------------------------------------------
+2.16ms       2164         0.4%     0x100042a44  sort.block.blockSwap__anon_21051 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_21024 (in geoip-converter) (block.zig:686)
+                                                
+--------------------------------------------------------------------------------
+2.10ms       2103         0.4%     0x10003bb60  ip.IpTrie(u128).optimize (in geoip-converter) (ip.zig:213)
+                                                
+--------------------------------------------------------------------------------
+2.06ms       2063         0.4%     0x1000403ec  array_list.Aligned(ip.TrieNode,null).ensureTotalCapacity (in geoip-converter) (array_list.zig:0)
+                                                
+--------------------------------------------------------------------------------
+1.87ms       1869         0.4%     0x1000051b8  ip.IpTrie(u128).getCountryIdx (in geoip-converter) (ip.zig:145)
+                                                main.main (in geoip-converter) (main.zig:44)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+1.84ms       1836         0.4%     0x10004230c  sort.block.blockSwap__anon_21051 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_21024 (in geoip-converter) (block.zig:632)
+                                                
+--------------------------------------------------------------------------------
+1.80ms       1801         0.4%     0x10003ec78  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                mem.reverse__anon_20870 (in geoip-converter) (mem.zig:3916)
+                                                mem.rotate__anon_20777 (in geoip-converter) (mem.zig:4048)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:733)
+                                                
+--------------------------------------------------------------------------------
+1.80ms       1801         0.4%     0x1000009cc  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+1.74ms       1742         0.3%     0x100001364  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+1.71ms       1714         0.3%     0x10003ed14  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                mem.reverse__anon_20870 (in geoip-converter) (mem.zig:3916)
+                                                mem.rotate__anon_20777 (in geoip-converter) (mem.zig:4050)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:733)
+                                                
+--------------------------------------------------------------------------------
+1.67ms       1666         0.3%     0x100003584  array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutInternal__anon_21959 (in geoip-converter) (array_hash_map.zig:0)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutAssumeCapacityAdapted__anon_21948 (in geoip-converter) (array_hash_map.zig:395)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutContextAdapted__anon_21935 (in geoip-converter) (array_hash_map.zig:332)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutContext (in geoip-converter) (array_hash_map.zig:308)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPut (in geoip-converter) (array_hash_map.zig:305)
+                                                process.Environ.Map.put (in geoip-converter) (Environ.zig:261)
+                                                process.Environ.Map.putPosixBlock (in geoip-converter) (Environ.zig:194)
+                                                process.Environ.createMap (in geoip-converter) (Environ.zig:518)
+                                                start.callMain (in geoip-converter) (start.zig:730)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+1.63ms       1631         0.3%     0x10003e650  sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:844)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:662)
+                                                
+--------------------------------------------------------------------------------
+1.60ms       1600         0.3%     0x10003d6e0  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                mem.reverse__anon_20870 (in geoip-converter) (mem.zig:3916)
+                                                mem.rotate__anon_20777 (in geoip-converter) (mem.zig:4049)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:522)
+                                                
+--------------------------------------------------------------------------------
+1.53ms       1534         0.3%     0x100001264  array_list.Aligned(ip.TrieNode,null).append (in geoip-converter) (array_list.zig:905)
+                                                ip.IpTrie(u128).allocNode (in geoip-converter) (ip.zig:155)
+                                                ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:186)
+                                                
+--------------------------------------------------------------------------------
+1.51ms       1509         0.3%     0x10004037c  array_list.Aligned(ip.TrieNode,null).ensureTotalCapacity (in geoip-converter) (array_list.zig:1210)
+                                                
+--------------------------------------------------------------------------------
+1.46ms       1460         0.3%     0x10003ff08  mem.swap__anon_13523 (in geoip-converter) (mem.zig:3863)
+                                                sort.block.swap__anon_20773 (in geoip-converter) (block.zig:1073)
+                                                
+--------------------------------------------------------------------------------
+1.45ms       1447         0.3%     0x10003e6a8  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                mem.reverse__anon_20870 (in geoip-converter) (mem.zig:3916)
+                                                mem.rotate__anon_20777 (in geoip-converter) (mem.zig:4048)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:678)
+                                                
+--------------------------------------------------------------------------------
+1.41ms       1407         0.3%     0x1000051c4  ip.IpTrie(u128).getCountryIdx (in geoip-converter) (ip.zig:0)
+                                                main.main (in geoip-converter) (main.zig:44)
+                                                start.callMain (in geoip-converter) (start.zig:737)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+1.35ms       1346         0.3%     0x100043fa0  fmt.parseIntWithSign__anon_21106 (in geoip-converter) (fmt.zig:444)
+                                                fmt.parseIntWithGenericCharacter__anon_21096 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_2901 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+1.34ms       1339         0.3%     0x100043fb0  math.mul__anon_21113 (in geoip-converter) (math.zig:556)
+                                                fmt.parseIntWithSign__anon_21106 (in geoip-converter) (fmt.zig:445)
+                                                fmt.parseIntWithGenericCharacter__anon_21096 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_2901 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+1.31ms       1311         0.3%     0x10003dfd4  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3863)
+                                                sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:632)
+                                                
+--------------------------------------------------------------------------------
+1.18ms       1178         0.2%     0x100000910  array_list.Aligned(ip.TrieNode,null).append (in geoip-converter) (array_list.zig:905)
+                                                ip.IpTrie(u32).allocNode (in geoip-converter) (ip.zig:155)
+                                                ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:186)
+                                                
+--------------------------------------------------------------------------------
+1.16ms       1163         0.2%     0x10003bc40  ip.IpTrie(u128).optimize (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+1.12ms       1117         0.2%     0x100043f88  fmt.parseIntWithSign__anon_21106 (in geoip-converter) (fmt.zig:441)
+                                                fmt.parseIntWithGenericCharacter__anon_21096 (in geoip-converter) (fmt.zig:331)
+                                                fmt.parseInt__anon_2901 (in geoip-converter) (fmt.zig:318)
+                                                
+--------------------------------------------------------------------------------
+1.11ms       1113         0.2%     0x10003dd34  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:595)
+                                                
+--------------------------------------------------------------------------------
+1.04ms       1045         0.2%     0x10000fb78  multi_array_list.MultiArrayList(array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).Data).setCapacity (in geoip-converter) (multi_array_list.zig:559)
+                                                multi_array_list.MultiArrayList(array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).Data).ensureTotalCapacity (in geoip-converter) (multi_array_list.zig:516)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).ensureTotalCapacityContext (in geoip-converter) (array_hash_map.zig:425)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).getOrPutContextAdapted__anon_12654 (in geoip-converter) (array_hash_map.zig:320)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).getOrPutContext (in geoip-converter) (array_hash_map.zig:308)
+                                                array_hash_map.Custom(u32,error{InvalidDwarf,InvalidMachO,MissingDebugInfo,OutOfMemory,ReadFailed,UnsupportedDebugInfo}!debug.MachOFile.OFile,array_hash_map.AutoContext(u32),false).getOrPut (in geoip-converter) (array_hash_map.zig:305)
+                                                debug.MachOFile.getDwarfForAddress (in geoip-converter) (MachOFile.zig:276)
+                                                debug.SelfInfo.MachO.getSymbols (in geoip-converter) (MachO.zig:54)
+                                                
+--------------------------------------------------------------------------------
+1.04ms       1039         0.2%     0x1000007a8  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:160)
+                                                
+--------------------------------------------------------------------------------
+1.03ms       1030         0.2%     0x1000468f4  DYLD-STUB$$memcpy (in geoip-converter) + 4
+                                                
+--------------------------------------------------------------------------------
+1.03ms       1029         0.2%     0x1000007d0  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:169)
+                                                
+--------------------------------------------------------------------------------
+1.00ms       1002         0.2%     0x1000010c4  ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:159)
+                                                
+--------------------------------------------------------------------------------
+0.97ms       966          0.2%     0x100044214  mem.findScalarPos__anon_2890 (in geoip-converter) (mem.zig:0)
+                                                
+--------------------------------------------------------------------------------
+0.92ms       920          0.2%     0x10000356c  array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPutContext (in geoip-converter) (array_hash_map.zig:309)
+                                                array_hash_map.Custom([]const u8,[]const u8,process.Environ.Map.EnvNameHashContext,false).getOrPut (in geoip-converter) (array_hash_map.zig:305)
+                                                process.Environ.Map.put (in geoip-converter) (Environ.zig:261)
+                                                process.Environ.Map.putPosixBlock (in geoip-converter) (Environ.zig:194)
+                                                process.Environ.createMap (in geoip-converter) (Environ.zig:518)
+                                                start.callMain (in geoip-converter) (start.zig:730)
+                                                start.callMainWithArgs (in geoip-converter) (start.zig:638)
+                                                main (in geoip-converter) (start.zig:663)
+                                                
+--------------------------------------------------------------------------------
+0.92ms       917          0.2%     0x10003e218  sort.block.block__anon_20760 (in geoip-converter) (mem.zig:0)
+                                                
+--------------------------------------------------------------------------------
+0.89ms       888          0.2%     0x1000007c0  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:167)
+                                                
+--------------------------------------------------------------------------------
+0.84ms       837          0.2%     0x1000007b4  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
+0.81ms       805          0.2%     0x1000009ac  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:198)
+                                                
+--------------------------------------------------------------------------------
+0.80ms       799          0.2%     0x1000410a8  sort.block.mergeInto__anon_21043 (in geoip-converter) (block.zig:1001)
+                                                sort.block.block__anon_21024 (in geoip-converter) (block.zig:267)
+                                                
+--------------------------------------------------------------------------------
+0.76ms       763          0.2%     0x10003e7b8  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3862)
+                                                sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:686)
+                                                
+--------------------------------------------------------------------------------
+0.76ms       760          0.1%     0x1000012bc  array_list.Aligned(ip.TrieNode,null).append (in geoip-converter) (array_list.zig:905)
+                                                ip.IpTrie(u128).allocNode (in geoip-converter) (ip.zig:155)
+                                                ip.IpTrie(u128).insertRange (in geoip-converter) (ip.zig:191)
+                                                
+--------------------------------------------------------------------------------
+0.75ms       752          0.1%     0x10003e634  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3863)
+                                                sort.block.blockSwap__anon_20783 (in geoip-converter) (block.zig:845)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:662)
+                                                
+--------------------------------------------------------------------------------
+0.75ms       749          0.1%     0x10003d728  mem.swap__anon_20771 (in geoip-converter) (mem.zig:3865)
+                                                mem.reverse__anon_20870 (in geoip-converter) (mem.zig:3916)
+                                                mem.rotate__anon_20777 (in geoip-converter) (mem.zig:4050)
+                                                sort.block.block__anon_20760 (in geoip-converter) (block.zig:522)
+                                                
+--------------------------------------------------------------------------------
+0.73ms       734          0.1%     0x10003fe30  ip.sortRangesBySizeDesc__anon_3108__struct_20753.less (in geoip-converter) (ip.zig:24)
+                                                sort.block.swap__anon_20773 (in geoip-converter) (block.zig:1071)
+                                                
+--------------------------------------------------------------------------------
+0.73ms       730          0.1%     0x10003bb84  ip.IpTrie(u128).optimize (in geoip-converter) (ip.zig:220)
+                                                
+--------------------------------------------------------------------------------
+0.72ms       722          0.1%     0x100000a0c  ip.IpTrie(u32).insertRange (in geoip-converter) (ip.zig:0)
+                                                
+--------------------------------------------------------------------------------
