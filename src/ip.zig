@@ -38,19 +38,19 @@ pub fn sortRanges(comptime T: type, ranges: []IPRange(T)) void {
 }
 
 pub fn isPrivateIPv4(ip: u32) bool {
-    if (ip >= 2130706432 and ip <= 2147483647) return true;
-    if (ip >= 2851995648 and ip <= 2852061183) return true;
-    if (ip >= 167772160 and ip <= 184549375) return true;
-    if (ip >= 2886729728 and ip <= 2887778303) return true;
-    if (ip >= 3232235520 and ip <= 3232301055) return true;
-    return false;
+    return (ip & 0xFF000000) == 0x7F000000 or // 127.0.0.0/8
+           (ip & 0xFFFF0000) == 0xA9FE0000 or // 169.254.0.0/16
+           (ip & 0xFF000000) == 0x0A000000 or // 10.0.0.0/8
+           (ip & 0xFFF00000) == 0xAC100000 or // 172.16.0.0/12
+           (ip & 0xFFFF0000) == 0xC0A80000;   // 192.168.0.0/16
 }
 
 pub fn findBlockBits(comptime T: type, start: T, end: T) u8 {
-    if (start == 0 and end == std.math.maxInt(T)) return @bitSizeOf(T);
     var bits: u8 = @intCast(@ctz(start));
     while (bits > 0) {
-        const max_diff: T = if (bits == @bitSizeOf(T)) std.math.maxInt(T) else (@as(T, 1) << @intCast(bits)) - 1;
+        const ShiftT = std.math.Log2Int(T);
+        const shift: ShiftT = @intCast(@bitSizeOf(T) - bits);
+        const max_diff: T = @as(T, std.math.maxInt(T)) >> shift;
         if (max_diff <= end - start) break;
         bits -= 1;
     }

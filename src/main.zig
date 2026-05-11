@@ -18,7 +18,7 @@ pub fn main(init: std.process.Init) !void {
     const out_file = try std.Io.Dir.cwd().createFile(init.io, config.output, .{});
     defer out_file.close(init.io);
 
-    var out_buf: [4096]u8 = undefined;
+    var out_buf: [65536]u8 = undefined;
     var out_file_writer = out_file.writer(init.io, &out_buf);
     const writer = &out_file_writer.interface;
 
@@ -42,7 +42,7 @@ pub fn main(init: std.process.Init) !void {
 fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer) !void {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
-    var in_buf: [4096]u8 = undefined;
+    var in_buf: [65536]u8 = undefined;
     var file_reader = file.reader(io, &in_buf);
     const reader = &file_reader.interface;
 
@@ -62,7 +62,7 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
-    var in_buf: [8192]u8 = undefined;
+    var in_buf: [65536]u8 = undefined;
     var file_reader = file.reader(io, &in_buf);
     const reader = &file_reader.interface;
 
