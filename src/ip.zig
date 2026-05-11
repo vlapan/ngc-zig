@@ -294,7 +294,6 @@ test "IPv4 Trie formatting and basic insertion" {
         trie.nodes.deinit(testing.allocator);
         for (trie.countries.items) |c| testing.allocator.free(c);
         trie.countries.deinit(testing.allocator);
-        trie.country_map.deinit(testing.allocator);
     }
 
     const us_idx = try trie.getCountryIdx("US");
@@ -323,7 +322,6 @@ test "IPv4 Trie optimization of siblings" {
         trie.nodes.deinit(testing.allocator);
         for (trie.countries.items) |c| testing.allocator.free(c);
         trie.countries.deinit(testing.allocator);
-        trie.country_map.deinit(testing.allocator);
     }
 
     const fr_idx = try trie.getCountryIdx("FR");
