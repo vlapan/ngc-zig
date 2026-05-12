@@ -7,6 +7,7 @@ Updated: 2026-05-11
 - No `-lc` link flag
 - Read changelogs from `ZIG-CHANGELOG-*.md`
 - Use real test data from `test/geo-whois-asn-country-ipv4-num.csv` and `test/geo-whois-asn-country-ipv6-num.csv`
+- Always verify output changes (`git diff test/output.txt`) to track expected vs unexpected changes before committing code
 - Keep state files updated frequently
 - Commit incrementally
 - Write state frequently for session survival
