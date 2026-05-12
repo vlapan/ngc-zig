@@ -2,3 +2,13 @@
 zig-out
 DO_NOT_READ.md
 test/other-impl
+# Downloaded test DBs and temp files
+test/geo-whois-asn-country-ipv4-num.csv
+test/geo-whois-asn-country-ipv6-num.csv
+test/*.etag
+test/*.tmp
+test/tmp.csv
+
+# Generated output files
+test/output.txt
+out.txt
