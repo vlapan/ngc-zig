@@ -6,6 +6,7 @@ fetch_file() {
     local target="$2"
     local tmp_file="${target}.tmp"
     local etag_file="${target}.etag"
+    local tmp_etag="${target}.etag.tmp"
     local name="$(basename "${target}")"
 
     # Ensure target directory exists
@@ -31,7 +32,7 @@ fetch_file() {
         --max-time 300 \
         --remote-time \
         --write-out "%{http_code}" \
-        --etag-save "${etag_file}" \
+        --etag-save "${tmp_etag}" \
         ${etag_args} \
         -o "${tmp_file}" \
         "${url}" > "${http_code_file}" 2> >(tr '\r' '\n' | sed "s/^/MAKE:INFO: ${name}: /" >&2) || curl_status=$?
@@ -43,20 +44,23 @@ fetch_file() {
     if [ ${curl_status} -eq 0 ]; then
         if [ "${http_code}" = "304" ]; then
             echo "MAKE:INFO: 🟢 [SUCCESS] ${name} is up to date (ETag matched)."
-            rm -f "${tmp_file}"
+            rm -f "${tmp_file}" "${tmp_etag}"
         else
             if [ -s "${tmp_file}" ]; then
                 mv -f "${tmp_file}" "${target}"
+                if [ -f "${tmp_etag}" ]; then
+                    mv -f "${tmp_etag}" "${etag_file}"
+                fi
                 echo "MAKE:INFO: 🟢 [SUCCESS] ${name} fetched and installed."
             else
                 echo "MAKE:INFO: 🛑 [ERROR] ${name} returned ${http_code} but file is empty!"
-                rm -f "${tmp_file}"
+                rm -f "${tmp_file}" "${tmp_etag}"
                 exit 1
             fi
         fi
     else
         echo "MAKE:INFO: 🛑 [ERROR] Download failed for ${name} with exit code ${curl_status}!"
-        rm -f "${tmp_file}"
+        rm -f "${tmp_file}" "${tmp_etag}"
         exit ${curl_status}
     fi
 }
