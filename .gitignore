@@ -1,6 +1,7 @@
 .zig-cache/*
 zig-out
 DO_NOT_READ.md
+ZIG-CHANGELOG-*.md
 test/other-impl
 # Downloaded test DBs and temp files
 test/*.etag
