@@ -71,7 +71,7 @@ pub fn build(b: *Build) void {
     options.addOption([]const u8, "build_iso_date", iso_string);
     options.addOption(std.builtin.OptimizeMode, "optimize", optimize);
 
-    exe.root_module.addOptions("options", options);
+    exe.root_module.addOptions("build_options.zig", options);
 
     b.installArtifact(exe);
 
@@ -92,7 +92,7 @@ pub fn build(b: *Build) void {
             .optimize = optimize,
         }),
     });
-    test_exe.root_module.addOptions("options", options);
+    test_exe.root_module.addOptions("build_options.zig", options);
 
     const test_install = b.addInstallArtifact(test_exe, .{});
     const test_run = b.addRunArtifact(test_exe);

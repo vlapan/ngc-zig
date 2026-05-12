@@ -1,7 +1,7 @@
 const std = @import("std");
 const cli = @import("cli.zig");
 const ip_mod = @import("ip.zig");
-const build_options = @import("options");
+const build_options = @import("build_options.zig");
 
 pub const Stats = struct {
     lines_parsed: usize = 0,
