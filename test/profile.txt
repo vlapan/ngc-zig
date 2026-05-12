@@ -1,22 +1,22 @@
 TIME (ms)    PROBES       REL %    OFFSET       SYMBOL / SOURCE LINE
 ---------    ------       -----    ------       --------------------
-51.59ms      51592        5.2%     0x10003b8d0  ngc`sort.block.block__anon_21252 + 9112 [inlined] mem.swap__anon_21259 + 12 at mem.zig:3865:13
-51.51ms      51513        5.2%     0x10003c09c  ngc`sort.block.block__anon_21252 + 11108 [inlined] mem.swap__anon_21259 + 12 at mem.zig:3865:13
-42.67ms      42675        4.3%     0x100002c48  ngc`ip.IpTrie(u128).insertRange + 572 at ip.zig:223:17
-41.91ms      41914        4.2%     0x1000021c0  ngc`ip.IpTrie(u32).insertRange + 372 [inlined] ip.IpTrie(u32).allocNode at ip.zig:180:41
-29.44ms      29436        3.0%     0x100002c90  ngc`ip.IpTrie(u128).insertRange + 644 at ip.zig
-22.86ms      22860        2.3%     0x10003bf30  ngc`sort.block.block__anon_21252 + 10744 [inlined] mem.swap__anon_21259 + 12 at mem.zig:3865:13
-21.01ms      21011        2.1%     0x100005718  ngc`main.main + 8492 [inlined] main.fastParseInt__anon_3765 + 56 at main.zig:273:24
-20.82ms      20820        2.1%     0x10003d7e8  ngc`sort.block.swap__anon_21261 + 344 [inlined] mem.swap__anon_21259 + 12 at mem.zig:3865:13
-20.77ms      20767        2.1%     0x100002c80  ngc`ip.IpTrie(u128).insertRange + 628 at ip.zig:224:37
-16.21ms      16212        1.6%     0x10000576c  ngc`main.main + 8576 [inlined] main.fastParseInt__anon_3765 + 72 at main.zig:273:24
-15.73ms      15726        1.6%     0x100003418  ngc`ip.IpTrie(u128).dump + 1780 [inlined] Io.Writer.write at Writer.zig:533:10
-15.63ms      15633        1.6%     0x100002c54  ngc`ip.IpTrie(u128).insertRange + 584 at ip.zig
-13.22ms      13219        1.3%     0x100002a80  ngc`ip.IpTrie(u128).insertRange + 116 at ip.zig:193:49
-12.92ms      12919        1.3%     0x100002a40  ngc`ip.IpTrie(u128).insertRange + 52 at ip.zig:185
-12.48ms      12479        1.3%     0x100002270  ngc`ip.IpTrie(u32).insertRange + 548 at ip.zig:224:37
-12.05ms      12052        1.2%     0x100002354  ngc`ip.IpTrie(u32).dump + 64 at ip.zig:278:56
-11.84ms      11835        1.2%     0x10000573c  ngc`main.main + 8528 [inlined] main.fastParseInt__anon_3765 + 24 at main.zig:271:10
-11.35ms      11350        1.1%     0x100002d18  ngc`ip.IpTrie(u128).insertRange + 780 at ip.zig
-11.20ms      11202        1.1%     0x100003474  ngc`ip.IpTrie(u128).dump + 1872 [inlined] Io.Writer.write + 28 at Writer.zig:539:26
-11.07ms      11066        1.1%     0x100002088  ngc`ip.IpTrie(u32).insertRange + 60 at ip.zig:186:17
+30.64ms      30645        6.1%     0x1000021c0  ngc`ip.IpTrie(u32).insertRange + 372 [inlined] ip.IpTrie(u32).allocNode at ip.zig:180:41
+27.90ms      27901        5.5%     0x100039660  ngc`sort.block.block__anon_20719 + 9112 [inlined] mem.swap__anon_20726 + 12 at mem.zig:3865:13
+24.57ms      24574        4.9%     0x100039e2c  ngc`sort.block.block__anon_20719 + 11108 [inlined] mem.swap__anon_20726 + 12 at mem.zig:3865:13
+21.31ms      21310        4.2%     0x100002c48  ngc`ip.IpTrie(u128).insertRange + 572 at ip.zig:223:17
+13.76ms      13760        2.7%     0x100002c90  ngc`ip.IpTrie(u128).insertRange + 644 at ip.zig
+11.56ms      11559        2.3%     0x100039cc0  ngc`sort.block.block__anon_20719 + 10744 [inlined] mem.swap__anon_20726 + 12 at mem.zig:3865:13
+11.37ms      11368        2.3%     0x10003b578  ngc`sort.block.swap__anon_20728 + 344 [inlined] mem.swap__anon_20726 + 12 at mem.zig:3865:13
+10.88ms      10876        2.2%     0x100002c80  ngc`ip.IpTrie(u128).insertRange + 628 at ip.zig:224:37
+10.35ms      10346        2.0%     0x1000056cc  ngc`main.main + 8416 [inlined] main.fastParseInt__anon_3785 + 32 at main.zig:275:29
+9.95ms       9950         2.0%     0x10000571c  ngc`main.main + 8496 [inlined] main.fastParseInt__anon_3785 + 60 at main.zig:275:29
+9.31ms       9308         1.8%     0x100002b84  ngc`ip.IpTrie(u128).insertRange + 376 [inlined] ip.IpTrie(u128).allocNode at ip.zig:180:41
+7.89ms       7890         1.6%     0x100002c54  ngc`ip.IpTrie(u128).insertRange + 584 at ip.zig
+7.25ms       7245         1.4%     0x100002a80  ngc`ip.IpTrie(u128).insertRange + 116 at ip.zig:193:49
+7.04ms       7038         1.4%     0x100002a40  ngc`ip.IpTrie(u128).insertRange + 52 at ip.zig:185
+6.79ms       6794         1.3%     0x100002354  ngc`ip.IpTrie(u32).dump + 64 at ip.zig:278:56
+5.88ms       5878         1.2%     0x1000354bc  ngc`ip.IpTrie(u128).optimize + 36 at ip.zig
+5.55ms       5552         1.1%     0x100002d18  ngc`ip.IpTrie(u128).insertRange + 780 at ip.zig
+5.51ms       5510         1.1%     0x100003474  ngc`ip.IpTrie(u128).dump + 1872 [inlined] Io.Writer.write + 28 at Writer.zig:539:26
+5.44ms       5438         1.1%     0x1000021a0  ngc`ip.IpTrie(u32).insertRange + 340 at ip.zig:215:55
+5.19ms       5194         1.0%     0x100002270  ngc`ip.IpTrie(u32).insertRange + 548 at ip.zig:224:37

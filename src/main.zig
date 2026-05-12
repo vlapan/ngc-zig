@@ -3,10 +3,6 @@ const cli = @import("cli.zig");
 const ip_mod = @import("ip.zig");
 const build_options = @import("build_options.zig");
 
-pub const std_options: std.Options = .{
-    .networking = false,
-};
-
 pub const Stats = struct {
     lines_parsed: usize = 0,
     lines_skipped: usize = 0,
@@ -21,7 +17,9 @@ pub fn main(init: std.process.Init) void {
         build_options.build_iso_date,
     });
 
-    const alloc = init.arena.allocator();
+    var arena = std.heap.ArenaAllocator.init(init.gpa);
+    defer arena.deinit();
+    const alloc = arena.allocator();
 
     const config = cli.parseArgs(init, alloc) catch |err| {
         if (err == error.InvalidArgs) {
@@ -75,6 +73,7 @@ pub fn main(init: std.process.Init) void {
     var v4_countries: usize = 0;
     var v6_countries: usize = 0;
 
+    var intern_map = std.StringHashMapUnmanaged([]const u8){};
     var static_v4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     var static_v6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
 
@@ -91,7 +90,7 @@ pub fn main(init: std.process.Init) void {
 
     if (config.ipv4_csv) |v4_path| {
         var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc) catch |err| {
+        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &intern_map) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv4 CSV file not found: '{s}'", .{v4_path});
             } else {
@@ -131,7 +130,7 @@ pub fn main(init: std.process.Init) void {
 
     if (config.ipv6_csv) |v6_path| {
         var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
-        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc) catch |err| {
+        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &intern_map) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv6 CSV file not found: '{s}'", .{v6_path});
             } else {
@@ -271,13 +270,12 @@ fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc:
 fn fastParseInt(comptime T: type, str: []const u8) !T {
     var res: T = 0;
     for (str) |c| {
-        if (c < '0' or c > '9') return error.InvalidCharacter;
         res = res * 10 + (c - '0');
     }
     return res;
 }
 
-fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator) !Stats {
+fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, intern_map: *std.StringHashMapUnmanaged([]const u8)) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
@@ -323,7 +321,11 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
         try ranges.append(alloc, .{
             .start = start,
             .end = end,
-            .country = try alloc.dupe(u8, country),
+            .country = if (intern_map.get(country)) |existing| existing else blk: {
+                const duped = try alloc.dupe(u8, country);
+                try intern_map.put(alloc, duped, duped);
+                break :blk duped;
+            },
             .size = size,
         });
         stats.lines_parsed += 1;
