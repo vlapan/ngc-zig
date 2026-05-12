@@ -3,6 +3,10 @@ const cli = @import("cli.zig");
 const ip_mod = @import("ip.zig");
 const build_options = @import("build_options.zig");
 
+pub const std_options: std.Options = .{
+    .networking = false,
+};
+
 pub const Stats = struct {
     lines_parsed: usize = 0,
     lines_skipped: usize = 0,
@@ -17,9 +21,7 @@ pub fn main(init: std.process.Init) void {
         build_options.build_iso_date,
     });
 
-    var arena = std.heap.ArenaAllocator.init(init.gpa);
-    defer arena.deinit();
-    const alloc = arena.allocator();
+    const alloc = init.arena.allocator();
 
     const config = cli.parseArgs(init, alloc) catch |err| {
         if (err == error.InvalidArgs) {
