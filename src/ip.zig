@@ -145,6 +145,7 @@ pub fn IpTrie(comptime T: type) type {
     return struct {
         nodes: std.ArrayListUnmanaged(TrieNode),
         countries: std.ArrayListUnmanaged([]const u8),
+        country_map: std.StringHashMapUnmanaged(u32),
         alloc: std.mem.Allocator,
         writer: *std.Io.Writer,
 
@@ -152,6 +153,7 @@ pub fn IpTrie(comptime T: type) type {
             var self = IpTrie(T){
                 .nodes = std.ArrayListUnmanaged(TrieNode).empty,
                 .countries = std.ArrayListUnmanaged([]const u8).empty,
+                .country_map = std.StringHashMapUnmanaged(u32).empty,
                 .alloc = allocator,
                 .writer = writer,
             };
@@ -164,12 +166,14 @@ pub fn IpTrie(comptime T: type) type {
         }
 
         pub fn getCountryIdx(self: *IpTrie(T), country: []const u8) !u32 {
-            for (self.countries.items, 0..) |c, i| {
-                if (std.mem.eql(u8, c, country)) return @intCast(i);
+            if (self.country_map.get(country)) |idx| {
+                return idx;
             }
-            const new_idx = self.countries.items.len;
-            try self.countries.append(self.alloc, try self.alloc.dupe(u8, country));
-            return @intCast(new_idx);
+            const new_idx = @as(u32, @intCast(self.countries.items.len));
+            const duped = try self.alloc.dupe(u8, country);
+            try self.countries.append(self.alloc, duped);
+            try self.country_map.put(self.alloc, duped, new_idx);
+            return new_idx;
         }
 
         fn allocNode(self: *IpTrie(T)) !u32 {
@@ -296,8 +300,9 @@ test "IPv4 Trie formatting and basic insertion" {
     var trie = try IpTrie(u32).init(testing.allocator, &aw.writer);
     defer {
         trie.nodes.deinit(testing.allocator);
-        for (trie.countries.items) |c| testing.allocator.free(c);
+        for (trie.countries.items[1..]) |c| testing.allocator.free(c);
         trie.countries.deinit(testing.allocator);
+        trie.country_map.deinit(testing.allocator);
     }
 
     const us_idx = try trie.getCountryIdx("US");
@@ -324,8 +329,9 @@ test "IPv4 Trie optimization of siblings" {
     var trie = try IpTrie(u32).init(testing.allocator, &aw.writer);
     defer {
         trie.nodes.deinit(testing.allocator);
-        for (trie.countries.items) |c| testing.allocator.free(c);
+        for (trie.countries.items[1..]) |c| testing.allocator.free(c);
         trie.countries.deinit(testing.allocator);
+        trie.country_map.deinit(testing.allocator);
     }
 
     const fr_idx = try trie.getCountryIdx("FR");

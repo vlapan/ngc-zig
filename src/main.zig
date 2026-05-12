@@ -266,6 +266,15 @@ fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc:
     return stats;
 }
 
+fn fastParseInt(comptime T: type, str: []const u8) !T {
+    var res: T = 0;
+    for (str) |c| {
+        if (c < '0' or c > '9') return error.InvalidCharacter;
+        res = res * 10 + (c - '0');
+    }
+    return res;
+}
+
 fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
@@ -299,11 +308,11 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
             country = country[0 .. country.len - 1];
         }
 
-        const start = std.fmt.parseInt(T, start_str, 10) catch {
+        const start = fastParseInt(T, start_str) catch {
             stats.lines_skipped += 1;
             continue;
         };
-        const end = std.fmt.parseInt(T, end_str, 10) catch {
+        const end = fastParseInt(T, end_str) catch {
             stats.lines_skipped += 1;
             continue;
         };
