@@ -65,7 +65,20 @@ fetch_file() {
     fi
 }
 
-echo "MAKE:INFO: Fetching upstream DBs securely..."
-fetch_file "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv4-num.csv" "test/geo-whois-asn-country-ipv4-num.csv"
-fetch_file "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv6-num.csv" "test/geo-whois-asn-country-ipv6-num.csv"
+echo "MAKE:INFO: Fetching upstream DBs securely in parallel..."
+fetch_file "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv4-num.csv" "test/geo-whois-asn-country-ipv4-num.csv" &
+pid1=$!
+
+fetch_file "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv6-num.csv" "test/geo-whois-asn-country-ipv6-num.csv" &
+pid2=$!
+
+fail=0
+wait $pid1 || fail=1
+wait $pid2 || fail=1
+
+if [ $fail -ne 0 ]; then
+    echo "MAKE:INFO: 🛑 [ERROR] One or more downloads failed!"
+    exit 1
+fi
+
 echo "MAKE:INFO: Test data fetched successfully!"
