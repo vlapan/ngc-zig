@@ -1,5 +1,5 @@
 # Define phony targets so Make doesn't look for files named 'all' or 'clean'
-.PHONY: all build release clean run
+.PHONY: all build release clean run test
 
 SHELL := /opt/homebrew/bin/zsh
 .SHELLFLAGS := -e -o pipefail -c
@@ -52,3 +52,8 @@ fmt:
 	@echo "MAKE:INFO: Formatting Zig source files..."
 	zig fmt src/*.zig build.zig
 	@echo "MAKE:INFO: Formatting done!"
+
+test:
+	@echo "MAKE:INFO: Running unit tests..."
+	zig build test
+	@echo "MAKE:INFO: Tests passed!"
