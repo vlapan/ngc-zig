@@ -214,6 +214,8 @@ fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc:
     if (stat.size == 0) return Stats{};
     const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
     defer std.posix.munmap(mapped);
+    std.posix.madvise(mapped.ptr, mapped.len, std.posix.MADV.SEQUENTIAL) catch {};
+    std.posix.madvise(mapped.ptr, mapped.len, std.posix.MADV.SEQUENTIAL) catch {};
 
     var stats = Stats{};
     var it = std.mem.splitScalar(u8, mapped, '\n');
@@ -334,6 +336,8 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
 
     const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
     defer std.posix.munmap(mapped);
+    std.posix.madvise(mapped.ptr, mapped.len, std.posix.MADV.SEQUENTIAL) catch {};
+    std.posix.madvise(mapped.ptr, mapped.len, std.posix.MADV.SEQUENTIAL) catch {};
 
     var stats = Stats{};
     var it = std.mem.splitScalar(u8, mapped, '\n');
