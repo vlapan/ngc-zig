@@ -54,6 +54,7 @@ fmt:
 	@echo "MAKE:INFO: Formatting done!"
 
 test:
-	@echo "MAKE:INFO: Running unit tests..."
+	@echo "MAKE:INFO: Building and running unit tests..."
 	zig build test
+	@./zig-out/bin/ngc-test
 	@echo "MAKE:INFO: Tests passed!"
