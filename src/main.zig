@@ -5,6 +5,8 @@ const build_options = @import("build_options.zig");
 
 pub const std_options: std.Options = .{
     .networking = false,
+    .log_level = .err,
+    .http_disable_tls = true,
 };
 
 pub const Stats = struct {
@@ -287,7 +289,6 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
         const estimated_lines = stat.size / 30;
         try ranges.ensureTotalCapacity(alloc, @intCast(estimated_lines));
     }
-
 
     var in_buf: [65536]u8 = undefined;
     var file_reader = file.reader(io, &in_buf);

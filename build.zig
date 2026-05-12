@@ -58,6 +58,7 @@ pub fn build(b: *Build) void {
             .single_threaded = true,
             .strip = should_strip,
             .link_libc = false,
+            .link_libcpp = false,
         }),
     });
 
