@@ -279,6 +279,14 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
+    // Heuristically pre-allocate array capacity based on file size.
+    // IPv4/IPv6 CSV lines average ~30-40 bytes each. Overestimating capacity prevents O(N) reallocs.
+    if (file.stat(io) catch null) |stat| {
+        const estimated_lines = stat.size / 30;
+        try ranges.ensureTotalCapacity(alloc, @intCast(estimated_lines));
+    }
+
+
     var in_buf: [65536]u8 = undefined;
     var file_reader = file.reader(io, &in_buf);
     const reader = &file_reader.interface;
