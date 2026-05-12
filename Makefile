@@ -60,8 +60,4 @@ test:
 	@echo "MAKE:INFO: Tests passed!"
 
 fetch-data:
-	@echo "MAKE:INFO: Fetching test input files from upstream..."
-	mkdir -p test
-	curl -fSL "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv4-num.csv" -o test/geo-whois-asn-country-ipv4-num.csv
-	curl -fSL "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv6-num.csv" -o test/geo-whois-asn-country-ipv6-num.csv
-	@echo "MAKE:INFO: Test data fetched successfully!"
+	@bash test/fetch-data.sh
