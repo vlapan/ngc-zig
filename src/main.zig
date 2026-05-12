@@ -210,13 +210,15 @@ pub fn main(init: std.process.Init) void {
 fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: std.mem.Allocator, static_v4: *std.ArrayList(ip_mod.IPv4Range), static_v6: *std.ArrayList(ip_mod.IPv6Range)) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
-    var in_buf: [65536]u8 = undefined;
-    var file_reader = file.reader(io, &in_buf);
-    const reader = &file_reader.interface;
+    const stat = try file.stat(io);
+    if (stat.size == 0) return Stats{};
+    const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
+    defer std.posix.munmap(mapped);
 
     var stats = Stats{};
+    var it = std.mem.splitScalar(u8, mapped, '\n');
 
-    while (try reader.takeDelimiter('\n')) |line| {
+    while (it.next()) |line| {
         if (line.len == 0) {
             stats.lines_skipped += 1;
             continue;
@@ -290,18 +292,18 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
 
     // Heuristically pre-allocate array capacity based on file size.
     // IPv4/IPv6 CSV lines average ~30-40 bytes each. Overestimating capacity prevents O(N) reallocs.
-    if (file.stat(io) catch null) |stat| {
-        const estimated_lines = stat.size / 30;
-        try ranges.ensureTotalCapacity(alloc, @intCast(estimated_lines));
-    }
+    const stat = try file.stat(io);
+    if (stat.size == 0) return Stats{};
+    const estimated_lines = stat.size / 30;
+    try ranges.ensureTotalCapacity(alloc, @intCast(estimated_lines));
 
-    var in_buf: [65536]u8 = undefined;
-    var file_reader = file.reader(io, &in_buf);
-    const reader = &file_reader.interface;
+    const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
+    defer std.posix.munmap(mapped);
 
     var stats = Stats{};
+    var it = std.mem.splitScalar(u8, mapped, '\n');
 
-    while (try reader.takeDelimiter('\n')) |line| {
+    while (it.next()) |line| {
         if (line.len == 0) {
             stats.lines_skipped += 1;
             continue;
