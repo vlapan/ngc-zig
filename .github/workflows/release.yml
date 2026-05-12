@@ -36,7 +36,7 @@ jobs:
 
       - name: Build Release
         run: |
-          zig build -Dtarget=${{ matrix.target }} -Doptimize=ReleaseFast -Dstamp=true
+          zig build -Dtarget=${{ matrix.target }} --release=fast -Dstamp=true
           mv zig-out/bin/ngc zig-out/bin/ngc-${{ matrix.target }}
 
       - name: Upload Release Artifacts
