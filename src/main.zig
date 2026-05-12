@@ -77,7 +77,8 @@ pub fn main(init: std.process.Init) void {
     var v4_countries: usize = 0;
     var v6_countries: usize = 0;
 
-    var intern_map = std.StringHashMapUnmanaged([]const u8){};
+    var seen_v4 = [_]bool{false} ** 65536;
+    var seen_v6 = [_]bool{false} ** 65536;
     var static_v4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     var static_v6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
 
@@ -94,7 +95,7 @@ pub fn main(init: std.process.Init) void {
 
     if (config.ipv4_csv) |v4_path| {
         var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &intern_map) catch |err| {
+        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &seen_v4) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv4 CSV file not found: '{s}'", .{v4_path});
             } else {
@@ -109,11 +110,7 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         for (ipv4_ranges.items) |r| {
-            const c_idx = trie_v4.getCountryIdx(r.country) catch |err| {
-                std.log.err("Failed to map country '{s}': {}", .{ r.country, err });
-                std.process.exit(1);
-            };
-            trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, c_idx) catch |err| {
+            trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv4 range: {}", .{err});
                 std.process.exit(1);
             };
@@ -129,12 +126,14 @@ pub fn main(init: std.process.Init) void {
             std.log.err("Failed to write IPv4 output: {}", .{err});
             std.process.exit(1);
         };
-        v4_countries = trie_v4.countries.items.len - 1;
+        for (seen_v4) |seen| {
+            if (seen) v4_countries += 1;
+        }
     }
 
     if (config.ipv6_csv) |v6_path| {
         var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
-        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &intern_map) catch |err| {
+        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &seen_v6) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv6 CSV file not found: '{s}'", .{v6_path});
             } else {
@@ -149,11 +148,7 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         for (ipv6_ranges.items) |r| {
-            const c_idx = trie_v6.getCountryIdx(r.country) catch |err| {
-                std.log.err("Failed to map country '{s}': {}", .{ r.country, err });
-                std.process.exit(1);
-            };
-            trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, c_idx) catch |err| {
+            trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv6 range: {}", .{err});
                 std.process.exit(1);
             };
@@ -169,7 +164,9 @@ pub fn main(init: std.process.Init) void {
             std.log.err("Failed to write IPv6 output: {}", .{err});
             std.process.exit(1);
         };
-        v6_countries = trie_v6.countries.items.len - 1;
+        for (seen_v6) |seen| {
+            if (seen) v6_countries += 1;
+        }
     }
 
     out_file_writer.flush() catch |err| {
@@ -247,7 +244,7 @@ fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc:
                     try static_v4.append(alloc, .{
                         .start = ip_val & mask,
                         .end = (ip_val & mask) | ~mask,
-                        .country = "",
+                        .country = ip_mod.HOLE,
                         .size = 0,
                     });
                 }
@@ -260,7 +257,7 @@ fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc:
                         try static_v6.append(alloc, .{
                             .start = ip_val & mask,
                             .end = (ip_val & mask) | ~mask,
-                            .country = "",
+                            .country = ip_mod.HOLE,
                             .size = 0,
                         });
                     }
@@ -279,7 +276,7 @@ fn fastParseInt(comptime T: type, str: []const u8) !T {
     return res;
 }
 
-fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, intern_map: *std.StringHashMapUnmanaged([]const u8)) !Stats {
+fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, seen_countries: *[65536]bool) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
@@ -329,14 +326,15 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
         };
         const size = end -% start +% 1;
 
+        var c_val: u16 = 0;
+        if (country.len >= 2) {
+            c_val = (@as(u16, country[0]) << 8) | @as(u16, country[1]);
+            seen_countries[c_val] = true;
+        }
         try ranges.append(alloc, .{
             .start = start,
             .end = end,
-            .country = if (intern_map.get(country)) |existing| existing else blk: {
-                const duped = try alloc.dupe(u8, country);
-                try intern_map.put(alloc, duped, duped);
-                break :blk duped;
-            },
+            .country = c_val,
             .size = size,
         });
         stats.lines_parsed += 1;
