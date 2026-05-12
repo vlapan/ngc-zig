@@ -1,102 +1,102 @@
 TIME (ms)    PROBES       REL %    OFFSET       SYMBOL / SOURCE LINE
 ---------    ------       -----    ------       --------------------
-55.66ms      55662        6.0%     0x100042a90  ngc`sort.block.block__anon_21738 + 9112 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-54.53ms      54534        5.9%     0x10004325c  ngc`sort.block.block__anon_21738 + 11108 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-39.30ms      39301        4.3%     0x1000026c0  ngc`ip.IpTrie(u32).insertRange + 372 [inlined] ip.IpTrie(u32).allocNode at ip.zig:176:41
-33.92ms      33923        3.7%     0x100003148  ngc`ip.IpTrie(u128).insertRange + 572 at ip.zig:219:17
-25.55ms      25545        2.8%     0x1000430f0  ngc`sort.block.block__anon_21738 + 10744 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-24.32ms      24319        2.6%     0x100003190  ngc`ip.IpTrie(u128).insertRange + 644 at ip.zig
-19.59ms      19590        2.1%     0x100045318  ngc`fmt.parseInt__anon_4403 + 416 [inlined] math.mul__anon_22038 + 28 at math.zig:556:5
-18.71ms      18710        2.0%     0x1000449a8  ngc`sort.block.swap__anon_21747 + 344 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-16.45ms      16454        1.8%     0x100045334  ngc`fmt.parseInt__anon_4403 + 444 [inlined] math.add__anon_22117 + 12 at math.zig:564:5
-13.60ms      13603        1.5%     0x1000055f8  ngc`main.main + 6924 [inlined] mem.eqlBytes + 28 at mem.zig:776:88
-12.84ms      12844        1.4%     0x100003180  ngc`ip.IpTrie(u128).insertRange + 628 at ip.zig:220:37
-12.70ms      12698        1.4%     0x100003154  ngc`ip.IpTrie(u128).insertRange + 584 at ip.zig
-11.44ms      11442        1.2%     0x100002f80  ngc`ip.IpTrie(u128).insertRange + 116 at ip.zig:189:49
-10.87ms      10868        1.2%     0x10000560c  ngc`main.main + 6944 [inlined] ip.IpTrie(u32).getCountryIdx + 140 at ip.zig:168:32
-10.55ms      10553        1.1%     0x100002770  ngc`ip.IpTrie(u32).insertRange + 548 at ip.zig:220:37
-10.49ms      10491        1.1%     0x10003e8ec  ngc`ip.IpTrie(u128).optimize + 36 at ip.zig
-10.37ms      10369        1.1%     0x100003418  ngc`ip.IpTrie(u128).dump + 500 [inlined] ip.formatIPv6__anon_4497 + 60 at ip.zig
-10.26ms      10260        1.1%     0x100002588  ngc`ip.IpTrie(u32).insertRange + 60 at ip.zig:182:17
-10.22ms      10216        1.1%     0x100003084  ngc`ip.IpTrie(u128).insertRange + 376 [inlined] ip.IpTrie(u128).allocNode at ip.zig:176:41
-10.14ms      10144        1.1%     0x100002f40  ngc`ip.IpTrie(u128).insertRange + 52 at ip.zig:181
-9.89ms       9892         1.1%     0x100003218  ngc`ip.IpTrie(u128).insertRange + 780 at ip.zig
-9.85ms       9849         1.1%     0x10003e9bc  ngc`ip.IpTrie(u128).optimize + 244 at ip.zig
-9.71ms       9707         1.1%     0x1000055d8  ngc`main.main + 6892 [inlined] ip.IpTrie(u32).getCountryIdx + 88 at ip.zig
-8.55ms       8554         0.9%     0x100006060  ngc`main.main + 9588 [inlined] mem.eqlBytes + 28 at mem.zig:776:88
-8.21ms       8205         0.9%     0x100003474  ngc`ip.IpTrie(u128).dump + 592 [inlined] ip.formatIPv6__anon_4497 + 152 at ip.zig:100:28
-7.87ms       7874         0.9%     0x100002854  ngc`ip.IpTrie(u32).dump + 64 at ip.zig:274:56
-7.70ms       7702         0.8%     0x100002798  ngc`ip.IpTrie(u32).insertRange + 588 at ip.zig:222:17
-7.63ms       7628         0.8%     0x100002698  ngc`ip.IpTrie(u32).insertRange + 332 at ip.zig:206:54
-7.60ms       7600         0.8%     0x100002808  ngc`ip.IpTrie(u32).insertRange + 700 at ip.zig
-7.31ms       7313         0.8%     0x1000055c8  ngc`main.main + 6876 [inlined] ip.IpTrie(u32).getCountryIdx + 72 at ip.zig:167:40
-7.11ms       7105         0.8%     0x1000031a0  ngc`ip.IpTrie(u128).insertRange + 660 at ip.zig:223:53
-6.83ms       6835         0.7%     0x1000026bc  ngc`ip.IpTrie(u32).insertRange + 368 at ip.zig:219:17
-6.65ms       6651         0.7%     0x1000452f4  ngc`fmt.parseInt__anon_4403 + 380 [inlined] fmt.parseIntWithSign__anon_22027 + 52 at fmt.zig:444:13
-6.60ms       6601         0.7%     0x10000306c  ngc`ip.IpTrie(u128).insertRange + 352 at ip.zig:206:54
-6.52ms       6520         0.7%     0x1000025ac  ngc`ip.IpTrie(u32).insertRange + 96 at ip.zig:189:49
-6.40ms       6397         0.7%     0x1000452dc  ngc`fmt.parseInt__anon_4403 + 356 [inlined] fmt.parseIntWithSign__anon_22027 + 28 at fmt.zig:441:10
-6.38ms       6382         0.7%     0x1000026ac  ngc`ip.IpTrie(u32).insertRange + 352 at ip.zig:217:48
-6.30ms       6300         0.7%     0x10000fbfc  ngc`debug.writeCurrentStackTrace + 23992 [inlined] Io.Writer.write + 28 at Writer.zig:536:10
-6.09ms       6093         0.7%     0x1000028b4  ngc`ip.IpTrie(u32).dump + 160 [inlined] ip.isPrivateIPv4 at ip.zig:32:5
-5.95ms       5950         0.6%     0x10000317c  ngc`ip.IpTrie(u128).insertRange + 624 at ip.zig:220:37
-5.81ms       5811         0.6%     0x1000452e8  ngc`fmt.parseInt__anon_4403 + 368 [inlined] fmt.charToDigit at fmt.zig:571:27
-5.77ms       5769         0.6%     0x1000452d4  ngc`fmt.parseInt__anon_4403 + 348 [inlined] fmt.parseIntWithSign__anon_22027 + 20 at fmt.zig:441:10
-5.67ms       5673         0.6%     0x100002788  ngc`ip.IpTrie(u32).insertRange + 572 at ip.zig:220:37
-5.27ms       5268         0.6%     0x1000055b8  ngc`main.main + 6860 [inlined] ip.IpTrie(u32).getCountryIdx + 56 at ip.zig
-5.09ms       5091         0.6%     0x100003078  ngc`ip.IpTrie(u128).insertRange + 364 at ip.zig:211:55
-4.92ms       4922         0.5%     0x100003264  ngc`ip.IpTrie(u128).dump + 64 at ip.zig:274:56
-4.91ms       4911         0.5%     0x100043200  ngc`sort.block.block__anon_21738 + 11016 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-4.90ms       4897         0.5%     0x100006040  ngc`main.main + 9556 [inlined] ip.IpTrie(u128).getCountryIdx + 88 at ip.zig
-4.85ms       4845         0.5%     0x100043158  ngc`sort.block.block__anon_21738 + 10848 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-4.64ms       4642         0.5%     0x1000032d4  ngc`ip.IpTrie(u128).dump + 176 at ip.zig:266:94
-4.53ms       4528         0.5%     0x100003584  ngc`ip.IpTrie(u128).dump + 864 [inlined] ip.formatIPv6__anon_4497 + 424 at ip.zig
-4.53ms       4525         0.5%     0x100006074  ngc`main.main + 9608 [inlined] ip.IpTrie(u128).getCountryIdx + 140 at ip.zig:168:32
-4.41ms       4407         0.5%     0x100043100  ngc`sort.block.block__anon_21738 + 10760 [inlined] sort.block.blockSwap__anon_21757 + 32 at block.zig:844:41
-4.39ms       4395         0.5%     0x100006030  ngc`main.main + 9540 [inlined] ip.IpTrie(u128).getCountryIdx + 72 at ip.zig:167:40
-4.20ms       4203         0.5%     0x100002f3c  ngc`ip.IpTrie(u128).insertRange + 48 at ip.zig:181
-4.18ms       4177         0.5%     0x10003e8e4  ngc`ip.IpTrie(u128).optimize + 28 at ip.zig:235:49
-4.10ms       4098         0.4%     0x100003184  ngc`ip.IpTrie(u128).insertRange + 632 at ip.zig:220:37
-3.90ms       3901         0.4%     0x1000026a0  ngc`ip.IpTrie(u32).insertRange + 340 at ip.zig:211:55
-3.80ms       3797         0.4%     0x100047a74  ngc`array_list.Aligned(ip.TrieNode,null).ensureTotalCapacity + 144 at array_list.zig
-3.77ms       3769         0.4%     0x1000027b0  ngc`ip.IpTrie(u32).insertRange + 612 at ip.zig
-3.70ms       3699         0.4%     0x1000055d4  ngc`main.main + 6888 [inlined] mem.eqlBytes + 8 at mem.zig:772:33
-3.49ms       3488         0.4%     0x100047a04  ngc`array_list.Aligned(ip.TrieNode,null).ensureTotalCapacity + 32 at array_list.zig:1210:21
-3.34ms       3342         0.4%     0x1000031b8  ngc`ip.IpTrie(u128).insertRange + 684 at ip.zig
-3.12ms       3123         0.3%     0x1000027a0  ngc`ip.IpTrie(u32).insertRange + 596 at ip.zig:223:53
-3.10ms       3102         0.3%     0x100043728  ngc`sort.block.block__anon_21738 + 12336 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-2.95ms       2950         0.3%     0x100006020  ngc`main.main + 9524 [inlined] ip.IpTrie(u128).getCountryIdx + 56 at ip.zig
-2.84ms       2840         0.3%     0x1000437c4  ngc`sort.block.block__anon_21738 + 12492 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-2.81ms       2811         0.3%     0x10004c5c8  ngc`fmt.parseInt__anon_4205 + 260 [inlined] math.add__anon_22674 + 8 at math.zig:564:5
-2.68ms       2680         0.3%     0x1000427e4  ngc`sort.block.block__anon_21738 + 8428 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-2.58ms       2582         0.3%     0x100051d18  ngc`symbol stub for: memcpy + 4
-2.55ms       2548         0.3%     0x10003e9c4  ngc`ip.IpTrie(u128).optimize + 252 at ip.zig
-2.43ms       2428         0.3%     0x10000603c  ngc`main.main + 9552 [inlined] mem.eqlBytes + 8 at mem.zig:772:33
-2.37ms       2369         0.3%     0x100003420  ngc`ip.IpTrie(u128).dump + 508 [inlined] ip.formatIPv6__anon_4497 + 68 at ip.zig:103:16
-2.22ms       2219         0.2%     0x10000356c  ngc`ip.IpTrie(u128).dump + 840 [inlined] ip.formatIPv6__anon_4497 + 400 at ip.zig:109:33
-2.20ms       2197         0.2%     0x1000449b8  ngc`sort.block.swap__anon_21747 + 360 [inlined] mem.swap__anon_13955 at mem.zig:3863:13
-2.17ms       2168         0.2%     0x1000030b8  ngc`ip.IpTrie(u128).insertRange + 428 [inlined] array_list.Aligned(ip.TrieNode,null).append + 40 at array_list.zig:905:13
-2.15ms       2151         0.2%     0x10004c600  ngc`fmt.parseInt__anon_4205 + 316 [inlined] math.mul__anon_22621 + 12 at math.zig:556:5
-2.04ms       2038         0.2%     0x100002f18  ngc`ip.IpTrie(u128).insertRange + 12 at ip.zig:181
-1.97ms       1971         0.2%     0x100003254  ngc`ip.IpTrie(u128).dump + 48 at ip.zig:257:49
-1.94ms       1942         0.2%     0x100003290  ngc`ip.IpTrie(u128).dump + 108 at ip.zig:276:39
-1.84ms       1844         0.2%     0x100003074  ngc`ip.IpTrie(u128).insertRange + 360 at ip.zig:211:55
-1.84ms       1843         0.2%     0x10004d8c8  ngc`array_list.Aligned(ip.IPRange(u128),null).append + 148 at array_list.zig:905:13
-1.83ms       1830         0.2%     0x10004c5d8  ngc`fmt.parseInt__anon_4205 + 276 [inlined] fmt.parseIntWithSign__anon_22613 + 24 at fmt.zig:441:10
-1.76ms       1756         0.2%     0x10004bcec  ngc`sort.block.swap__anon_22480 + 328 at block.zig:1073:17
-1.75ms       1752         0.2%     0x10004c5f0  ngc`fmt.parseInt__anon_4205 + 300 [inlined] fmt.parseIntWithSign__anon_22613 + 48 at fmt.zig:444:13
-1.75ms       1750         0.2%     0x100042190  ngc`sort.block.block__anon_21738 + 6808 [inlined] mem.swap__anon_21745 + 12 at mem.zig:3865:13
-1.75ms       1749         0.2%     0x10004a1b4  ngc`sort.block.block__anon_22471 + 7684 [inlined] sort.block.blockSwap__anon_22490 + 4 at block.zig:845:27
-1.74ms       1740         0.2%     0x10004bbd8  ngc`sort.block.swap__anon_22480 + 52 at block.zig:1071
-1.71ms       1710         0.2%     0x1000033cc  ngc`ip.IpTrie(u128).dump + 424 [inlined] ip.formatIPv6__anon_4497 + 64 at ip.zig:112:25
-1.66ms       1662         0.2%     0x10004bcd0  ngc`sort.block.swap__anon_22480 + 300 at block.zig:1072:17
-1.63ms       1632         0.2%     0x1000427e8  ngc`sort.block.block__anon_21738 + 8432 [inlined] mem.swap__anon_21745 + 16 at mem.zig:3866:9
-1.54ms       1540         0.2%     0x1000026f4  ngc`ip.IpTrie(u32).insertRange + 424 [inlined] array_list.Aligned(ip.TrieNode,null).append + 40 at array_list.zig:905:13
-1.52ms       1521         0.2%     0x1000430e4  ngc`sort.block.block__anon_21738 + 10732 [inlined] mem.swap__anon_21745 at mem.zig:3863:13
-1.51ms       1506         0.2%     0x10000358c  ngc`ip.IpTrie(u128).dump + 872 [inlined] ip.formatIPv6__anon_4497 + 432 at ip.zig:120:17
-1.49ms       1488         0.2%     0x10003e950  ngc`ip.IpTrie(u128).optimize + 136 [inlined] ip.IpTrie(u128).getCountry + 16 at ip.zig:229:41
-1.48ms       1484         0.2%     0x1000025a4  ngc`ip.IpTrie(u32).insertRange + 88 at ip.zig:189:39
-1.48ms       1482         0.2%     0x10004a224  ngc`sort.block.block__anon_22471 + 7796 [inlined] sort.block.mergeExternal__anon_22485 + 40 at block.zig:1043:41
-1.48ms       1478         0.2%     0x10004bc40  ngc`sort.block.swap__anon_22480 + 156 at block.zig:1071:17
-1.47ms       1468         0.2%     0x10003e908  ngc`ip.IpTrie(u128).optimize + 64 at ip.zig:242:17
-1.46ms       1461         0.2%     0x100002f60  ngc`ip.IpTrie(u128).insertRange + 84 at ip.zig
+23.28ms      23282        6.7%     0x100042da0  ngc`sort.block.block__anon_21825 + 9112 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+20.47ms      20466        5.9%     0x10004356c  ngc`sort.block.block__anon_21825 + 11108 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+20.03ms      20030        5.7%     0x1000026c0  ngc`ip.IpTrie(u32).insertRange + 372 [inlined] ip.IpTrie(u32).allocNode at ip.zig:180:41
+15.15ms      15149        4.3%     0x100003148  ngc`ip.IpTrie(u128).insertRange + 572 at ip.zig:223:17
+10.29ms      10287        2.9%     0x100043400  ngc`sort.block.block__anon_21825 + 10744 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+9.90ms       9903         2.8%     0x100003190  ngc`ip.IpTrie(u128).insertRange + 644 at ip.zig
+7.50ms       7497         2.1%     0x10000fbfc  ngc`debug.writeCurrentStackTrace + 23688 [inlined] Io.Writer.printIntAny__anon_6892 + 12 at Writer.zig:1526:33
+7.18ms       7177         2.1%     0x100003084  ngc`ip.IpTrie(u128).insertRange + 376 [inlined] ip.IpTrie(u128).allocNode at ip.zig:180:41
+7.03ms       7028         2.0%     0x100003180  ngc`ip.IpTrie(u128).insertRange + 628 at ip.zig:224:37
+5.99ms       5989         1.7%     0x100003154  ngc`ip.IpTrie(u128).insertRange + 584 at ip.zig
+5.37ms       5374         1.5%     0x100002f80  ngc`ip.IpTrie(u128).insertRange + 116 at ip.zig:193:49
+5.12ms       5122         1.5%     0x100003418  ngc`ip.IpTrie(u128).dump + 500 [inlined] ip.formatIPv6__anon_4571 + 60 at ip.zig
+4.95ms       4949         1.4%     0x10003ebfc  ngc`ip.IpTrie(u128).optimize + 36 at ip.zig
+4.67ms       4669         1.3%     0x100002f40  ngc`ip.IpTrie(u128).insertRange + 52 at ip.zig:185
+4.20ms       4198         1.2%     0x100042db0  ngc`sort.block.block__anon_21825 + 9128 [inlined] sort.block.blockSwap__anon_21844 + 32 at block.zig:844:12
+4.15ms       4145         1.2%     0x10003eccc  ngc`ip.IpTrie(u128).optimize + 244 at ip.zig
+4.12ms       4121         1.2%     0x100003218  ngc`ip.IpTrie(u128).insertRange + 780 at ip.zig
+3.79ms       3793         1.1%     0x100003474  ngc`ip.IpTrie(u128).dump + 592 [inlined] ip.formatIPv6__anon_4571 + 152 at ip.zig:100:28
+3.78ms       3784         1.1%     0x1000026a0  ngc`ip.IpTrie(u32).insertRange + 340 at ip.zig:215:55
+3.42ms       3417         1.0%     0x100002854  ngc`ip.IpTrie(u32).dump + 64 at ip.zig:278:56
+3.36ms       3363         1.0%     0x100002770  ngc`ip.IpTrie(u32).insertRange + 548 at ip.zig:224:37
+3.22ms       3218         0.9%     0x100005b88  ngc`main.main + 8348 [inlined] main.fastParseInt__anon_4475 + 56 at main.zig:273:24
+3.07ms       3067         0.9%     0x10000306c  ngc`ip.IpTrie(u128).insertRange + 352 at ip.zig:210:54
+3.06ms       3056         0.9%     0x1000031a0  ngc`ip.IpTrie(u128).insertRange + 660 at ip.zig:227:53
+3.02ms       3020         0.9%     0x100002588  ngc`ip.IpTrie(u32).insertRange + 60 at ip.zig:186:17
+2.81ms       2812         0.8%     0x1000025ac  ngc`ip.IpTrie(u32).insertRange + 96 at ip.zig:193:49
+2.57ms       2570         0.7%     0x100003078  ngc`ip.IpTrie(u128).insertRange + 364 at ip.zig:215:55
+2.56ms       2556         0.7%     0x100002798  ngc`ip.IpTrie(u32).insertRange + 588 at ip.zig:226:17
+2.48ms       2478         0.7%     0x100002808  ngc`ip.IpTrie(u32).insertRange + 700 at ip.zig
+2.46ms       2462         0.7%     0x1000028b4  ngc`ip.IpTrie(u32).dump + 160 [inlined] ip.isPrivateIPv4 at ip.zig:32:5
+2.44ms       2441         0.7%     0x100005b8c  ngc`main.main + 8352 [inlined] main.fastParseInt__anon_4475 + 60 at main.zig:271:10
+2.43ms       2431         0.7%     0x10000317c  ngc`ip.IpTrie(u128).insertRange + 624 at ip.zig:224:37
+2.42ms       2420         0.7%     0x100002698  ngc`ip.IpTrie(u32).insertRange + 332 at ip.zig:210:54
+2.30ms       2300         0.7%     0x100005bdc  ngc`main.main + 8432 [inlined] main.fastParseInt__anon_4475 + 72 at main.zig:273:24
+2.16ms       2156         0.6%     0x100002788  ngc`ip.IpTrie(u32).insertRange + 572 at ip.zig:224:37
+2.15ms       2152         0.6%     0x100043510  ngc`sort.block.block__anon_21825 + 11016 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+2.12ms       2117         0.6%     0x1000026ac  ngc`ip.IpTrie(u32).insertRange + 352 at ip.zig:221:48
+2.08ms       2084         0.6%     0x100002f3c  ngc`ip.IpTrie(u128).insertRange + 48 at ip.zig:185
+2.07ms       2067         0.6%     0x1000026bc  ngc`ip.IpTrie(u32).insertRange + 368 at ip.zig:223:17
+2.04ms       2043         0.6%     0x100043468  ngc`sort.block.block__anon_21825 + 10848 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+1.87ms       1868         0.5%     0x1000032d4  ngc`ip.IpTrie(u128).dump + 176 at ip.zig:270:94
+1.84ms       1839         0.5%     0x100003264  ngc`ip.IpTrie(u128).dump + 64 at ip.zig:278:56
+1.74ms       1742         0.5%     0x10000511c  ngc`main.main + 5680 [inlined] main.fastParseInt__anon_4241 + 20 at main.zig:271:10
+1.74ms       1738         0.5%     0x100003074  ngc`ip.IpTrie(u128).insertRange + 360 at ip.zig:215:55
+1.72ms       1724         0.5%     0x100005b58  ngc`main.main + 8300 [inlined] main.fastParseInt__anon_4475 + 8 at main.zig:271:10
+1.67ms       1669         0.5%     0x100005bcc  ngc`main.main + 8416 [inlined] main.fastParseInt__anon_4475 + 56 at main.zig:273:19
+1.65ms       1653         0.5%     0x100003184  ngc`ip.IpTrie(u128).insertRange + 632 at ip.zig:224:37
+1.64ms       1640         0.5%     0x100005bac  ngc`main.main + 8384 [inlined] main.fastParseInt__anon_4475 + 24 at main.zig:271:10
+1.61ms       1609         0.5%     0x10003ebf4  ngc`ip.IpTrie(u128).optimize + 28 at ip.zig:239:49
+1.59ms       1588         0.5%     0x100044cb8  ngc`sort.block.swap__anon_21834 + 344 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+1.59ms       1586         0.5%     0x100003584  ngc`ip.IpTrie(u128).dump + 864 [inlined] ip.formatIPv6__anon_4571 + 424 at ip.zig
+1.54ms       1542         0.4%     0x100043410  ngc`sort.block.block__anon_21825 + 10760 [inlined] sort.block.blockSwap__anon_21844 + 32 at block.zig:844:41
+1.53ms       1527         0.4%     0x1000424e8  ngc`sort.block.block__anon_21825 + 6880 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+1.47ms       1469         0.4%     0x100005130  ngc`main.main + 5700 [inlined] main.fastParseInt__anon_4241 + 40 at main.zig:273:19
+1.40ms       1400         0.4%     0x1000027a0  ngc`ip.IpTrie(u32).insertRange + 596 at ip.zig:227:53
+1.37ms       1371         0.4%     0x1000031b8  ngc`ip.IpTrie(u128).insertRange + 684 at ip.zig
+1.37ms       1366         0.4%     0x100047d04  ngc`array_list.Aligned(ip.TrieNode,null).ensureTotalCapacity + 144 at array_list.zig
+1.31ms       1307         0.4%     0x100043a38  ngc`sort.block.block__anon_21825 + 12336 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+1.17ms       1166         0.3%     0x100043ad4  ngc`sort.block.block__anon_21825 + 12492 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+1.07ms       1075         0.3%     0x100003110  ngc`ip.IpTrie(u128).insertRange + 516 [inlined] array_list.Aligned(ip.TrieNode,null).append + 40 at array_list.zig:905:13
+1.06ms       1065         0.3%     0x100042d94  ngc`sort.block.block__anon_21825 + 9100 [inlined] mem.swap__anon_21832 at mem.zig:3863:13
+1.05ms       1054         0.3%     0x1000424a0  ngc`sort.block.block__anon_21825 + 6808 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+1.05ms       1052         0.3%     0x1000027b0  ngc`ip.IpTrie(u32).insertRange + 612 at ip.zig
+0.95ms       949          0.3%     0x100047c94  ngc`array_list.Aligned(ip.TrieNode,null).ensureTotalCapacity + 32 at array_list.zig:1210:21
+0.94ms       943          0.3%     0x10003ecd4  ngc`ip.IpTrie(u128).optimize + 252 at ip.zig
+0.90ms       902          0.3%     0x100053dd0  ngc`symbol stub for: memcpy + 4
+0.85ms       854          0.2%     0x100042af4  ngc`sort.block.block__anon_21825 + 8428 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
+0.82ms       824          0.2%     0x10004ca28  ngc`array_list.Aligned(ip.IPRange(u128),null).append + 148 at array_list.zig:905:13
+0.81ms       810          0.2%     0x10002a270  ngc`array_list.Aligned(debug.Dwarf.expression.StackMachine(.{ .addr_size = 8, .endian = .little, .call_frame_context = true }).Value,null).append + 144 at array_list.zig:905:13
+0.79ms       788          0.2%     0x100046ec4  ngc`hash_map.HashMapUnmanaged([]const u8,u32,hash_map.StringContext,80).getIndex__anon_22303 + 96 at hash_map.zig
+0.78ms       776          0.2%     0x1000025a4  ngc`ip.IpTrie(u32).insertRange + 88 at ip.zig:193:39
+0.77ms       774          0.2%     0x100002f48  ngc`ip.IpTrie(u128).insertRange + 60 at ip.zig:186:17
+0.76ms       762          0.2%     0x1000026f4  ngc`ip.IpTrie(u32).insertRange + 424 [inlined] array_list.Aligned(ip.TrieNode,null).append + 40 at array_list.zig:905:13
+0.76ms       760          0.2%     0x10000356c  ngc`ip.IpTrie(u128).dump + 840 [inlined] ip.formatIPv6__anon_4571 + 400 at ip.zig:109:33
+0.75ms       754          0.2%     0x10000fb78  ngc`debug.writeCurrentStackTrace + 23556 [inlined] Io.Writer.writeAll + 56 at Writer.zig:551:25
+0.73ms       726          0.2%     0x100002790  ngc`ip.IpTrie(u32).insertRange + 580 at ip.zig:224:37
+0.72ms       725          0.2%     0x10004c16c  ngc`mem.findScalarPos__anon_4233 + 448 at mem.zig
+0.72ms       715          0.2%     0x100002694  ngc`ip.IpTrie(u32).insertRange + 328 at ip.zig:210:44
+0.71ms       714          0.2%     0x1000433f4  ngc`sort.block.block__anon_21825 + 10732 [inlined] mem.swap__anon_21832 at mem.zig:3863:13
+0.71ms       712          0.2%     0x1000025b4  ngc`ip.IpTrie(u32).insertRange + 104 at ip.zig:195:58
+0.68ms       677          0.2%     0x100003254  ngc`ip.IpTrie(u128).dump + 48 at ip.zig:261:49
+0.68ms       675          0.2%     0x100003220  ngc`ip.IpTrie(u128).insertRange + 788 at ip.zig
+0.67ms       674          0.2%     0x100002564  ngc`ip.IpTrie(u32).insertRange + 24 at ip.zig:185
+0.67ms       667          0.2%     0x1000050f4  ngc`main.main + 5640 [inlined] main.fastParseInt__anon_4241 + 28 at main.zig:273:19
+0.66ms       662          0.2%     0x100002f18  ngc`ip.IpTrie(u128).insertRange + 12 at ip.zig:185
+0.65ms       653          0.2%     0x10004ab7c  ngc`sort.block.block__anon_22651 + 9532 [inlined] sort.block.blockSwap__anon_22670 at block.zig:845:27
+0.63ms       629          0.2%     0x10004a444  ngc`sort.block.block__anon_22651 + 7684 [inlined] sort.block.blockSwap__anon_22670 + 4 at block.zig:845:27
+0.62ms       621          0.2%     0x1000050e0  ngc`main.main + 5620 [inlined] main.fastParseInt__anon_4241 + 8 at main.zig:271:10
+0.62ms       616          0.2%     0x100002f60  ngc`ip.IpTrie(u128).insertRange + 84 at ip.zig
+0.60ms       595          0.2%     0x10003ec60  ngc`ip.IpTrie(u128).optimize + 136 [inlined] ip.IpTrie(u128).getCountry + 16 at ip.zig:233:41
+0.59ms       587          0.2%     0x100003420  ngc`ip.IpTrie(u128).dump + 508 [inlined] ip.formatIPv6__anon_4571 + 68 at ip.zig:103:16
+0.57ms       574          0.2%     0x1000033cc  ngc`ip.IpTrie(u128).dump + 424 [inlined] ip.formatIPv6__anon_4571 + 64 at ip.zig:112:25
+0.55ms       545          0.2%     0x100002f24  ngc`ip.IpTrie(u128).insertRange + 24 at ip.zig:185
+0.53ms       531          0.2%     0x1000033c0  ngc`ip.IpTrie(u128).dump + 412 [inlined] ip.formatIPv6__anon_4571 + 52 at ip.zig:111:41
+0.53ms       530          0.2%     0x100049414  ngc`sort.block.block__anon_22651 + 3540 [inlined] ip.sortRangesBySizeDesc__anon_4265__struct_22643.less + 8 at ip.zig:25:27
+0.53ms       529          0.2%     0x100003574  ngc`ip.IpTrie(u128).dump + 848 [inlined] ip.formatIPv6__anon_4571 + 408 at ip.zig
+0.52ms       518          0.1%     0x1000030b8  ngc`ip.IpTrie(u128).insertRange + 428 [inlined] array_list.Aligned(ip.TrieNode,null).append + 40 at array_list.zig:905:13
+0.52ms       517          0.1%     0x100002598  ngc`ip.IpTrie(u32).insertRange + 76 at ip.zig
+0.52ms       516          0.1%     0x100043574  ngc`sort.block.block__anon_21825 + 11116 [inlined] mem.swap__anon_21832 + 20 at mem.zig:3862:23
+0.51ms       511          0.1%     0x100042dd0  ngc`sort.block.block__anon_21825 + 9160 [inlined] mem.swap__anon_21832 + 12 at mem.zig:3865:13
