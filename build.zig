@@ -55,7 +55,7 @@ pub fn build(b: *Build) void {
             .root_source_file = .{ .cwd_relative = "src/main.zig" },
             .target = target,
             .optimize = optimize,
-            .single_threaded = false,
+            .single_threaded = true,
             .strip = should_strip,
             .link_libc = false,
         }),
