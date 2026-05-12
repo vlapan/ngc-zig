@@ -1,5 +1,5 @@
 # Define phony targets so Make doesn't look for files named 'all' or 'clean'
-.PHONY: all build release clean run test
+.PHONY: all build release clean run test fetch-data
 
 SHELL := /opt/homebrew/bin/zsh
 .SHELLFLAGS := -e -o pipefail -c
@@ -58,3 +58,10 @@ test:
 	zig build test
 	@./zig-out/bin/ngc-test
 	@echo "MAKE:INFO: Tests passed!"
+
+fetch-data:
+	@echo "MAKE:INFO: Fetching test input files from upstream..."
+	mkdir -p test
+	curl -fSL "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv4-num.csv" -o test/geo-whois-asn-country-ipv4-num.csv
+	curl -fSL "https://raw.githubusercontent.com/sapics/ip-location-db/refs/heads/main/geo-whois-asn-country/geo-whois-asn-country-ipv6-num.csv" -o test/geo-whois-asn-country-ipv6-num.csv
+	@echo "MAKE:INFO: Test data fetched successfully!"
