@@ -23,7 +23,7 @@ pub fn build(b: *Build) void {
     const clean_hash = std.mem.trim(u8, git_hash, &std.ascii.whitespace);
 
     const should_stamp = b.option(bool, "stamp", "Include build timestamp") orelse true;
-    const should_strip = b.option(bool, "strip", "Strip the binary (default: true for release)") orelse (optimize != .Debug);
+    const should_strip = b.option(bool, "strip", "Strip the binary (default: true if stamped)") orelse should_stamp;
 
     const iso_string = if (should_stamp) blk: {
         const ts = std.Io.Timestamp.now(b.graph.io, .real);
