@@ -126,9 +126,9 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
     try writer.writeAll(";\n");
 }
 
-pub const TrieNode = struct {
-    left: u32 = 0,
-    right: u32 = 0,
+pub const TrieNode = packed struct {
+    left: u24 = 0,
+    right: u24 = 0,
     country: u16 = 0,
 };
 
@@ -154,13 +154,13 @@ pub fn IpTrie(comptime T: type) type {
             return self;
         }
 
-        fn allocNode(self: *IpTrie(T)) !u32 {
+        fn allocNode(self: *IpTrie(T)) !u24 {
             const idx = self.nodes.items.len;
             try self.nodes.append(self.alloc, .{});
             return @intCast(idx);
         }
 
-        pub fn insertRange(self: *IpTrie(T), node_idx: u32, node_start: T, node_end: T, rs: T, re: T, country: u16) !void {
+        pub fn insertRange(self: *IpTrie(T), node_idx: u24, node_start: T, node_end: T, rs: T, re: T, country: u16) !void {
             if (rs <= node_start and re >= node_end) {
                 self.nodes.items[node_idx].country = country;
                 self.nodes.items[node_idx].left = 0;
@@ -206,12 +206,12 @@ pub fn IpTrie(comptime T: type) type {
             }
         }
 
-        fn getCountry(self: *IpTrie(T), idx: u32) u16 {
+        fn getCountry(self: *IpTrie(T), idx: u24) u16 {
             if (idx == 0) return HOLE;
             return self.nodes.items[idx].country;
         }
 
-        pub fn optimize(self: *IpTrie(T), node_idx: u32) void {
+        pub fn optimize(self: *IpTrie(T), node_idx: u24) void {
             if (node_idx == 0) return;
 
             const c = self.nodes.items[node_idx].country;
@@ -233,7 +233,7 @@ pub fn IpTrie(comptime T: type) type {
             }
         }
 
-        pub fn dump(self: *IpTrie(T), node_idx: u32, ip: T, depth: u8) !usize {
+        pub fn dump(self: *IpTrie(T), node_idx: u24, ip: T, depth: u8) !usize {
             if (node_idx == 0) return 0;
 
             const c = self.nodes.items[node_idx].country;

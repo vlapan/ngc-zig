@@ -109,6 +109,10 @@ pub fn main(init: std.process.Init) void {
             std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
             std.process.exit(1);
         };
+        trie_v4.nodes.ensureTotalCapacity(alloc, ipv4_ranges.items.len * 4) catch |err| {
+            std.log.err("Failed to pre-allocate IPv4 Trie: {}", .{err});
+            std.process.exit(1);
+        };
         for (ipv4_ranges.items) |r| {
             trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv4 range: {}", .{err});
@@ -145,6 +149,10 @@ pub fn main(init: std.process.Init) void {
 
         var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
+            std.process.exit(1);
+        };
+        trie_v6.nodes.ensureTotalCapacity(alloc, ipv6_ranges.items.len * 8) catch |err| {
+            std.log.err("Failed to pre-allocate IPv6 Trie: {}", .{err});
             std.process.exit(1);
         };
         for (ipv6_ranges.items) |r| {
