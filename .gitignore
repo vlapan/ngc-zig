@@ -10,3 +10,6 @@ test/tmp.csv
 
 # Generated output files
 out.txt
+
+# Locally compiled binaries
+ngc-static
