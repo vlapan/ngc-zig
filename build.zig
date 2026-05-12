@@ -96,7 +96,7 @@ pub fn build(b: *Build) void {
     const test_install = b.addInstallArtifact(test_exe, .{});
     const test_run = b.addRunArtifact(test_exe);
     test_run.step.dependOn(&test_install.step);
-    
+
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&test_run.step);
 }
