@@ -205,12 +205,19 @@ pub fn IpTrie(comptime T: type) type {
             return @intCast(idx);
         }
 
-        pub fn insertRange(self: *IpTrie(T), node_idx: u24, node_start: T, node_end: T, rs: T, re: T, country: u16) !void {
+        pub fn insertRange(self: *IpTrie(T), node_idx: u24, node_start: T, node_end: T, rs: T, re: T, country: u16) !usize {
+            var overrides: usize = 0;
+
             if (rs <= node_start and re >= node_end) {
+                const old_c = self.nodes.items[node_idx].country;
+                if (old_c != MIXED and old_c != country) {
+                    overrides += 1;
+                }
+                
                 self.nodes.items[node_idx].country = country;
                 self.nodes.items[node_idx].left = 0;
                 self.nodes.items[node_idx].right = 0;
-                return;
+                return overrides;
             }
 
             const c = self.nodes.items[node_idx].country;
@@ -244,11 +251,12 @@ pub fn IpTrie(comptime T: type) type {
             const mid = node_start + (node_end - node_start) / 2;
 
             if (rs <= mid) {
-                try self.insertRange(left_idx, node_start, mid, rs, re, country);
+                overrides += try self.insertRange(left_idx, node_start, mid, rs, re, country);
             }
             if (re > mid) {
-                try self.insertRange(right_idx, mid + 1, node_end, rs, re, country);
+                overrides += try self.insertRange(right_idx, mid + 1, node_end, rs, re, country);
             }
+            return overrides;
         }
 
         fn getCountry(self: *IpTrie(T), idx: u24) u16 {
@@ -327,11 +335,11 @@ test "IPv4 Trie formatting and basic insertion" {
     const ca_idx: u16 = (@as(u16, 'C') << 8) | @as(u16, 'A');
 
     // Insert 0.0.0.0/0 -> US
-    try trie.insertRange(1, 0, std.math.maxInt(u32), 0, std.math.maxInt(u32), us_idx);
+    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), 0, std.math.maxInt(u32), us_idx);
 
     // Insert 128.0.0.0/1 -> CA (size: 2^31)
     const mid = std.math.maxInt(u32) / 2;
-    try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), ca_idx);
+    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), ca_idx);
 
     trie.optimize(1);
     _ = try trie.dump(1, 0, 0);
@@ -351,8 +359,8 @@ test "IPv4 Trie optimization of siblings" {
 
     // Insert two halves of 0.0.0.0/0 explicitly
     const mid = std.math.maxInt(u32) / 2;
-    try trie.insertRange(1, 0, std.math.maxInt(u32), 0, mid, fr_idx);
-    try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), fr_idx);
+    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), 0, mid, fr_idx);
+    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), fr_idx);
 
     trie.optimize(1);
     _ = try trie.dump(1, 0, 0);

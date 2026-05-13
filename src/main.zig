@@ -13,6 +13,7 @@ pub const Stats = struct {
     lines_parsed: usize = 0,
     lines_skipped: usize = 0,
     collisions: usize = 0,
+    overrides: usize = 0,
 };
 
 pub fn main(init: std.process.Init) void {
@@ -116,13 +117,13 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         for (ipv4_ranges.items) |r| {
-            trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, r.country) catch |err| {
+            v4_stats.overrides += trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv4 range: {}", .{err});
                 std.process.exit(1);
             };
         }
         for (static_v4_ranges.items) |r| {
-            trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, ip_mod.HOLE) catch |err| {
+            v4_stats.overrides += trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, ip_mod.HOLE) catch |err| {
                 std.log.err("Failed to insert static IPv4 hole: {}", .{err});
                 std.process.exit(1);
             };
@@ -159,13 +160,13 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         for (ipv6_ranges.items) |r| {
-            trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, r.country) catch |err| {
+            v6_stats.overrides += trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv6 range: {}", .{err});
                 std.process.exit(1);
             };
         }
         for (static_v6_ranges.items) |r| {
-            trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, ip_mod.HOLE) catch |err| {
+            v6_stats.overrides += trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, ip_mod.HOLE) catch |err| {
                 std.log.err("Failed to insert static IPv6 hole: {}", .{err});
                 std.process.exit(1);
             };
@@ -198,9 +199,13 @@ pub fn main(init: std.process.Init) void {
         static_stats.lines_parsed,
         total_skipped,
     });
-    std.debug.print("  Data Collisions (dirty overlaps): IPv4: {}, IPv6: {}\n", .{
+    std.debug.print("  Data Collisions (topological overlaps): IPv4: {}, IPv6: {}\n", .{
         v4_stats.collisions,
         v6_stats.collisions,
+    });
+    std.debug.print("  Routing Overrides (subnets overwritten): IPv4: {}, IPv6: {}\n", .{
+        v4_stats.overrides,
+        v6_stats.overrides,
     });
     std.debug.print("  Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
         v4_countries,
