@@ -18,6 +18,51 @@ pub fn sortRangesBySizeDesc(comptime T: type, ranges: []IPRange(T)) void {
     }.less);
 }
 
+pub fn countCollisions(comptime T: type, ranges: []IPRange(T)) usize {
+    if (ranges.len < 2) return 0;
+
+    std.mem.sort(IPRange(T), ranges, {}, struct {
+        fn less(_: void, a: IPRange(T), b: IPRange(T)) bool {
+            if (a.start != b.start) return a.start < b.start;
+            return a.end > b.end;
+        }
+    }.less);
+
+    var collisions: usize = 0;
+    var active_ranges: [16]IPRange(T) = undefined;
+    var active_count: usize = 0;
+
+    for (ranges) |r| {
+        var i: usize = 0;
+        while (i < active_count) {
+            if (active_ranges[i].end < r.start) {
+                active_count -= 1;
+                active_ranges[i] = active_ranges[active_count];
+            } else {
+                i += 1;
+            }
+        }
+
+        for (active_ranges[0..active_count]) |active| {
+            if (active.country != r.country) {
+                collisions += 1;
+                break;
+            }
+        }
+
+        if (active_count < active_ranges.len) {
+            active_ranges[active_count] = r;
+            active_count += 1;
+        } else {
+            // Unlikely to ever happen since max depth in reality is < 5.
+            // If it does, we safely overwrite the last slot to prevent out-of-bounds.
+            active_ranges[active_count - 1] = r;
+        }
+    }
+
+    return collisions;
+}
+
 pub fn isPrivateIPv4(ip: u32) bool {
     return (ip & 0xFF000000) == 0x7F000000 or // 127.0.0.0/8
         (ip & 0xFFFF0000) == 0xA9FE0000 or // 169.254.0.0/16

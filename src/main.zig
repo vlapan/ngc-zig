@@ -12,6 +12,7 @@ pub const std_options: std.Options = .{
 pub const Stats = struct {
     lines_parsed: usize = 0,
     lines_skipped: usize = 0,
+    collisions: usize = 0,
 };
 
 pub fn main(init: std.process.Init) void {
@@ -103,6 +104,7 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
+        v4_stats.collisions = ip_mod.countCollisions(u32, ipv4_ranges.items);
         ip_mod.sortRangesBySizeDesc(u32, ipv4_ranges.items);
 
         var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
@@ -145,6 +147,7 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
+        v6_stats.collisions = ip_mod.countCollisions(u128, ipv6_ranges.items);
         ip_mod.sortRangesBySizeDesc(u128, ipv6_ranges.items);
 
         var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
@@ -194,6 +197,10 @@ pub fn main(init: std.process.Init) void {
         v6_stats.lines_parsed,
         static_stats.lines_parsed,
         total_skipped,
+    });
+    std.debug.print("  Data Collisions (dirty overlaps): IPv4: {}, IPv6: {}\n", .{
+        v4_stats.collisions,
+        v6_stats.collisions,
     });
     std.debug.print("  Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
         v4_countries,
