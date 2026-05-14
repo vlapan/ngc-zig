@@ -50,9 +50,9 @@ fi
 echo -e "\n${BOLD}[5/7] Preparing Annotated Tag...${RESET}"
 LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 if [ -n "$LAST_TAG" ]; then
-    CHANGES=$(git log ${LAST_TAG}..HEAD --oneline --no-decorate | sed 's/^/- /')
+    CHANGES=$(git log ${LAST_TAG}..HEAD --format="- %s" | grep -v "^- chore: release" || true)
 else
-    CHANGES=$(git log --oneline --no-decorate | sed 's/^/- /')
+    CHANGES=$(git log --format="- %s" | grep -v "^- chore: release" || true)
 fi
 
 echo -e "${BOLD}Changes since $LAST_TAG:${RESET}"
