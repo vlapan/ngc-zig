@@ -2,7 +2,6 @@
 Updated: 2026-05-14
 
 ## Active / Next Up
-- [ ] **Test Engineering: TDD & Expanded Coverage**: Adopt Test-Driven Development (TDD) principles and aggressively expand unit testing across all components. Investigate broader testing strategies. (Details: `notes/2026-05-14.md`)
 
 - [ ] **Performance: Future Optimizations**: Continuously profile and research new algorithmic or structural optimization possibilities. (Details: `notes/2026-05-14.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
@@ -10,6 +9,7 @@ Updated: 2026-05-14
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
+- [x] **Test Engineering: TDD & Expanded Coverage**: Unit tests generated for pure algorithmic components, including `src/flatten.zig` (1D Sweep-Line Pre-Flattening merges and priorities) and `src/ip.zig` IPv4 routines. (Completed: 2026-05-14)
 - [x] **Architecture: Module Separation**: Decoupled monolithic files into `trie.zig`, `flatten.zig`, `parser.zig`, `config.zig`, `ip.zig`, and `main.zig`. (Completed: 2026-05-14)
 - [x] **Test Infrastructure: Feature-Specific Benchmarking**: Created dedicated `Makefile` commands to benchmark filtering and grouping isolated from the baseline, capturing metrics in separate log files. (Completed: 2026-05-14)
 - [x] **Test Infrastructure: Feature-Specific Validation**: Created dedicated `Makefile` commands to test and verify (via `git diff`) the `--group` and `--filter` outputs to catch regressions before releases. (Completed: 2026-05-14)
