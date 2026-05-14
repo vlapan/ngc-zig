@@ -1,0 +1,29 @@
+======================================================================
+Date: 2026-05-14 16:53:19 UTC | Commit: a19b5b0  | Mode: filter
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 296K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 7.7M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 100123, IPv6: 58150, Static: 5, Skipped: 3, Filtered: 395906
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 842, IPv6: 92
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 1061, IPv6: 169
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 99941, IPv6: 58099
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 640708, IPv6: 698676
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 0, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 5, IPv6: 5
+      Outputs (CIDR networks generated): IPv4: 180473, IPv6: 170523, Static: 5, Total: 351001
+      Estimated Nginx RAM footprint: ~31 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 46ms, Phase 1 (Flatten): 46ms, Phase 2 (Radix): 22ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.45s |  0.08s |  0.01s | 31.0 MB |    936,435,445 |    274,513,911 |   16/382 |
+| Hot1 |  0.08s |  0.07s |  0.00s | 31.0 MB |    908,487,073 |    260,648,850 |    10/34 |
+| Hot2 |  0.09s |  0.07s |  0.00s | 31.0 MB |    909,141,221 |    258,370,723 |    17/39 |
+| Hot3 |  0.09s |  0.07s |  0.00s | 31.0 MB |    908,609,312 |    258,466,611 |    17/32 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
+======================================================================

@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 set -e
 
+MODE=${1:-baseline}
+
+if [ "$MODE" = "baseline" ]; then
+    EXTRA_ARGS=""
+    OUTPUT_FILE="test/output.txt"
+elif [ "$MODE" = "filter" ]; then
+    EXTRA_ARGS="--filters-file test/test_filter.txt"
+    OUTPUT_FILE="test/output-filter.txt"
+elif [ "$MODE" = "group" ]; then
+    EXTRA_ARGS="--groups-file test/test_groups.txt"
+    OUTPUT_FILE="test/output-group.txt"
+else
+    echo "Unknown mode: $MODE"
+    exit 1
+fi
+
 if [ -t 1 ]; then
     BOLD="\033[1m"
     RED="\033[31m"
@@ -19,7 +35,7 @@ echo "======================================================================"
 DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
 COMMIT=$(git rev-parse --short HEAD)
 DIRTY=$(git diff --quiet src/ || echo "- DIRTY")
-echo -e "${BOLD}Date:${RESET} $DATE | ${BOLD}Commit:${RESET} $COMMIT $DIRTY"
+echo -e "${BOLD}Date:${RESET} $DATE | ${BOLD}Commit:${RESET} $COMMIT $DIRTY | ${BOLD}Mode:${RESET} $MODE"
 echo "----------------------------------------------------------------------"
 
 echo -e "${BOLD}[1/5] Compiling Release Binary...${RESET}"
@@ -35,11 +51,11 @@ echo -e "${BOLD}[2/5] File Metrics:${RESET}"
 BIN_SIZE=$(ls -lh zig-out/bin/ngc | awk '{print $5}')
 V4_SIZE=$(ls -lh test/geo-whois-asn-country-ipv4-num.csv | awk '{print $5}')
 V6_SIZE=$(ls -lh test/geo-whois-asn-country-ipv6-num.csv | awk '{print $5}')
-OUT_SIZE=$(ls -lh test/output.txt | awk '{print $5}')
+OUT_SIZE=$(ls -lh $OUTPUT_FILE | awk '{print $5}')
 echo "      Binary: $BIN_SIZE | IPv4 CSV: $V4_SIZE | IPv6 CSV: $V6_SIZE | Output: $OUT_SIZE"
 
 echo -e "${BOLD}[3/5] Application Stats (Cold Run):${RESET}"
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt > /dev/null 2> /tmp/ngc_time_cold.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_cold.txt
 
 grep "Inputs (ranges parsed)" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 grep -E "^  Phase 1" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
@@ -51,9 +67,9 @@ grep "Pipeline Profiling" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 echo -e "${BOLD}[4/5] Performance Metrics:${RESET}"
 
 # Hot runs
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt > /dev/null 2> /tmp/ngc_time_hot1.txt
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt > /dev/null 2> /tmp/ngc_time_hot2.txt
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt > /dev/null 2> /tmp/ngc_time_hot3.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot1.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot2.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot3.txt
 
 # Parse function
 parse_time() {
@@ -97,11 +113,11 @@ parse_time /tmp/ngc_time_hot3.txt "Hot3"
 echo ""
 
 echo -e "${BOLD}[5/5] Output Verification:${RESET}"
-if git diff --quiet test/output.txt; then
-    echo -e "      ${GREEN}[OK] No changes in test/output.txt. Output exactly matches baseline.${RESET}"
+if git diff --quiet $OUTPUT_FILE; then
+    echo -e "      ${GREEN}[OK] No changes in $OUTPUT_FILE. Output exactly matches baseline.${RESET}"
 else
-    echo -e "      ${YELLOW}[NOTICE] test/output.txt has changed!${RESET}"
+    echo -e "      ${YELLOW}[NOTICE] $OUTPUT_FILE has changed!${RESET}"
     echo -e "      If this is an intentional formatting or feature change, review the diff:"
-    git diff --stat test/output.txt | sed 's/^/      /'
+    git diff --stat $OUTPUT_FILE | sed 's/^/      /'
 fi
 echo "======================================================================"

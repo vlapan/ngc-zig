@@ -1,5 +1,5 @@
 # Define phony targets so Make doesn't look for files named 'all' or 'clean'
-.PHONY: all build release clean run test fetch-data
+.PHONY: all build release clean run test fetch-data bench bench-filter bench-group
 
 SHELL := /opt/homebrew/bin/zsh
 .SHELLFLAGS := -e -o pipefail -c
@@ -65,7 +65,13 @@ test:
 	@echo "MAKE:INFO: Tests passed!"
 
 bench:
-	@bash test/benchmark.sh | tee -a benchmarks.log
+	@bash test/benchmark.sh baseline | tee -a test/baseline-benchmarks.log
+
+bench-filter:
+	@bash test/benchmark.sh filter | tee -a test/filter-benchmarks.log
+
+bench-group:
+	@bash test/benchmark.sh group | tee -a test/group-benchmarks.log
 
 tag:
 	@bash test/tag-release.sh
