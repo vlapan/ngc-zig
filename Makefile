@@ -67,5 +67,8 @@ test:
 bench:
 	@bash test/benchmark.sh | tee -a benchmarks.log
 
+tag:
+	@bash test/tag-release.sh
+
 fetch-data:
 	@bash test/fetch-data.sh

@@ -1,16 +1,19 @@
 # Project Release & Deployment Protocol
 Updated: 2026-05-14
 
-Before tagging a new release, always execute this strict verification pipeline to ensure artifacts and baseline states are perfectly synchronized:
+The entire release process has been fully automated to ensure maximum safety, mathematical correctness, and detailed tracking.
 
-1. `make fmt` (Format all Zig code).
-2. `make test` (Ensure all edge cases and unit tests pass).
-3. `make bench` (Compile the `-Dstamp=true` release artifact, run cold/hot benchmarks, and verify output consistency).
-4. `git status` (Verify that step 3 did NOT report an unexpected `[NOTICE]` modifying `test/output.txt`).
-5. `git add benchmarks.log` (Stage the new benchmark baseline if performance changed).
-6. Update `build.zig.zon` version string.
-7. Commit the version bump: `git commit -am "chore: release vX.Y.Z"`
-8. Review the commit history since the last release: `git log $(git describe --tags --abbrev=0)..HEAD --oneline`
-9. Create an **annotated tag** containing bullet points of the main features and optimizations implemented since the last tag. Example:
-   `git tag -a vX.Y.Z -m "Release vX.Y.Z" -m "- perf: lightweight index sorting" -m "- perf: branchless IPv6 formatting"`
-10. Push the commit and the new annotated tag: `git push origin master --follow-tags`
+When you are ready to cut a new release, simply ensure your working directory is clean (all optimizations and features committed) and run:
+
+```bash
+make tag
+```
+
+### What `make tag` does automatically:
+1. **Safety Check:** Enforces a perfectly clean git working directory.
+2. **Version Bump:** Prompts for the next semantic version and updates `build.zig.zon`.
+3. **Format & Test:** Runs `make fmt` and `make test`.
+4. **Benchmark Verification:** Runs `make bench` to compile the `-Dstamp=true` release artifact and perform cold/hot benchmarks.
+5. **Logic Validation:** Runs `git diff test/output.txt`. If the output mathematically changed, it flags it as a `[NOTICE]` and pauses to ask you for explicit confirmation.
+6. **Annotation Extraction:** Automatically parses `git log` since the last tag to generate a bulleted list of all features, perf, and chore commits.
+7. **Commit & Tag:** Commits the version bump and `benchmarks.log`, creates the **annotated tag** with the embedded changelog, and pushes `origin master --follow-tags` to deploy it.
