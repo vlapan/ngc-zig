@@ -5,9 +5,9 @@ Updated: 2026-05-14
 - [ ] **Custom Country Grouping**: Allow aggregating specific countries into custom regions (e.g., grouping `FR`, `DE`, `ES` into an `EU` block) to further compress Nginx CIDR output. Include an "Estimated Nginx RAM footprint" output metric. (Details: `notes/2026-05-13.md`)
 
 ## Backlog / Enhancements
-- [ ] **Telemetry: Radix Trie Node Count**: Output the total number of allocated Trie nodes (e.g. `Trie Nodes Allocated: 1,402,392`) to measure IP space fragmentation and provide a baseline for future node-reduction optimizations.
-- [ ] **Telemetry: Contiguous Merges**: Track how many contiguous dataset blocks were perfectly merged during Phase 1. This measures sweep-line efficiency and reveals how "dirty" the raw upstream CSV data actually is.
-- [ ] **Telemetry: Pipeline Profiling (Phase Timing)**: Break down the total execution time into granular phases (e.g., `I/O Parsing: 80ms`, `Phase 1 Flattening: 40ms`, `Phase 2 Radix: 100ms`) to easily identify pipeline bottlenecks.
+- [ ] **Telemetry: Radix Trie Node Count**: Track total allocated Trie nodes to measure fragmentation. (Details: `notes/2026-05-14.md`)
+- [ ] **Telemetry: Contiguous Merges**: Track how many adjacent identical blocks were merged during Phase 1. (Details: `notes/2026-05-14.md`)
+- [ ] **Telemetry: Pipeline Profiling (Phase Timing)**: Break down total execution time into granular phases (I/O vs Flattening vs Radix). (Details: `notes/2026-05-14.md`)
 - [ ] **Memory Optimization: Stream Flattened Output to Trie**: The sweep-line `flatten()` algorithm currently buffers its output into intermediate arrays, causing Max RSS to peak at ~80MB. Refactor `flatten` to stream segments directly into the `IpTrie` to eliminate the `flattened_vX` array allocations and drop memory usage. (Details: `notes/2026-05-14.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
