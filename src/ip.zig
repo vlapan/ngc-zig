@@ -10,16 +10,17 @@ pub const IPv6Range = IPRange(u128);
 pub const FlattenStats = struct {
     collisions: usize,
     merges: usize,
+    flattened: usize,
 };
 
-pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const IPRange(T), out_ranges: *std.ArrayList(IPRange(T))) !FlattenStats {
+pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const IPRange(T), trie: *IpTrie(T)) !FlattenStats {
     const Event = struct {
         val: T,
         is_end: bool,
         id: u32,
     };
 
-    var stats = FlattenStats{ .collisions = 0, .merges = 0 };
+    var stats = FlattenStats{ .collisions = 0, .merges = 0, .flattened = 0 };
     if (ranges.len == 0) return stats;
 
     var events = try std.ArrayList(Event).initCapacity(alloc, ranges.len * 2);
@@ -95,12 +96,8 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const IPRan
         if (new_country != current_country) {
             if (current_country) |c| {
                 if (current_val > segment_start) {
-                    try out_ranges.append(alloc, .{
-                        .start = segment_start,
-                        .end = current_val - 1,
-                        .country = c,
-                        .size = (current_val - 1) - segment_start + 1,
-                    });
+                    stats.flattened += 1;
+                    _ = try trie.insertRange(1, 0, std.math.maxInt(T), segment_start, current_val - 1, c);
                 }
             }
             current_country = new_country;

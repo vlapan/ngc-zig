@@ -122,32 +122,26 @@ pub fn main(init: std.process.Init) void {
         const ts_v4_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_io_ns += ts_v4_parsed - ts_v4_start;
 
-        var flattened_v4 = std.ArrayList(ip_mod.IPv4Range).empty;
-        const flatten_stats = ip_mod.flatten(u32, alloc, ipv4_ranges.items, &flattened_v4) catch |err| {
+        var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
+            std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
+            std.process.exit(1);
+        };
+        trie_v4.nodes.ensureTotalCapacity(alloc, ipv4_ranges.items.len * 4) catch |err| {
+            std.log.err("Failed to pre-allocate IPv4 Trie: {}", .{err});
+            std.process.exit(1);
+        };
+
+        const flatten_stats = ip_mod.flatten(u32, alloc, ipv4_ranges.items, &trie_v4) catch |err| {
             std.log.err("Failed to flatten IPv4 ranges: {}", .{err});
             std.process.exit(1);
         };
         v4_stats.collisions = flatten_stats.collisions;
         v4_merges = flatten_stats.merges;
-        v4_flattened = flattened_v4.items.len;
+        v4_flattened = flatten_stats.flattened;
         
         const ts_v4_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_flatten_ns += ts_v4_flattened - ts_v4_parsed;
 
-        var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
-            std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
-            std.process.exit(1);
-        };
-        trie_v4.nodes.ensureTotalCapacity(alloc, flattened_v4.items.len * 4) catch |err| {
-            std.log.err("Failed to pre-allocate IPv4 Trie: {}", .{err});
-            std.process.exit(1);
-        };
-        for (flattened_v4.items) |r| {
-            v4_stats.overrides += trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, r.country) catch |err| {
-                std.log.err("Failed to insert IPv4 range: {}", .{err});
-                std.process.exit(1);
-            };
-        }
         for (static_v4_ranges.items) |r| {
             v4_stats.overrides += trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, ip_mod.HOLE) catch |err| {
                 std.log.err("Failed to insert static IPv4 hole: {}", .{err});
@@ -183,32 +177,26 @@ pub fn main(init: std.process.Init) void {
         const ts_v6_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_io_ns += ts_v6_parsed - ts_v6_start;
 
-        var flattened_v6 = std.ArrayList(ip_mod.IPv6Range).empty;
-        const flatten_v6_stats = ip_mod.flatten(u128, alloc, ipv6_ranges.items, &flattened_v6) catch |err| {
+        var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
+            std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
+            std.process.exit(1);
+        };
+        trie_v6.nodes.ensureTotalCapacity(alloc, ipv6_ranges.items.len * 8) catch |err| {
+            std.log.err("Failed to pre-allocate IPv6 Trie: {}", .{err});
+            std.process.exit(1);
+        };
+
+        const flatten_v6_stats = ip_mod.flatten(u128, alloc, ipv6_ranges.items, &trie_v6) catch |err| {
             std.log.err("Failed to flatten IPv6 ranges: {}", .{err});
             std.process.exit(1);
         };
         v6_stats.collisions = flatten_v6_stats.collisions;
         v6_merges = flatten_v6_stats.merges;
-        v6_flattened = flattened_v6.items.len;
+        v6_flattened = flatten_v6_stats.flattened;
         
         const ts_v6_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_flatten_ns += ts_v6_flattened - ts_v6_parsed;
 
-        var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
-            std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
-            std.process.exit(1);
-        };
-        trie_v6.nodes.ensureTotalCapacity(alloc, flattened_v6.items.len * 8) catch |err| {
-            std.log.err("Failed to pre-allocate IPv6 Trie: {}", .{err});
-            std.process.exit(1);
-        };
-        for (flattened_v6.items) |r| {
-            v6_stats.overrides += trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, r.country) catch |err| {
-                std.log.err("Failed to insert IPv6 range: {}", .{err});
-                std.process.exit(1);
-            };
-        }
         for (static_v6_ranges.items) |r| {
             v6_stats.overrides += trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, ip_mod.HOLE) catch |err| {
                 std.log.err("Failed to insert static IPv6 hole: {}", .{err});
