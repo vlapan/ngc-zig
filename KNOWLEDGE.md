@@ -12,6 +12,7 @@ Updated: 2026-05-13
 - Keep state files updated frequently
 - Commit incrementally
 - Write state frequently for session survival
+- **Telemetry Validity**: Always ensure that console outputs and tracking metrics (`Stats`) accurately reflect the current physical architecture. If a major pipeline refactor happens (e.g. moving from Trie-based collision resolution to Sweep-Line pre-flattening), the CLI output *must* be updated to track the new distinct phases of the pipeline so the user understands exactly what the machine is doing.
 
 
 ## Files
