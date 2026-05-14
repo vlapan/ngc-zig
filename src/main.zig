@@ -106,7 +106,7 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v4_stats.collisions = ip_mod.countCollisions(u32, ipv4_ranges.items);
-        
+
         const v4_indices = alloc.alloc(u32, ipv4_ranges.items.len) catch |err| {
             std.log.err("Failed to allocate IPv4 indices: {}", .{err});
             std.process.exit(1);
@@ -156,7 +156,7 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v6_stats.collisions = ip_mod.countCollisions(u128, ipv6_ranges.items);
-        
+
         const v6_indices = alloc.alloc(u32, ipv6_ranges.items.len) catch |err| {
             std.log.err("Failed to allocate IPv6 indices: {}", .{err});
             std.process.exit(1);
