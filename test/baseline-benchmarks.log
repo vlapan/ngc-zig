@@ -404,3 +404,32 @@ Date: 2026-05-14 17:58:17 UTC | Commit: b1e221f  | Mode: baseline
 [5/5] Output Verification:
       [OK] No changes in test/output.txt. Output exactly matches baseline.
 ======================================================================
+======================================================================
+Date: 2026-05-14 18:01:12 UTC | Commit: 7adad19  | Mode: baseline
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3, Filtered: 0
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5651, IPv6: 1010
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 157, IPv6: 43
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337113, IPv6: 216977
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 1020898, IPv6: 1595702
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
+      Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
+      Estimated Nginx RAM footprint: ~93 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 49ms, Phase 1 (Flatten): 140ms, Phase 2 (Radix): 45ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.55s |  0.18s |  0.02s | 61.5 MB |  2,325,345,963 |    641,220,321 |    6/427 |
+| Hot1 |  0.20s |  0.18s |  0.01s | 61.5 MB |  2,297,747,020 |    627,113,174 |    14/96 |
+| Hot2 |  0.20s |  0.18s |  0.01s | 61.5 MB |  2,296,979,977 |    626,325,016 |    20/97 |
+| Hot3 |  0.21s |  0.18s |  0.01s | 61.5 MB |  2,295,192,574 |    620,910,657 |    29/88 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output.txt. Output exactly matches baseline.
+======================================================================
