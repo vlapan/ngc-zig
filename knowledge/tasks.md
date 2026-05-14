@@ -2,14 +2,12 @@
 Updated: 2026-05-14
 
 ## Active / Next Up
-- [ ] **Custom Country Grouping**: Allow aggregating specific countries into custom regions (e.g., grouping `FR`, `DE`, `ES` into an `EU` block) to further compress Nginx CIDR output. (Details: `notes/2026-05-13.md`)
-
-## Backlog / Enhancements
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
+- [x] **Custom Country Grouping**: Implemented `--group` and `--groups-file` to aggregate countries into blocks (e.g., `EU`) and seamlessly merge Nginx output. (Completed: 2026-05-14)
 - [x] **Estimated Nginx RAM footprint**: Added heuristic to approximate RAM usage of resulting Nginx CIDRs (`~64B/v4`, `~128B/v6`). (Completed: 2026-05-14)
 - [x] **Memory Optimization: Stream Flattened Output to Trie**: Refactored `flatten` to stream segments directly into the `IpTrie`, eliminating intermediate `flattened_vX` arrays and dropping Max RSS by ~18.3MB. (Completed: 2026-05-14)
 - [x] **Telemetry Enhancements**: Added tracking for Radix Nodes, Contiguous Merges, and Granular Pipeline Profiling to CLI output. (Completed: 2026-05-14)
