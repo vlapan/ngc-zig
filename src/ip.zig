@@ -78,7 +78,7 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const IPRan
             } else {
                 const current_best = ranges[best_id.?];
                 const candidate = ranges[id];
-                
+
                 if (candidate.size != current_best.size) {
                     if (candidate.size < current_best.size) best_id = id;
                 } else if (candidate.end != current_best.end) {
@@ -106,10 +106,9 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const IPRan
             segment_start = current_val;
         }
     }
-    
+
     return stats;
 }
-
 
 pub fn isPrivateIPv4(ip: u32) bool {
     return (ip & 0xFF000000) == 0x7F000000 or // 127.0.0.0/8
