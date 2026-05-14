@@ -514,3 +514,34 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     try formatIPv6(&aw.writer, ip7, 128, country);
     try testing.expectEqualStrings("2001:0:0:1::1/128 US;\n", aw.writer.buffered());
 }
+
+test "isPrivateIPv4 detects correct private blocks" {
+    // Localhost
+    try std.testing.expect(isPrivateIPv4(0x7F000001)); // 127.0.0.1
+    // APIPA
+    try std.testing.expect(isPrivateIPv4(0xA9FE0001)); // 169.254.0.1
+    // 10.x.x.x
+    try std.testing.expect(isPrivateIPv4(0x0A000001)); // 10.0.0.1
+    // 172.16.x.x
+    try std.testing.expect(isPrivateIPv4(0xAC100001)); // 172.16.0.1
+    // 192.168.x.x
+    try std.testing.expect(isPrivateIPv4(0xC0A80001)); // 192.168.0.1
+
+    // Public IPs (Should return false)
+    try std.testing.expect(!isPrivateIPv4(0x08080808)); // 8.8.8.8
+    try std.testing.expect(!isPrivateIPv4(0x01010101)); // 1.1.1.1
+}
+
+test "IPv4 formatting handles edges" {
+    var aw: std.Io.Writer.Allocating = .init(std.testing.allocator);
+    defer aw.deinit();
+
+    const us_idx: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
+
+    try formatIPv4(&aw.writer, 0, 0, us_idx); // 0.0.0.0/0
+    try std.testing.expectEqualStrings("0.0.0.0/0 US;\n", aw.writer.buffered());
+
+    aw.clearRetainingCapacity();
+    try formatIPv4(&aw.writer, 0xFFFFFFFF, 32, us_idx); // 255.255.255.255/32
+    try std.testing.expectEqualStrings("255.255.255.255/32 US;\n", aw.writer.buffered());
+}
