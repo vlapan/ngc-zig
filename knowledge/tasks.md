@@ -2,7 +2,7 @@
 Updated: 2026-05-14
 
 ## Active / Next Up
-- [ ] **Country Filtering**: Implement `--filter` and `--filters-file` to allowlist/denylist specific countries *before* grouping is applied. This will allow the parser to aggressively drop unwanted networks early, saving massive amounts of CPU/RAM when generating targeted regional datasets.
+- [ ] **Country Filtering**: Add `--filter` and `--filters-file` to allowlist specific source countries before grouping. (Details: `notes/2026-05-14.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
