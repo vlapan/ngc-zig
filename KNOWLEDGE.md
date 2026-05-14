@@ -21,6 +21,8 @@ Updated: 2026-05-13
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps
 - `notes/` - Daily session logs with progress. These are strictly append-only historical narratives showing *what was done*. Do NOT trap open tasks or future backlogs in daily notes; put them in `knowledge/tasks.md` and link to the daily note for context.
 - **Benchmarking & Profiling Rules**:
-  - Whenever performance optimizations are made, you must compare and record the difference in detail.
-  - Do not just compare CPU/User time. Also track: `maximum resident set size`, `peak memory footprint`, `instructions retired`, `cycles elapsed`, `voluntary context switches`, and `involuntary context switches` (from `/usr/bin/time -al`).
-  - Be mindful of filesystem caching: A fresh build triggers a "cold run" with high I/O overhead. Subsequent runs are "hot runs". Always compare *cold runs with cold runs* and *hot runs with hot runs*.
+  - Whenever performance optimizations are made, you must use the `make bench` command.
+  - `make bench` will automatically compile a clean release binary, run a Cold Run (to capture I/O overhead), 3 Hot Runs (to capture CPU efficiency), format the output into a clean table, and verify via `git diff` that `test/output.txt` was not corrupted.
+  - The output of `make bench` is automatically appended to `benchmarks.log`.
+  - Do NOT manually run `/usr/bin/time -al` and paste walls of raw output into notes or chat. Always use `make bench` for performance proofs.
+  - When committing an optimization, ensure you commit the changes to `benchmarks.log` alongside your source code to permanently document the performance improvement.

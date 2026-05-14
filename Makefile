@@ -64,5 +64,8 @@ test:
 	@./zig-out/bin/ngc-test
 	@echo "MAKE:INFO: Tests passed!"
 
+bench:
+	@bash test/benchmark.sh | tee -a benchmarks.log
+
 fetch-data:
 	@bash test/fetch-data.sh

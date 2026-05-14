@@ -1,0 +1,23 @@
+======================================================================
+[1mDate:[0m 2026-05-14 11:54:56 UTC | [1mCommit:[0m af4c77a 
+----------------------------------------------------------------------
+[1m[1/5] Compiling Release Binary...[0m
+      OK
+[1m[2/5] File Metrics:[0m
+      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
+[1m[3/5] Application Stats (Cold Run):[0m
+      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
+      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
+      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
+      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
+[1m[4/5] Performance Metrics:[0m
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.70s |  0.31s |  0.02s | 44.8 MB |  3,918,242,503 |  1,019,672,026 |   54/448 |
+| Hot1 |  0.33s |  0.30s |  0.01s | 44.8 MB |  3,890,827,344 |  1,004,537,795 |    9/184 |
+| Hot2 |  0.33s |  0.30s |  0.01s | 44.8 MB |  3,891,466,309 |  1,004,910,093 |   17/122 |
+| Hot3 |  0.33s |  0.30s |  0.01s | 44.8 MB |  3,895,761,108 |  1,006,684,938 |   32/114 |
+
+[1m[5/5] Logic Verification:[0m
+      [32m[OK] No unexpected changes in test/output.txt. Logic intact.[0m
+======================================================================
