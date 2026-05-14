@@ -140,3 +140,26 @@
 [1m[5/5] Output Verification:[0m
       [32m[OK] No changes in test/output.txt. Output exactly matches baseline.[0m
 ======================================================================
+======================================================================
+[1mDate:[0m 2026-05-14 13:04:27 UTC | [1mCommit:[0m 441e8c3 
+----------------------------------------------------------------------
+[1m[1/5] Compiling Release Binary...[0m
+      OK
+[1m[2/5] File Metrics:[0m
+      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
+[1m[3/5] Application Stats (Cold Run):[0m
+      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
+      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
+      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
+      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
+[1m[4/5] Performance Metrics:[0m
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.62s |  0.23s |  0.01s | 46.1 MB |  2,556,722,912 |    776,372,017 |   84/376 |
+| Hot1 |  0.27s |  0.22s |  0.01s | 46.1 MB |  2,525,061,998 |    775,181,565 |    57/37 |
+| Hot2 |  0.27s |  0.23s |  0.01s | 46.1 MB |  2,526,188,912 |    806,796,689 |    50/62 |
+| Hot3 |  0.25s |  0.22s |  0.01s | 46.1 MB |  2,525,326,407 |    750,489,258 |    44/28 |
+
+[1m[5/5] Output Verification:[0m
+      [32m[OK] No changes in test/output.txt. Output exactly matches baseline.[0m
+======================================================================
