@@ -27,3 +27,61 @@ Date: 2026-05-14 16:53:37 UTC | Commit: a19b5b0  | Mode: group
 [5/5] Output Verification:
       [OK] No changes in test/output-group.txt. Output exactly matches baseline.
 ======================================================================
+======================================================================
+Date: 2026-05-14 17:06:15 UTC | Commit: b03c4ef - DIRTY | Mode: group
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 296K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 17M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3, Filtered: 0
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 4133, IPv6: 762
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 93601, IPv6: 59182
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 243669, IPv6: 157838
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 796846, IPv6: 1330298
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 218, IPv6: 219
+      Outputs (CIDR networks generated): IPv4: 386606, IPv6: 386604, Static: 5, Total: 773215
+      Estimated Nginx RAM footprint: ~70 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 50ms, Phase 1 (Flatten): 96ms, Phase 2 (Radix): 45ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.51s |  0.13s |  0.02s | 57.8 MB |  1,791,297,834 |    488,644,036 |   47/407 |
+| Hot1 |  0.16s |  0.13s |  0.01s | 57.8 MB |  1,760,104,114 |    468,575,719 |    23/73 |
+| Hot2 |  0.16s |  0.13s |  0.01s | 57.8 MB |  1,758,965,316 |    469,003,535 |    17/67 |
+| Hot3 |  0.16s |  0.13s |  0.01s | 57.8 MB |  1,761,226,477 |    469,872,147 |    22/65 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output-group.txt. Output exactly matches baseline.
+======================================================================
+======================================================================
+Date: 2026-05-14 17:18:43 UTC | Commit: b03c4ef - DIRTY | Mode: group
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 296K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 17M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3, Filtered: 0
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 4133, IPv6: 762
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 93601, IPv6: 59182
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 243669, IPv6: 157838
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 796846, IPv6: 1330298
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 218, IPv6: 219
+      Outputs (CIDR networks generated): IPv4: 386606, IPv6: 386604, Static: 5, Total: 773215
+      Estimated Nginx RAM footprint: ~70 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 47ms, Phase 1 (Flatten): 95ms, Phase 2 (Radix): 38ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.50s |  0.13s |  0.02s | 57.8 MB |  1,793,475,126 |    486,045,932 |   28/424 |
+| Hot1 |  0.15s |  0.13s |  0.01s | 57.8 MB |  1,760,780,267 |    465,383,186 |     4/91 |
+| Hot2 |  0.15s |  0.13s |  0.01s | 57.8 MB |  1,760,750,118 |    468,901,400 |    6/114 |
+| Hot3 |  0.16s |  0.13s |  0.01s | 57.8 MB |  1,762,218,570 |    467,832,020 |    8/132 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output-group.txt. Output exactly matches baseline.
+======================================================================
