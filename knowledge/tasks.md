@@ -3,13 +3,14 @@ Updated: 2026-05-14
 
 ## Active / Next Up
 - [ ] **Test Engineering: TDD & Expanded Coverage**: Adopt Test-Driven Development (TDD) principles and aggressively expand unit testing across all components. Investigate broader testing strategies. (Details: `notes/2026-05-14.md`)
-- [ ] **Architecture: Module Separation**: Investigate decoupling `src/main.zig` and `src/ip.zig` into more isolated, single-responsibility modules (e.g. separate CLI, Parser, Trie, Algorithms). (Details: `notes/2026-05-14.md`)
+
 - [ ] **Performance: Future Optimizations**: Continuously profile and research new algorithmic or structural optimization possibilities. (Details: `notes/2026-05-14.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
+- [x] **Architecture: Module Separation**: Decoupled monolithic files into `trie.zig`, `flatten.zig`, `parser.zig`, `config.zig`, `ip.zig`, and `main.zig`. (Completed: 2026-05-14)
 - [x] **Test Infrastructure: Feature-Specific Benchmarking**: Created dedicated `Makefile` commands to benchmark filtering and grouping isolated from the baseline, capturing metrics in separate log files. (Completed: 2026-05-14)
 - [x] **Test Infrastructure: Feature-Specific Validation**: Created dedicated `Makefile` commands to test and verify (via `git diff`) the `--group` and `--filter` outputs to catch regressions before releases. (Completed: 2026-05-14)
 - [x] **Test Infrastructure: Baseline Benchmark Relocation**: Moved `benchmarks.log` to `test/baseline-benchmarks.log` to clarify it tests the raw, unfiltered architecture. (Completed: 2026-05-14)
