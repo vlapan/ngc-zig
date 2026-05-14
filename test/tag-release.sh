@@ -17,11 +17,10 @@ fi
 # 2. Get current version and calculate next patch version
 CURRENT_VERSION=$(grep -oE '\.version = "[0-9]+\.[0-9]+\.[0-9]+"' build.zig.zon | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
-DEFAULT_NEXT="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((VERSION_PARTS[2] + 1))"
+NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$((VERSION_PARTS[2] + 1))"
 
 echo -e "${BOLD}Current version:${RESET} $CURRENT_VERSION"
-read -p "Enter new version [${DEFAULT_NEXT}]: " input_version
-NEW_VERSION=${input_version:-$DEFAULT_NEXT}
+echo -e "${BOLD}Bumping to:${RESET} $NEW_VERSION"
 
 # 3. Update build.zig.zon
 echo -e "\n${BOLD}[1/7] Updating build.zig.zon to $NEW_VERSION...${RESET}"
@@ -40,15 +39,11 @@ make bench
 
 # 6. Verify output logic
 if ! git diff --quiet test/output.txt; then
-    echo -e "\n${YELLOW}[NOTICE] test/output.txt has changed!${RESET}"
-    git diff --stat test/output.txt | sed 's/^/      /'
-    echo ""
-    read -p "Are these output changes intentional for this release? (y/N) " intentional
-    if [[ ! "$intentional" =~ ^[Yy]$ ]]; then
-        echo -e "${RED}Aborting release. Reverting version bump.${RESET}"
-        git restore build.zig.zon test/output.txt benchmarks.log
-        exit 1
-    fi
+    echo -e "\n${RED}[ERROR] test/output.txt changed during benchmark verification!${RESET}"
+    echo -e "${RED}This means the compiled release binary behaves differently than the committed baseline.${RESET}"
+    echo -e "${RED}Aborting release and reverting state.${RESET}"
+    git restore build.zig.zon test/output.txt benchmarks.log 2>/dev/null || true
+    exit 1
 fi
 
 # 7. Commit, Tag, and Push
@@ -63,13 +58,6 @@ fi
 echo -e "${BOLD}Changes since $LAST_TAG:${RESET}"
 echo "$CHANGES"
 echo ""
-
-read -p "Proceed with commit and tagging v$NEW_VERSION? (y/N) " proceed
-if [[ ! "$proceed" =~ ^[Yy]$ ]]; then
-    echo -e "${YELLOW}Aborted by user.${RESET}"
-    git restore build.zig.zon test/output.txt benchmarks.log 2>/dev/null || true
-    exit 1
-fi
 
 echo -e "\n${BOLD}[6/7] Committing version bump...${RESET}"
 git commit -am "chore: release v$NEW_VERSION"
