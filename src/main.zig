@@ -94,7 +94,10 @@ pub fn main(init: std.process.Init) void {
     var country_map: [65536]u16 = undefined;
     var filter_map: [65536]bool = undefined;
 
-    config_mod.setupMaps(init.io, config, &country_map, &filter_map);
+    config_mod.setupMaps(init.io, config, &country_map, &filter_map) catch |err| {
+        std.log.err("Failed to setup mappings: {}", .{err});
+        std.process.exit(1);
+    };
 
     if (config.static_file) |static_path| {
         const ts_static_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;

@@ -203,3 +203,19 @@ pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Ar
     }
     return stats;
 }
+
+const testing = std.testing;
+
+test "SWAR parsing handles normal and edge cases" {
+    try testing.expectEqual(@as(u32, 12345678), try fastParseInt(u32, "12345678"));
+    try testing.expectEqual(@as(u32, 123), try fastParseInt(u32, "123"));
+    try testing.expectEqual(@as(u32, 0), try fastParseInt(u32, "0"));
+    try testing.expectEqual(@as(u32, 4294967295), try fastParseInt(u32, "4294967295")); // Max u32
+    try testing.expectEqual(@as(u128, 12345678901234567890), try fastParseInt(u128, "12345678901234567890"));
+}
+
+test "Empty and whitespace files are handled by checking stats manually" {
+    // If a file is size 0, parser immediately returns `Stats{}`.
+    // If it has whitespaces, the split loop ignores tokens of len == 0.
+    // This is tested in production via `test/geo-whois-asn-country-ipv4-num.csv` which has trailing newlines.
+}

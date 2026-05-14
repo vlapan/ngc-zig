@@ -84,15 +84,16 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
     };
 }
 
-fn parseGroupLine(line: []const u8, country_map: *[65536]u16) void {
+pub const ConfigError = error{ InvalidGroupFormat, InvalidFilterFormat };
+
+pub fn parseGroupLine(line: []const u8, country_map: *[65536]u16) !void {
     const g = std.mem.trim(u8, line, " \t\r\n");
     if (g.len == 0 or g[0] == '#') return;
 
     if (std.mem.indexOfScalar(u8, g, ':')) |colon_idx| {
         const target_str = std.mem.trim(u8, g[0..colon_idx], " \t");
         if (target_str.len != 2) {
-            std.log.err("Target group name must be exactly 2 characters (got '{s}')", .{target_str});
-            std.process.exit(1);
+            return error.InvalidGroupFormat;
         }
         const target_u16 = (@as(u16, target_str[0]) << 8) | @as(u16, target_str[1]);
         
@@ -101,19 +102,17 @@ fn parseGroupLine(line: []const u8, country_map: *[65536]u16) void {
             const s_str = std.mem.trim(u8, src_str, " \t");
             if (s_str.len == 0) continue;
             if (s_str.len != 2) {
-                std.log.err("Source country code must be exactly 2 characters (got '{s}')", .{s_str});
-                std.process.exit(1);
+                return error.InvalidGroupFormat;
             }
             const src_u16 = (@as(u16, s_str[0]) << 8) | @as(u16, s_str[1]);
             country_map.*[src_u16] = target_u16;
         }
     } else {
-        std.log.err("Invalid group format '{s}'. Expected TARGET:SRC1,SRC2", .{g});
-        std.process.exit(1);
+        return error.InvalidGroupFormat;
     }
 }
 
-fn parseFilterLine(line: []const u8, filter_map: *[65536]bool) void {
+pub fn parseFilterLine(line: []const u8, filter_map: *[65536]bool) !void {
     const f = std.mem.trim(u8, line, " \t\r\n");
     if (f.len == 0 or f[0] == '#') return;
 
@@ -122,42 +121,32 @@ fn parseFilterLine(line: []const u8, filter_map: *[65536]bool) void {
         const s_str = std.mem.trim(u8, src_str, " \t");
         if (s_str.len == 0) continue;
         if (s_str.len != 2) {
-            std.log.err("Filter country code must be exactly 2 characters (got '{s}')", .{s_str});
-            std.process.exit(1);
+            return error.InvalidFilterFormat;
         }
         const src_u16 = (@as(u16, s_str[0]) << 8) | @as(u16, s_str[1]);
         filter_map.*[src_u16] = true;
     }
 }
 
-pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_map: *[65536]bool) void {
+pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_map: *[65536]bool) !void {
     for (0..65536) |i| {
         country_map[i] = @intCast(i);
     }
     for (config.groups) |g| {
-        parseGroupLine(g, country_map);
+        try parseGroupLine(g, country_map);
     }
 
     if (config.groups_file) |gf| {
-        var file = std.Io.Dir.cwd().openFile(io, gf, .{}) catch |err| {
-            std.log.err("Failed to open groups file '{s}': {}", .{gf, err});
-            std.process.exit(1);
-        };
+        var file = try std.Io.Dir.cwd().openFile(io, gf, .{});
         defer file.close(io);
-        const stat = file.stat(io) catch |err| {
-            std.log.err("Failed to stat groups file: {}", .{err});
-            std.process.exit(1);
-        };
+        const stat = try file.stat(io);
         if (stat.size > 0) {
-            const mapped = std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0) catch |err| {
-                std.log.err("Failed to mmap groups file: {}", .{err});
-                std.process.exit(1);
-            };
+            const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
             defer std.posix.munmap(mapped);
             
             var it = std.mem.splitScalar(u8, mapped, '\n');
             while (it.next()) |line| {
-                parseGroupLine(line, country_map);
+                try parseGroupLine(line, country_map);
             }
         }
     }
@@ -167,31 +156,66 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
 
     if (has_filters) {
         for (config.filters) |f| {
-            parseFilterLine(f, filter_map);
+            try parseFilterLine(f, filter_map);
         }
 
         if (config.filters_file) |ff| {
-            var file = std.Io.Dir.cwd().openFile(io, ff, .{}) catch |err| {
-                std.log.err("Failed to open filters file '{s}': {}", .{ff, err});
-                std.process.exit(1);
-            };
+            var file = try std.Io.Dir.cwd().openFile(io, ff, .{});
             defer file.close(io);
-            const stat = file.stat(io) catch |err| {
-                std.log.err("Failed to stat filters file: {}", .{err});
-                std.process.exit(1);
-            };
+            const stat = try file.stat(io);
             if (stat.size > 0) {
-                const mapped = std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0) catch |err| {
-                    std.log.err("Failed to mmap filters file: {}", .{err});
-                    std.process.exit(1);
-                };
+                const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
                 defer std.posix.munmap(mapped);
                 
                 var it = std.mem.splitScalar(u8, mapped, '\n');
                 while (it.next()) |line| {
-                    parseFilterLine(line, filter_map);
+                    try parseFilterLine(line, filter_map);
                 }
             }
         }
     }
+}
+
+
+const testing = std.testing;
+
+test "parseGroupLine handles normal, empty, and whitespace correctly" {
+    var cmap = [_]u16{0} ** 65536;
+    
+    // Valid cases
+    try parseGroupLine("EU:FR,DE", &cmap);
+    const eu_idx = (@as(u16, 'E') << 8) | @as(u16, 'U');
+    const fr_idx = (@as(u16, 'F') << 8) | @as(u16, 'R');
+    const de_idx = (@as(u16, 'D') << 8) | @as(u16, 'E');
+    try testing.expectEqual(eu_idx, cmap[fr_idx]);
+    try testing.expectEqual(eu_idx, cmap[de_idx]);
+
+    // Whitespace handling (valid but ignored or trimmed)
+    try parseGroupLine("   \t  \n ", &cmap);
+    try parseGroupLine("", &cmap);
+    try parseGroupLine("# comment", &cmap);
+    
+    // Invalid cases
+    try testing.expectError(error.InvalidGroupFormat, parseGroupLine("E:FR,DE", &cmap));
+    try testing.expectError(error.InvalidGroupFormat, parseGroupLine("EU:F,DE", &cmap));
+    try testing.expectError(error.InvalidGroupFormat, parseGroupLine("EU", &cmap));
+}
+
+test "parseFilterLine handles normal, empty, and whitespace correctly" {
+    var fmap = [_]bool{false} ** 65536;
+    
+    // Valid cases
+    try parseFilterLine("FR, DE", &fmap);
+    const fr_idx = (@as(u16, 'F') << 8) | @as(u16, 'R');
+    const de_idx = (@as(u16, 'D') << 8) | @as(u16, 'E');
+    try testing.expect(fmap[fr_idx] == true);
+    try testing.expect(fmap[de_idx] == true);
+
+    // Whitespace handling
+    try parseFilterLine("   \t  \n ", &fmap);
+    try parseFilterLine("", &fmap);
+    try parseFilterLine("# comment", &fmap);
+
+    // Invalid cases
+    try testing.expectError(error.InvalidFilterFormat, parseFilterLine("F,DE", &fmap));
 }

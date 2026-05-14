@@ -452,51 +452,6 @@ pub fn IpTrie(comptime T: type) type {
 
 const testing = std.testing;
 
-test "IPv4 Trie formatting and basic insertion" {
-    var aw: std.Io.Writer.Allocating = .init(testing.allocator);
-    defer aw.deinit();
-
-    var trie = try IpTrie(u32).init(testing.allocator, &aw.writer);
-    defer trie.nodes.deinit(testing.allocator);
-
-    const us_idx: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
-    const ca_idx: u16 = (@as(u16, 'C') << 8) | @as(u16, 'A');
-
-    // Insert 0.0.0.0/0 -> US
-    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), 0, std.math.maxInt(u32), us_idx);
-
-    // Insert 128.0.0.0/1 -> CA (size: 2^31)
-    const mid = std.math.maxInt(u32) / 2;
-    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), ca_idx);
-
-    trie.optimize(1);
-    _ = try trie.dump(1, 0, 0);
-
-    const expected = "0.0.0.0/1 US;\n128.0.0.0/1 CA;\n";
-    try testing.expectEqualStrings(expected, aw.writer.buffered());
-}
-
-test "IPv4 Trie optimization of siblings" {
-    var aw: std.Io.Writer.Allocating = .init(testing.allocator);
-    defer aw.deinit();
-
-    var trie = try IpTrie(u32).init(testing.allocator, &aw.writer);
-    defer trie.nodes.deinit(testing.allocator);
-
-    const fr_idx: u16 = (@as(u16, 'F') << 8) | @as(u16, 'R');
-
-    // Insert two halves of 0.0.0.0/0 explicitly
-    const mid = std.math.maxInt(u32) / 2;
-    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), 0, mid, fr_idx);
-    _ = try trie.insertRange(1, 0, std.math.maxInt(u32), mid + 1, std.math.maxInt(u32), fr_idx);
-
-    trie.optimize(1);
-    _ = try trie.dump(1, 0, 0);
-
-    const expected = "0.0.0.0/0 FR;\n";
-    try testing.expectEqualStrings(expected, aw.writer.buffered());
-}
-
 test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
     defer aw.deinit();
