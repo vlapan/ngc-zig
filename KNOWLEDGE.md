@@ -21,7 +21,7 @@ Updated: 2026-05-13
 - `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
 - `knowledge/architecture.md` - Core system design and radix trie behavior
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps
-- `notes/` - Daily session logs with progress. These are strictly append-only historical narratives showing *what was done*. Do NOT trap open tasks or future backlogs in daily notes; put them in `knowledge/tasks.md` and link to the daily note for context.
+- `notes/` - Daily session logs with progress. These are strictly append-only historical narratives showing *what was done*. Do NOT trap open tasks or future backlogs in daily notes. Conversely, do NOT put detailed task specifications in `tasks.md`. `knowledge/tasks.md` must be strictly limited to a concise 1-line checklist. ALL rationale, examples, and detailed specifications MUST go into the daily `notes/YYYY-MM-DD.md` file, which is then linked at the end of the 1-line task (e.g., `(Details: notes/2026-05-14.md)`).
 - **Benchmarking & Profiling Rules**:
   - Whenever performance optimizations are made, you must use the `make bench` command.
   - `make bench` will automatically compile a clean release binary, run a Cold Run (to capture I/O overhead), 3 Hot Runs (to capture CPU efficiency), format the output into a clean table, and verify via `git diff` that `test/output.txt` was not corrupted.
