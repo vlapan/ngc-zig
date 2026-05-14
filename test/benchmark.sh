@@ -87,10 +87,12 @@ parse_time /tmp/ngc_time_hot2.txt "Hot2"
 parse_time /tmp/ngc_time_hot3.txt "Hot3"
 echo ""
 
-echo -e "${BOLD}[5/5] Logic Verification:${RESET}"
+echo -e "${BOLD}[5/5] Output Verification:${RESET}"
 if git diff --quiet test/output.txt; then
-    echo -e "      ${GREEN}[OK] No unexpected changes in test/output.txt. Logic intact.${RESET}"
+    echo -e "      ${GREEN}[OK] No changes in test/output.txt. Output exactly matches baseline.${RESET}"
 else
-    echo -e "      ${RED}[WARNING] test/output.txt changed! Your optimization altered the routing logic.${RESET}"
+    echo -e "      ${YELLOW}[NOTICE] test/output.txt has changed!${RESET}"
+    echo -e "      If this is an intentional formatting or feature change, review the diff:"
+    git diff --stat test/output.txt | sed 's/^/      /'
 fi
 echo "======================================================================"
