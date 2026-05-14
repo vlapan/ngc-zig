@@ -24,3 +24,6 @@ Updated: 2026-05-14
 - [x] **Dataset Overlap/Collision Reporting**. (Completed: 2026-05-13)
 - [x] **Look-Up Table (LUT) for Zero-Division IP Formatting**. (Completed: 2026-05-13)
 - [x] **ETag Desynchronization Fix**: Store `.etag` in git. (Completed: 2026-05-14)
+
+## Validation Rule Noted:
+*In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*

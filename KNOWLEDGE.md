@@ -8,6 +8,7 @@ Updated: 2026-05-13
 - Read changelogs from `ZIG-CHANGELOG-*.md`
 - Use real test data from `test/geo-whois-asn-country-ipv4-num.csv` and `test/geo-whois-asn-country-ipv6-num.csv`
 - Always verify output changes (`git diff test/output.txt`) to track expected vs unexpected changes before committing code
+- **Validate Before Implementing:** Before starting work on an item from `knowledge/tasks.md` (especially specific code optimizations), quickly `grep` or `cat` the relevant source code to verify the targeted logic still exists in the assumed state. Code evolves, and backlog plans can become obsolete or conceptually flawed over time.
 - Keep state files updated frequently
 - Commit incrementally
 - Write state frequently for session survival
