@@ -442,7 +442,7 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     // Case 1: Trailing zeroes (longest run at the end)
     // Uncompressed: 2001:db8:0:0:0:0:0:0
     // Expected: 2001:db8::
-    aw.writer.buffer.clearRetainingCapacity();
+    aw.clearRetainingCapacity();
     const ip1: u128 = (0x2001 << 112) | (0x0db8 << 96);
     try formatIPv6(&aw.writer, ip1, 32, country);
     try testing.expectEqualStrings("2001:db8::/32 US;\n", aw.writer.buffered());
@@ -450,7 +450,7 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     // Case 2: Middle zeroes (longest run in the middle)
     // Uncompressed: 2001:db8:0:0:0:0:2:1
     // Expected: 2001:db8::2:1
-    aw.writer.buffer.clearRetainingCapacity();
+    aw.clearRetainingCapacity();
     const ip2: u128 = (0x2001 << 112) | (0x0db8 << 96) | (0x0002 << 16) | (0x0001);
     try formatIPv6(&aw.writer, ip2, 128, country);
     try testing.expectEqualStrings("2001:db8::2:1/128 US;\n", aw.writer.buffered());
@@ -458,7 +458,7 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     // Case 3: Leading zeroes (longest run at the start)
     // Uncompressed: 0:0:0:0:0:0:0:1
     // Expected: ::1
-    aw.writer.buffer.clearRetainingCapacity();
+    aw.clearRetainingCapacity();
     const ip3: u128 = 1;
     try formatIPv6(&aw.writer, ip3, 128, country);
     try testing.expectEqualStrings("::1/128 US;\n", aw.writer.buffered());
@@ -466,7 +466,7 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     // Case 4: All zeroes
     // Uncompressed: 0:0:0:0:0:0:0:0
     // Expected: ::
-    aw.writer.buffer.clearRetainingCapacity();
+    aw.clearRetainingCapacity();
     const ip4: u128 = 0;
     try formatIPv6(&aw.writer, ip4, 0, country);
     try testing.expectEqualStrings("::/0 US;\n", aw.writer.buffered());
@@ -474,7 +474,7 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     // Case 5: Single zero (MUST NOT compress)
     // Uncompressed: 2001:db8:0:1:1:1:1:1
     // Expected: 2001:db8:0:1:1:1:1:1
-    aw.writer.buffer.clearRetainingCapacity();
+    aw.clearRetainingCapacity();
     const ip5: u128 = (0x2001 << 112) | (0x0db8 << 96) | (0x0001 << 64) | (0x0001 << 48) | (0x0001 << 32) | (0x0001 << 16) | (0x0001);
     try formatIPv6(&aw.writer, ip5, 128, country);
     try testing.expectEqualStrings("2001:db8:0:1:1:1:1:1/128 US;\n", aw.writer.buffered());
@@ -482,7 +482,7 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     // Case 6: Multiple equal-length zero runs (MUST compress FIRST run)
     // Uncompressed: 2001:db8:0:0:1:0:0:1
     // Expected: 2001:db8::1:0:0:1
-    aw.writer.buffer.clearRetainingCapacity();
+    aw.clearRetainingCapacity();
     const ip6: u128 = (0x2001 << 112) | (0x0db8 << 96) | (0x0001 << 48) | (0x0001);
     try formatIPv6(&aw.writer, ip6, 128, country);
     try testing.expectEqualStrings("2001:db8::1:0:0:1/128 US;\n", aw.writer.buffered());
@@ -490,7 +490,7 @@ test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     // Case 7: Multiple unequal-length zero runs (MUST compress LONGEST run)
     // Uncompressed: 2001:0:0:1:0:0:0:1
     // Expected: 2001:0:0:1::1
-    aw.writer.buffer.clearRetainingCapacity();
+    aw.clearRetainingCapacity();
     const ip7: u128 = (0x2001 << 112) | (0x0001 << 64) | (0x0001);
     try formatIPv6(&aw.writer, ip7, 128, country);
     try testing.expectEqualStrings("2001:0:0:1::1/128 US;\n", aw.writer.buffered());

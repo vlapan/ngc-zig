@@ -46,3 +46,17 @@ Updated: 2026-05-12
 - CSV: start_ip, end_ip, country_code
 - IPv4: numeric format (e.g., `16777216,16777471,AU`)
 - IPv6: numeric format (big integers up to ~2^128)
+## Memory Buffers & Testing (`std.Io.Writer.Allocating`)
+- In Zig 0.16.0, `std.Io.Writer.Allocating` is the new standard for building strings in memory, replacing the legacy `std.ArrayList(u8).writer()` pattern.
+- Init: `var aw: std.Io.Writer.Allocating = .init(allocator);`
+- Write: Pass `&aw.writer` to any function expecting a `*std.Io.Writer` (or `anytype`).
+- Read Output: `aw.writer.buffered()` returns `[]const u8`.
+- Clear/Reset: `aw.clearRetainingCapacity()`. (CRITICAL: The method belongs to the `Allocating` struct `aw`, NOT the internal primitive slice `aw.writer.buffer`).
+
+## Networking (`std.Io.net`)
+- IPv4/IPv6 address parsing and structs live in `std.Io.net` in 0.16.0 (e.g., `std.Io.net.IpAddress`).
+- **Formatting Trap:** The standard library `format` function (`try w.print("{f}", .{ip})`) enforces strict URI formatting. It will forcibly wrap IPv6 addresses in brackets and append the port (e.g., `[2001:db8::1]:0`). If you need raw IP strings, you must write a custom formatter.
+
+## Hardware Builtins (Performance)
+- `@clz(x)`: Count leading zeros. Compiles directly to the hardware `lzcnt` ASM instruction. Extremely useful for eliminating `if` branches inside tight loops (e.g., stripping leading zeros in Hex formatting).
+- `@ctz(x)`: Count trailing zeros. Compiles to `tzcnt`.
