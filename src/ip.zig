@@ -283,7 +283,10 @@ pub fn IpTrie(comptime T: type) type {
 
         fn allocNode(self: *IpTrie(T)) !u24 {
             const idx = self.nodes.items.len;
-            try self.nodes.append(self.alloc, .{});
+            if (idx == self.nodes.capacity) {
+                try self.nodes.ensureUnusedCapacity(self.alloc, 4096);
+            }
+            self.nodes.appendAssumeCapacity(.{});
             return @intCast(idx);
         }
 
