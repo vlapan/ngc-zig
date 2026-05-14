@@ -152,10 +152,58 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
     var buf: [128]u8 = undefined;
     var idx: usize = 0;
 
+    var chunks: [8]u16 = undefined;
     inline for (0..8) |i| {
         const shift: u7 = @intCast((7 - i) * 16);
-        const chunk: u16 = @truncate(ip >> shift);
+        chunks[i] = @truncate(ip >> shift);
+    }
 
+    var longest_start: usize = 8;
+    var longest_len: usize = 0;
+    var current_start: usize = 0;
+    var current_len: usize = 0;
+
+    for (chunks, 0..) |chunk, i| {
+        if (chunk == 0) {
+            if (current_len == 0) current_start = i;
+            current_len += 1;
+        } else {
+            if (current_len > longest_len) {
+                longest_start = current_start;
+                longest_len = current_len;
+            }
+            current_len = 0;
+        }
+    }
+    if (current_len > longest_len) {
+        longest_start = current_start;
+        longest_len = current_len;
+    }
+
+    if (longest_len == 1) {
+        longest_len = 0;
+    }
+
+    var i: usize = 0;
+    var last_was_colon = false;
+    while (i < 8) {
+        if (longest_len > 0 and i == longest_start) {
+            buf[idx] = ':';
+            idx += 1;
+            buf[idx] = ':';
+            idx += 1;
+            i += longest_len;
+            last_was_colon = true;
+            continue;
+        }
+
+        if (i > 0 and !last_was_colon) {
+            buf[idx] = ':';
+            idx += 1;
+        }
+        last_was_colon = false;
+
+        const chunk = chunks[i];
         if (chunk == 0) {
             buf[idx] = '0';
             idx += 1;
@@ -171,11 +219,7 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
                 }
             }
         }
-
-        if (i < 7) {
-            buf[idx] = ':';
-            idx += 1;
-        }
+        i += 1;
     }
 
     buf[idx] = '/';
@@ -387,4 +431,67 @@ test "IPv4 Trie optimization of siblings" {
 
     const expected = "0.0.0.0/0 FR;\n";
     try testing.expectEqualStrings(expected, aw.writer.buffered());
+}
+
+test "IPv6 RFC 5952 Zero Compression Edge Cases" {
+    var aw: std.Io.Writer.Allocating = .init(testing.allocator);
+    defer aw.deinit();
+
+    const country: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
+
+    // Case 1: Trailing zeroes (longest run at the end)
+    // Uncompressed: 2001:db8:0:0:0:0:0:0
+    // Expected: 2001:db8::
+    aw.writer.buffer.clearRetainingCapacity();
+    const ip1: u128 = (0x2001 << 112) | (0x0db8 << 96);
+    try formatIPv6(&aw.writer, ip1, 32, country);
+    try testing.expectEqualStrings("2001:db8::/32 US;\n", aw.writer.buffered());
+
+    // Case 2: Middle zeroes (longest run in the middle)
+    // Uncompressed: 2001:db8:0:0:0:0:2:1
+    // Expected: 2001:db8::2:1
+    aw.writer.buffer.clearRetainingCapacity();
+    const ip2: u128 = (0x2001 << 112) | (0x0db8 << 96) | (0x0002 << 16) | (0x0001);
+    try formatIPv6(&aw.writer, ip2, 128, country);
+    try testing.expectEqualStrings("2001:db8::2:1/128 US;\n", aw.writer.buffered());
+
+    // Case 3: Leading zeroes (longest run at the start)
+    // Uncompressed: 0:0:0:0:0:0:0:1
+    // Expected: ::1
+    aw.writer.buffer.clearRetainingCapacity();
+    const ip3: u128 = 1;
+    try formatIPv6(&aw.writer, ip3, 128, country);
+    try testing.expectEqualStrings("::1/128 US;\n", aw.writer.buffered());
+
+    // Case 4: All zeroes
+    // Uncompressed: 0:0:0:0:0:0:0:0
+    // Expected: ::
+    aw.writer.buffer.clearRetainingCapacity();
+    const ip4: u128 = 0;
+    try formatIPv6(&aw.writer, ip4, 0, country);
+    try testing.expectEqualStrings("::/0 US;\n", aw.writer.buffered());
+
+    // Case 5: Single zero (MUST NOT compress)
+    // Uncompressed: 2001:db8:0:1:1:1:1:1
+    // Expected: 2001:db8:0:1:1:1:1:1
+    aw.writer.buffer.clearRetainingCapacity();
+    const ip5: u128 = (0x2001 << 112) | (0x0db8 << 96) | (0x0001 << 64) | (0x0001 << 48) | (0x0001 << 32) | (0x0001 << 16) | (0x0001);
+    try formatIPv6(&aw.writer, ip5, 128, country);
+    try testing.expectEqualStrings("2001:db8:0:1:1:1:1:1/128 US;\n", aw.writer.buffered());
+
+    // Case 6: Multiple equal-length zero runs (MUST compress FIRST run)
+    // Uncompressed: 2001:db8:0:0:1:0:0:1
+    // Expected: 2001:db8::1:0:0:1
+    aw.writer.buffer.clearRetainingCapacity();
+    const ip6: u128 = (0x2001 << 112) | (0x0db8 << 96) | (0x0001 << 48) | (0x0001);
+    try formatIPv6(&aw.writer, ip6, 128, country);
+    try testing.expectEqualStrings("2001:db8::1:0:0:1/128 US;\n", aw.writer.buffered());
+
+    // Case 7: Multiple unequal-length zero runs (MUST compress LONGEST run)
+    // Uncompressed: 2001:0:0:1:0:0:0:1
+    // Expected: 2001:0:0:1::1
+    aw.writer.buffer.clearRetainingCapacity();
+    const ip7: u128 = (0x2001 << 112) | (0x0001 << 64) | (0x0001);
+    try formatIPv6(&aw.writer, ip7, 128, country);
+    try testing.expectEqualStrings("2001:0:0:1::1/128 US;\n", aw.writer.buffered());
 }
