@@ -2,9 +2,6 @@
 Updated: 2026-05-14
 
 ## Active / Next Up
-- [ ] **Test Infrastructure: Baseline Benchmark Relocation**: Move `benchmarks.log` to `test/baseline-benchmarks.log` to clarify it tests the raw, unfiltered architecture. (Details: `notes/2026-05-14.md`)
-- [ ] **Test Infrastructure: Feature-Specific Validation**: Create dedicated `Makefile` commands to test and verify (via `git diff`) the `--group` and `--filter` outputs to catch regressions before releases. (Details: `notes/2026-05-14.md`)
-- [ ] **Test Infrastructure: Feature-Specific Benchmarking**: Create dedicated `Makefile` commands to benchmark filtering and grouping isolated from the baseline, capturing metrics in separate log files. (Details: `notes/2026-05-14.md`)
 - [ ] **Test Engineering: TDD & Expanded Coverage**: Adopt Test-Driven Development (TDD) principles and aggressively expand unit testing across all components. Investigate broader testing strategies. (Details: `notes/2026-05-14.md`)
 - [ ] **Architecture: Module Separation**: Investigate decoupling `src/main.zig` and `src/ip.zig` into more isolated, single-responsibility modules (e.g. separate CLI, Parser, Trie, Algorithms). (Details: `notes/2026-05-14.md`)
 - [ ] **Performance: Future Optimizations**: Continuously profile and research new algorithmic or structural optimization possibilities. (Details: `notes/2026-05-14.md`)
@@ -13,6 +10,9 @@ Updated: 2026-05-14
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
+- [x] **Test Infrastructure: Feature-Specific Benchmarking**: Created dedicated `Makefile` commands to benchmark filtering and grouping isolated from the baseline, capturing metrics in separate log files. (Completed: 2026-05-14)
+- [x] **Test Infrastructure: Feature-Specific Validation**: Created dedicated `Makefile` commands to test and verify (via `git diff`) the `--group` and `--filter` outputs to catch regressions before releases. (Completed: 2026-05-14)
+- [x] **Test Infrastructure: Baseline Benchmark Relocation**: Moved `benchmarks.log` to `test/baseline-benchmarks.log` to clarify it tests the raw, unfiltered architecture. (Completed: 2026-05-14)
 - [x] **Country Filtering**: Add `--filter` and `--filters-file` to allowlist specific source countries before grouping. (Completed: 2026-05-14)
 - [x] **Custom Country Grouping**: Implemented `--group` and `--groups-file` to aggregate countries into blocks (e.g., `EU`) and seamlessly merge Nginx output. (Completed: 2026-05-14)
 - [x] **Estimated Nginx RAM footprint**: Added heuristic to approximate RAM usage of resulting Nginx CIDRs (`~64B/v4`, `~128B/v6`). (Completed: 2026-05-14)
