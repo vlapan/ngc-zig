@@ -60,3 +60,14 @@ Updated: 2026-05-12
 ## Hardware Builtins (Performance)
 - `@clz(x)`: Count leading zeros. Compiles directly to the hardware `lzcnt` ASM instruction. Extremely useful for eliminating `if` branches inside tight loops (e.g., stripping leading zeros in Hex formatting).
 - `@ctz(x)`: Count trailing zeros. Compiles to `tzcnt`.
+
+## Release & Deployment Protocol
+Before tagging a new release, always execute this strict verification pipeline to ensure artifacts and baseline states are perfectly synchronized:
+1. `git add test/output.txt && git commit -m "chore: sync baseline test output..."` (Ensure any structural output changes are tracked).
+2. `make fmt` (Format all Zig code).
+3. `make test` (Ensure all edge cases and unit tests pass).
+4. `make release` (Compile the `-Dstamp=true` artifact mimicking the real CI/CD build).
+5. `make run` (Execute the release binary against the datasets).
+6. `git status` (Verify that `make run` did NOT modify `test/output.txt`. If it did, it means the binary behavior drifted unexpectedly from the committed baseline!).
+7. Update `build.zig.zon` version string.
+8. `git commit`, `git tag vX.Y.Z`, and `git push origin master --tags`.
