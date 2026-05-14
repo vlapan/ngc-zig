@@ -45,6 +45,7 @@ grep "Inputs (ranges parsed)" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || tr
 grep -E "^  Phase 1" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 grep -E "^  Phase 2" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 grep "Outputs (CIDR" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
+grep "Estimated Nginx RAM footprint" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 grep "Pipeline Profiling" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 
 echo -e "${BOLD}[4/5] Performance Metrics:${RESET}"

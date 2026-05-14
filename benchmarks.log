@@ -1,484 +1,63 @@
 ======================================================================
-Date: 2026-05-14 11:54:56 UTC | Commit: af4c77a 
+======================================================================
+Date: 2026-05-14 15:52:11 UTC | Commit: 2288547 - DIRTY
+Date: 2026-05-14 15:52:11 UTC | Commit: 2288547 - DIRTY
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
       OK
 [2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.70s |  0.31s |  0.02s | 44.8 MB |  3,918,242,503 |  1,019,672,026 |   54/448 |
-| Hot1 |  0.33s |  0.30s |  0.01s | 44.8 MB |  3,890,827,344 |  1,004,537,795 |    9/184 |
-| Hot2 |  0.33s |  0.30s |  0.01s | 44.8 MB |  3,891,466,309 |  1,004,910,093 |   17/122 |
-| Hot3 |  0.33s |  0.30s |  0.01s | 44.8 MB |  3,895,761,108 |  1,006,684,938 |   32/114 |
-
-[5/5] Logic Verification:
-      [OK] No unexpected changes in test/output.txt. Logic intact.
-======================================================================
-======================================================================
-Date: 2026-05-14 12:01:58 UTC | Commit: a9c5243 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.69s |  0.31s |  0.02s | 44.8 MB |  3,923,977,495 |  1,030,944,365 |   52/490 |
-| Hot1 |  0.32s |  0.30s |  0.01s | 44.8 MB |  3,895,971,764 |  1,013,879,102 |   11/120 |
-| Hot2 |  0.34s |  0.30s |  0.01s | 44.8 MB |  3,898,114,796 |  1,018,516,801 |   55/123 |
-| Hot3 |  0.34s |  0.30s |  0.01s | 44.8 MB |  3,900,527,809 |  1,023,085,071 |   64/129 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 12:03:30 UTC | Commit: 214f59b 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.69s |  0.30s |  0.02s | 44.8 MB |  3,925,302,454 |    998,902,277 |   65/368 |
-| Hot1 |  0.33s |  0.29s |  0.01s | 44.8 MB |  3,901,362,824 |    976,891,107 |    73/82 |
-| Hot2 |  0.34s |  0.29s |  0.01s | 44.8 MB |  3,898,201,156 |    990,266,652 |    52/56 |
-| Hot3 |  0.32s |  0.29s |  0.01s | 44.8 MB |  3,897,380,681 |    985,030,301 |    40/42 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 12:32:28 UTC | Commit: 59322f9 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-======================================================================
-Date: 2026-05-14 12:32:57 UTC | Commit: 59322f9 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.61s |  0.24s |  0.02s | 46.1 MB |  2,651,118,275 |    834,251,015 |   33/472 |
-| Hot1 |  0.26s |  0.24s |  0.01s | 46.1 MB |  2,624,906,731 |    812,292,146 |     6/77 |
-| Hot2 |  0.28s |  0.24s |  0.01s | 46.1 MB |  2,627,867,730 |    813,460,763 |    52/84 |
-| Hot3 |  0.28s |  0.24s |  0.01s | 46.1 MB |  2,628,531,313 |    831,906,809 |   46/118 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 12:38:34 UTC | Commit: 881c4da 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.64s |  0.23s |  0.02s | 46.1 MB |  2,658,040,584 |    778,316,996 |   68/360 |
-| Hot1 |  0.26s |  0.22s |  0.01s | 46.1 MB |  2,633,989,324 |    762,112,597 |    52/26 |
-| Hot2 |  0.26s |  0.23s |  0.01s | 46.1 MB |  2,630,660,321 |    801,691,624 |    34/49 |
-| Hot3 |  0.26s |  0.22s |  0.01s | 46.1 MB |  2,628,684,024 |    777,396,150 |    31/30 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 13:03:13 UTC | Commit: 881c4da - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.79s |  0.24s |  0.02s | 46.1 MB |  2,550,212,901 |    822,868,653 |   32/472 |
-| Hot1 |  0.27s |  0.24s |  0.01s | 46.1 MB |  2,527,654,437 |    809,760,749 |    7/389 |
-| Hot2 |  0.40s |  0.25s |  0.03s | 46.1 MB |  2,574,880,563 |    911,148,853 |  37/3868 |
-| Hot3 |  0.39s |  0.25s |  0.04s | 46.1 MB |  2,714,719,790 |    924,281,522 |  46/1521 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 13:04:27 UTC | Commit: 441e8c3 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.62s |  0.23s |  0.01s | 46.1 MB |  2,556,722,912 |    776,372,017 |   84/376 |
-| Hot1 |  0.27s |  0.22s |  0.01s | 46.1 MB |  2,525,061,998 |    775,181,565 |    57/37 |
-| Hot2 |  0.27s |  0.23s |  0.01s | 46.1 MB |  2,526,188,912 |    806,796,689 |    50/62 |
-| Hot3 |  0.25s |  0.22s |  0.01s | 46.1 MB |  2,525,326,407 |    750,489,258 |    44/28 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 13:21:41 UTC | Commit: dd42cf9 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.64s |  0.24s |  0.02s | 46.1 MB |  2,554,993,280 |    812,364,721 |   71/431 |
-| Hot1 |  0.27s |  0.23s |  0.01s | 46.1 MB |  2,525,831,246 |    797,303,427 |    45/93 |
-| Hot2 |  0.28s |  0.23s |  0.01s | 46.1 MB |  2,526,083,068 |    804,803,734 |   49/114 |
-| Hot3 |  0.27s |  0.23s |  0.01s | 46.1 MB |  2,527,615,620 |    799,559,438 |   46/101 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 13:24:42 UTC | Commit: d393abf 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.63s |  0.24s |  0.02s | 46.1 MB |  2,551,141,864 |    807,157,973 |   75/457 |
-| Hot1 |  0.27s |  0.23s |  0.01s | 46.1 MB |  2,522,779,412 |    803,242,328 |   46/128 |
-| Hot2 |  0.29s |  0.24s |  0.01s | 46.1 MB |  2,521,288,146 |    815,690,356 |   44/178 |
-| Hot3 |  0.27s |  0.23s |  0.01s | 46.1 MB |  2,522,693,928 |    789,805,168 |    48/93 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 13:26:23 UTC | Commit: 9601cf0 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.64s |  0.24s |  0.02s | 46.1 MB |  2,554,653,583 |    830,644,518 |   89/552 |
-| Hot1 |  0.29s |  0.24s |  0.01s | 46.1 MB |  2,532,536,426 |    825,673,126 |   51/383 |
-| Hot2 |  0.28s |  0.24s |  0.01s | 46.1 MB |  2,531,566,193 |    816,998,308 |   49/236 |
-| Hot3 |  0.26s |  0.24s |  0.01s | 46.1 MB |  2,527,107,117 |    810,435,479 |   21/144 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 13:33:41 UTC | Commit: b90cd5a 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 312K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 7271, IPv6: 2469
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.64s |  0.24s |  0.01s | 46.1 MB |  2,550,647,973 |    780,121,089 |   83/367 |
-| Hot1 |  0.27s |  0.23s |  0.01s | 46.1 MB |  2,524,266,493 |    773,496,159 |    53/65 |
-| Hot2 |  0.28s |  0.23s |  0.01s | 46.1 MB |  2,527,651,061 |    793,359,090 |   52/117 |
-| Hot3 |  0.26s |  0.22s |  0.01s | 46.1 MB |  2,524,946,627 |    758,379,437 |    47/41 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 14:35:37 UTC | Commit: b60345c - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 263K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 2, IPv6: 0
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.57s |  0.18s |  0.02s | 79.6 MB |  2,355,359,836 |    649,007,233 |   73/409 |
-| Hot1 |  0.22s |  0.18s |  0.01s | 79.6 MB |  2,324,834,182 |    630,261,580 |    49/83 |
-| Hot2 |  0.22s |  0.18s |  0.02s | 79.6 MB |  2,326,174,680 |    633,837,389 |    42/82 |
-| Hot3 |  0.22s |  0.18s |  0.02s | 79.6 MB |  2,324,727,279 |    632,413,420 |    37/94 |
-
-[5/5] Output Verification:
-      [NOTICE] test/output.txt has changed!
-      If this is an intentional formatting or feature change, review the diff:
-       test/output.txt | 8 ++++----
-       1 file changed, 4 insertions(+), 4 deletions(-)
-======================================================================
-======================================================================
-Date: 2026-05-14 14:36:58 UTC | Commit: b60345c - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 263K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 2, IPv6: 0
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.59s |  0.18s |  0.02s | 79.6 MB |  2,339,110,714 |    653,436,816 |   52/535 |
-| Hot1 |  0.21s |  0.18s |  0.01s | 79.6 MB |  2,311,163,061 |    628,635,545 |    33/96 |
-| Hot2 |  0.21s |  0.18s |  0.01s | 79.6 MB |  2,310,803,173 |    629,658,370 |   46/104 |
-| Hot3 |  0.22s |  0.18s |  0.01s | 79.6 MB |  2,311,295,314 |    630,183,565 |   51/112 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 14:38:51 UTC | Commit: 777f752 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 263K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 2, IPv6: 0
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.58s |  0.18s |  0.02s | 79.6 MB |  2,353,218,325 |    654,393,308 |   78/438 |
-| Hot1 |  0.22s |  0.18s |  0.02s | 79.6 MB |  2,321,834,954 |    633,226,850 |   47/103 |
-| Hot2 |  0.24s |  0.18s |  0.02s | 79.6 MB |  2,320,745,269 |    635,598,665 |   45/147 |
-| Hot3 |  0.24s |  0.18s |  0.02s | 79.6 MB |  2,327,170,833 |    645,580,689 |   49/196 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 14:44:56 UTC | Commit: 7ab65eb 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 263K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 2, IPv6: 0
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.57s |  0.18s |  0.02s | 79.6 MB |  2,338,646,240 |    643,470,085 |   85/400 |
-| Hot1 |  0.22s |  0.18s |  0.01s | 79.6 MB |  2,309,792,245 |    627,101,126 |    50/70 |
-| Hot2 |  0.22s |  0.18s |  0.01s | 79.6 MB |  2,309,834,490 |    628,094,306 |    51/63 |
-| Hot3 |  0.23s |  0.18s |  0.01s | 79.6 MB |  2,310,944,888 |    629,409,314 |    47/75 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 14:48:08 UTC | Commit: 7ab65eb 
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 263K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Data Collisions (topological overlaps): IPv4: 5651, IPv6: 1010
-      Routing Overrides (subnets overwritten): IPv4: 2, IPv6: 0
-      Outputs (networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.74s |  0.19s |  0.02s | 79.7 MB |  2,336,844,094 |    634,910,418 |   71/379 |
-| Hot1 |  0.21s |  0.17s |  0.01s | 79.7 MB |  2,313,302,242 |    618,764,680 |    49/44 |
-| Hot2 |  0.21s |  0.17s |  0.01s | 79.7 MB |  2,315,024,130 |    620,566,417 |    53/27 |
-| Hot3 |  0.21s |  0.17s |  0.01s | 79.7 MB |  2,315,384,302 |    620,050,175 |    49/29 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 14:55:16 UTC | Commit: 6a263ab - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
 [2/5] File Metrics:
       Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
 [3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.59s |  0.19s |  0.02s | 79.6 MB |  2,342,284,729 |    643,397,528 |   93/430 |
-| Hot1 |  0.22s |  0.18s |  0.01s | 79.6 MB |  2,315,066,913 |    628,267,473 |    51/61 |
-| Hot2 |  0.22s |  0.18s |  0.01s | 79.6 MB |  2,315,044,101 |    630,572,470 |    44/91 |
-| Hot3 |  0.22s |  0.18s |  0.01s | 79.6 MB |  2,315,241,404 |    630,215,509 |    47/88 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 14:55:47 UTC | Commit: 6a263ab - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
       Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
 [3/5] Application Stats (Cold Run):
       Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5651, IPv6: 1010
-      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337113, IPv6: 216977
-      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
-      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
-      Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.57s |  0.19s |  0.02s | 79.6 MB |  2,338,231,192 |    639,679,533 |    9/428 |
-| Hot1 |  0.20s |  0.18s |  0.01s | 79.6 MB |  2,313,605,589 |    628,433,107 |     5/95 |
-| Hot2 |  0.20s |  0.18s |  0.01s | 79.6 MB |  2,313,878,630 |    625,938,143 |     3/73 |
-| Hot3 |  0.20s |  0.18s |  0.01s | 79.6 MB |  2,313,210,322 |    629,310,343 |     5/99 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 15:34:52 UTC | Commit: 8050096 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-======================================================================
-Date: 2026-05-14 15:35:16 UTC | Commit: 8050096 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5651, IPv6: 1010
-      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337113, IPv6: 216977
-      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
-      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
-      Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.57s |  0.18s |  0.02s | 79.6 MB |  2,341,334,885 |    644,843,897 |   49/423 |
-| Hot1 |  0.21s |  0.18s |  0.01s | 79.6 MB |  2,314,203,665 |    631,296,161 |    18/78 |
-| Hot2 |  0.21s |  0.18s |  0.01s | 79.6 MB |  2,315,249,717 |    629,348,541 |    23/70 |
-| Hot3 |  0.21s |  0.18s |  0.01s | 79.6 MB |  2,314,894,059 |    628,775,024 |    24/68 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 15:36:39 UTC | Commit: 8050096 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
       Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
       Phase 1 (Sweep Line): Topological Collisions: IPv4: 5651, IPv6: 1010
       Phase 1 (Sweep Line): Contiguous Merges: IPv4: 157, IPv6: 43
       Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337113, IPv6: 216977
-      Pipeline Profiling: I/O & Parsing: 51ms, Phase 1 (Flatten): 13ms, Phase 2 (Radix): 168ms
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5651, IPv6: 1010
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 157, IPv6: 43
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337113, IPv6: 216977
       Phase 2 (Radix Trie): Nodes Allocated: IPv4: 1020898, IPv6: 1595702
       Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
       Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
-      Pipeline Profiling: I/O & Parsing: 51ms, Phase 1 (Flatten): 13ms, Phase 2 (Radix): 168ms
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 1020898, IPv6: 1595702
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
       Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-      Pipeline Profiling: I/O & Parsing: 51ms, Phase 1 (Flatten): 13ms, Phase 2 (Radix): 168ms
+      Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
+      Estimated Nginx RAM footprint: ~93 MB (heuristic: 64B/v4, 128B/v6 node)
+      Estimated Nginx RAM footprint: ~93 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 50ms, Phase 1 (Flatten): 143ms, Phase 2 (Radix): 50ms
+      Pipeline Profiling: I/O & Parsing: 50ms, Phase 1 (Flatten): 143ms, Phase 2 (Radix): 50ms
+[4/5] Performance Metrics:
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.54s |  0.18s |  0.02s | 79.7 MB |  2,344,715,486 |    645,097,240 |   39/421 |
-| Hot1 |  0.21s |  0.18s |  0.02s | 79.7 MB |  2,318,194,199 |    634,044,333 |   19/116 |
-| Hot2 |  0.22s |  0.18s |  0.02s | 79.7 MB |  2,317,944,523 |    633,786,875 |    26/96 |
-| Hot3 |  0.21s |  0.18s |  0.02s | 79.7 MB |  2,320,724,569 |    635,393,095 |    28/94 |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.57s |  0.19s |  0.02s | 61.3 MB |  2,332,702,724 |    642,888,332 |   11/433 |
+| Cold |  0.57s |  0.19s |  0.02s | 61.3 MB |  2,332,702,724 |    642,888,332 |   11/433 |
+| Hot1 |  0.21s |  0.18s |  0.01s | 61.3 MB |  2,305,643,133 |    627,207,734 |    21/70 |
+| Hot1 |  0.21s |  0.18s |  0.01s | 61.3 MB |  2,305,643,133 |    627,207,734 |    21/70 |
+| Hot2 |  0.20s |  0.18s |  0.01s | 61.3 MB |  2,301,767,121 |    623,260,494 |    25/72 |
+| Hot2 |  0.20s |  0.18s |  0.01s | 61.3 MB |  2,301,767,121 |    623,260,494 |    25/72 |
+| Hot3 |  0.24s |  0.18s |  0.02s | 61.3 MB |  2,380,042,861 |    649,514,212 |   25/222 |
+| Hot3 |  0.24s |  0.18s |  0.02s | 61.3 MB |  2,380,042,861 |    649,514,212 |   25/222 |
+
 
 [5/5] Output Verification:
+[5/5] Output Verification:
+      [OK] No changes in test/output.txt. Output exactly matches baseline.
       [OK] No changes in test/output.txt. Output exactly matches baseline.
 ======================================================================
 ======================================================================
-Date: 2026-05-14 15:37:01 UTC | Commit: 8050096 - DIRTY
+======================================================================
+Date: 2026-05-14 15:53:31 UTC | Commit: 2288547 - DIRTY
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
@@ -493,70 +72,15 @@ Date: 2026-05-14 15:37:01 UTC | Commit: 8050096 - DIRTY
       Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
       Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
       Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-      Pipeline Profiling: I/O & Parsing: 51ms, Phase 1 (Flatten): 14ms, Phase 2 (Radix): 167ms
+      Estimated Nginx RAM footprint: ~93 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 56ms, Phase 1 (Flatten): 143ms, Phase 2 (Radix): 60ms
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.55s |  0.18s |  0.02s | 79.7 MB |  2,343,205,177 |    648,215,330 |    6/428 |
-| Hot1 |  0.20s |  0.18s |  0.01s | 79.6 MB |  2,315,955,259 |    629,694,476 |     9/78 |
-| Hot2 |  0.20s |  0.18s |  0.01s | 79.6 MB |  2,317,890,366 |    631,724,764 |    10/98 |
-| Hot3 |  0.20s |  0.18s |  0.01s | 79.6 MB |  2,315,351,489 |    631,273,127 |    11/97 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 15:38:48 UTC | Commit: 8050096 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5651, IPv6: 1010
-      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 157, IPv6: 43
-      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337113, IPv6: 216977
-      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 1020898, IPv6: 1595702
-      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
-      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
-      Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-      Pipeline Profiling: I/O & Parsing: 47ms, Phase 1 (Flatten): 15ms, Phase 2 (Radix): 188ms
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.56s |  0.19s |  0.02s | 79.7 MB |  2,344,746,250 |    648,787,596 |   77/397 |
-| Hot1 |  0.21s |  0.18s |  0.01s | 79.7 MB |  2,315,371,352 |    622,793,276 |    38/44 |
-| Hot2 |  0.22s |  0.18s |  0.01s | 79.7 MB |  2,316,646,014 |    622,668,307 |    35/25 |
-| Hot3 |  0.21s |  0.18s |  0.01s | 79.7 MB |  2,317,360,615 |    620,028,570 |    22/30 |
-
-[5/5] Output Verification:
-      [OK] No changes in test/output.txt. Output exactly matches baseline.
-======================================================================
-======================================================================
-Date: 2026-05-14 15:45:40 UTC | Commit: 91a7f50 - DIRTY
-----------------------------------------------------------------------
-[1/5] Compiling Release Binary...
-      OK
-[2/5] File Metrics:
-      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 17M | Output: 22M
-[3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 337180, IPv6: 216999, Static: 5, Skipped: 3
-      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5651, IPv6: 1010
-      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 157, IPv6: 43
-      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337113, IPv6: 216977
-      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 1020898, IPv6: 1595702
-      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
-      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 250, IPv6: 251
-      Outputs (CIDR networks generated): IPv4: 498632, IPv6: 519306, Static: 5, Total: 1017943
-      Pipeline Profiling: I/O & Parsing: 46ms, Phase 1 (Flatten): 142ms, Phase 2 (Radix): 59ms
-[4/5] Performance Metrics:
-| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
-|------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.58s |  0.19s |  0.02s | 61.3 MB |  2,328,492,899 |    636,536,727 |   94/399 |
-| Hot1 |  0.22s |  0.18s |  0.01s | 61.3 MB |  2,302,009,986 |    622,870,638 |   38/129 |
-| Hot2 |  0.22s |  0.18s |  0.01s | 61.3 MB |  2,303,607,853 |    626,071,163 |    37/85 |
-| Hot3 |  0.21s |  0.18s |  0.01s | 61.3 MB |  2,303,971,027 |    623,972,452 |    35/67 |
+| Cold |  0.61s |  0.19s |  0.03s | 61.3 MB |  2,333,277,231 |    656,715,031 |   82/492 |
+| Hot1 |  0.23s |  0.18s |  0.01s | 61.3 MB |  2,302,277,640 |    632,134,251 |   55/211 |
+| Hot2 |  0.22s |  0.18s |  0.01s | 61.3 MB |  2,302,904,970 |    634,254,715 |   30/131 |
+| Hot3 |  0.22s |  0.18s |  0.01s | 61.3 MB |  2,305,690,873 |    633,404,170 |   43/103 |
 
 [5/5] Output Verification:
       [OK] No changes in test/output.txt. Output exactly matches baseline.

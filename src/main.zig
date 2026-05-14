@@ -266,6 +266,13 @@ pub fn main(init: std.process.Init) void {
         static_stats.lines_parsed,
         total_cidrs,
     });
+    
+    // Heuristic: ~64 bytes per IPv4 CIDR, ~128 bytes per IPv6 CIDR in Nginx's ngx_radix_tree_t
+    const est_ram_v4 = v4_cidrs * 64;
+    const est_ram_v6 = v6_cidrs * 128;
+    const est_ram_mb = (est_ram_v4 + est_ram_v6) / (1024 * 1024);
+    std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (heuristic: 64B/v4, 128B/v6 node)\n", .{est_ram_mb});
+    
     std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (Radix): {}ms\n", .{
         @divTrunc(time_io_ns, 1_000_000),
         @divTrunc(time_flatten_ns, 1_000_000),
