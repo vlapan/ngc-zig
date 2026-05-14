@@ -16,6 +16,7 @@ Updated: 2026-05-13
 
 ## Files
 - `knowledge/tasks.md` - The single source of truth for the project roadmap, open tasks, backlog, and feature ideas. **Must be read at the start of every session.**
+- `knowledge/release-process.md` - The strict, step-by-step checklist required for tagging and deploying new versions.
 - `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
 - `knowledge/architecture.md` - Core system design and radix trie behavior
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps
