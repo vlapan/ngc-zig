@@ -78,6 +78,8 @@ pub fn main(init: std.process.Init) void {
     var v6_cidrs: usize = 0;
     var v4_countries: usize = 0;
     var v6_countries: usize = 0;
+    var v4_flattened: usize = 0;
+    var v6_flattened: usize = 0;
 
     var seen_v4 = [_]bool{false} ** 65536;
     var seen_v6 = [_]bool{false} ** 65536;
@@ -111,6 +113,7 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v4_stats.collisions = flatten_stats.collisions;
+        v4_flattened = flattened_v4.items.len;
 
         var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
@@ -158,6 +161,7 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v6_stats.collisions = flatten_v6_stats.collisions;
+        v6_flattened = flattened_v6.items.len;
 
         var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
@@ -207,19 +211,23 @@ pub fn main(init: std.process.Init) void {
         static_stats.lines_parsed,
         total_skipped,
     });
-    std.debug.print("  Data Collisions (topological overlaps): IPv4: {}, IPv6: {}\n", .{
+    std.debug.print("  Phase 1 (Sweep Line): Topological Collisions: IPv4: {}, IPv6: {}\n", .{
         v4_stats.collisions,
         v6_stats.collisions,
     });
-    std.debug.print("  Routing Overrides (subnets overwritten): IPv4: {}, IPv6: {}\n", .{
+    std.debug.print("  Phase 1 (Sweep Line): Disjoint Segments: IPv4: {}, IPv6: {}\n", .{
+        v4_flattened,
+        v6_flattened,
+    });
+    std.debug.print("  Phase 2 (Radix Trie): Static Overrides: IPv4: {}, IPv6: {}\n", .{
         v4_stats.overrides,
         v6_stats.overrides,
     });
-    std.debug.print("  Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
+    std.debug.print("  Phase 2 (Radix Trie): Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
         v4_countries,
         v6_countries,
     });
-    std.debug.print("  Outputs (networks generated): IPv4: {}, IPv6: {}, Static: {}, Total: {}\n", .{
+    std.debug.print("  Outputs (CIDR networks generated): IPv4: {}, IPv6: {}, Static: {}, Total: {}\n", .{
         v4_cidrs,
         v6_cidrs,
         static_stats.lines_parsed,

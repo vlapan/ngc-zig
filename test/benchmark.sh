@@ -42,9 +42,9 @@ echo -e "${BOLD}[3/5] Application Stats (Cold Run):${RESET}"
 /usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output test/output.txt --static test/private.txt > /dev/null 2> /tmp/ngc_time_cold.txt
 
 grep "Inputs (ranges parsed)" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
-grep "Data Collisions" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
-grep "Routing Overrides" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
-grep "Outputs (networks generated)" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
+grep "Phase 1" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
+grep "Phase 2" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
+grep "Outputs (CIDR" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 
 echo -e "${BOLD}[4/5] Performance Metrics:${RESET}"
 
