@@ -129,7 +129,8 @@ pub fn main(init: std.process.Init) void {
     }
 
     const has_filters = config.filters.len > 0 or config.filters_file != null;
-    var filter_map = [_]bool{!has_filters} ** 65536;
+    var filter_map: [65536]bool = undefined;
+    @memset(&filter_map, !has_filters);
 
     if (has_filters) {
         for (config.filters) |f| {

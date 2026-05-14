@@ -63,3 +63,9 @@ Updated: 2026-05-12
 - `@clz(x)`: Count leading zeros. Compiles directly to the hardware `lzcnt` ASM instruction. Extremely useful for eliminating `if` branches inside tight loops (e.g., stripping leading zeros in Hex formatting).
 - `@ctz(x)`: Count trailing zeros. Compiles to `tzcnt`.
 
+
+## Arrays & Binary Bloat
+**Avoid Array Initialization with Runtime Expressions using `**` repetition.**
+Initializing a large array like `var arr = [_]bool{runtime_expr} ** 65536;` forces the compiler to embed a 65KB block of initialization loops/data directly into the executable because the expression is evaluated per-element at runtime.
+- **BAD**: `var filter_map = [_]bool{!has_filters} ** 65536;` -> Bloats binary by ~1MB!
+- **GOOD**: `var filter_map: [65536]bool = undefined; @memset(&filter_map, !has_filters);` -> 0 bytes of binary bloat.
