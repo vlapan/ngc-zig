@@ -208,16 +208,30 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
             buf[idx] = '0';
             idx += 1;
         } else {
-            var started = false;
-            inline for (0..4) |nibble| {
-                const n_shift: u4 = @intCast((3 - nibble) * 4);
-                const nib: u8 = @intCast((chunk >> n_shift) & 0xF);
-                if (nib != 0 or started) {
-                    buf[idx] = HEX_CHARS[nib];
-                    idx += 1;
-                    started = true;
-                }
+            const clz: u5 = @clz(chunk);
+            const chars: u3 = @intCast(4 - (clz / 4));
+            switch (chars) {
+                4 => {
+                    buf[idx] = HEX_CHARS[@as(usize, (chunk >> 12) & 0xF)];
+                    buf[idx + 1] = HEX_CHARS[@as(usize, (chunk >> 8) & 0xF)];
+                    buf[idx + 2] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
+                    buf[idx + 3] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                },
+                3 => {
+                    buf[idx] = HEX_CHARS[@as(usize, (chunk >> 8) & 0xF)];
+                    buf[idx + 1] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
+                    buf[idx + 2] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                },
+                2 => {
+                    buf[idx] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
+                    buf[idx + 1] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                },
+                1 => {
+                    buf[idx] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                },
+                else => unreachable,
             }
+            idx += chars;
         }
         i += 1;
     }
