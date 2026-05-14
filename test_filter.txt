@@ -1,0 +1,3 @@
+# Test allow list
+US, CA, MX
+GB, FR

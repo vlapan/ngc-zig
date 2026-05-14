@@ -12,6 +12,7 @@ pub const std_options: std.Options = .{
 pub const Stats = struct {
     lines_parsed: usize = 0,
     lines_skipped: usize = 0,
+    lines_filtered: usize = 0,
     collisions: usize = 0,
     overrides: usize = 0,
 };
@@ -127,6 +128,39 @@ pub fn main(init: std.process.Init) void {
         }
     }
 
+    const has_filters = config.filters.len > 0 or config.filters_file != null;
+    var filter_map = [_]bool{!has_filters} ** 65536;
+
+    if (has_filters) {
+        for (config.filters) |f| {
+            parseFilterLine(f, &filter_map);
+        }
+
+        if (config.filters_file) |ff| {
+            var file = std.Io.Dir.cwd().openFile(init.io, ff, .{}) catch |err| {
+                std.log.err("Failed to open filters file '{s}': {}", .{ff, err});
+                std.process.exit(1);
+            };
+            defer file.close(init.io);
+            const stat = file.stat(init.io) catch |err| {
+                std.log.err("Failed to stat filters file: {}", .{err});
+                std.process.exit(1);
+            };
+            if (stat.size > 0) {
+                const mapped = std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0) catch |err| {
+                    std.log.err("Failed to mmap filters file: {}", .{err});
+                    std.process.exit(1);
+                };
+                defer std.posix.munmap(mapped);
+                
+                var it = std.mem.splitScalar(u8, mapped, '\n');
+                while (it.next()) |line| {
+                    parseFilterLine(line, &filter_map);
+                }
+            }
+        }
+    }
+
     if (config.static_file) |static_path| {
         const ts_static_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         static_stats = appendStaticFile(init.io, static_path, writer, alloc, &static_v4_ranges, &static_v6_ranges) catch |err| {
@@ -143,7 +177,7 @@ pub fn main(init: std.process.Init) void {
     if (config.ipv4_csv) |v4_path| {
         const ts_v4_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &seen_v4, &country_map) catch |err| {
+        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &seen_v4, &country_map, &filter_map) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv4 CSV file not found: '{s}'", .{v4_path});
             } else {
@@ -198,7 +232,7 @@ pub fn main(init: std.process.Init) void {
     if (config.ipv6_csv) |v6_path| {
         const ts_v6_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
-        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &seen_v6, &country_map) catch |err| {
+        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &seen_v6, &country_map, &filter_map) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv6 CSV file not found: '{s}'", .{v6_path});
             } else {
@@ -258,15 +292,17 @@ pub fn main(init: std.process.Init) void {
     const ts_end = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
     const elapsed_ms = @divTrunc(ts_end - ts_start, 1_000_000);
 
+    const total_filtered = v4_stats.lines_filtered + v6_stats.lines_filtered;
     const total_skipped = static_stats.lines_skipped + v4_stats.lines_skipped + v6_stats.lines_skipped;
     const total_cidrs = static_stats.lines_parsed + v4_cidrs + v6_cidrs;
 
     std.debug.print("Done in {} ms.\n", .{elapsed_ms});
-    std.debug.print("  Inputs (ranges parsed): IPv4: {}, IPv6: {}, Static: {}, Skipped: {}\n", .{
+    std.debug.print("  Inputs (ranges parsed): IPv4: {}, IPv6: {}, Static: {}, Skipped: {}, Filtered: {}\n", .{
         v4_stats.lines_parsed,
         v6_stats.lines_parsed,
         static_stats.lines_parsed,
         total_skipped,
+        total_filtered,
     });
     std.debug.print("  Phase 1 (Sweep Line): Topological Collisions: IPv4: {}, IPv6: {}\n", .{
         v4_stats.collisions,
@@ -428,7 +464,7 @@ fn fastParseInt(comptime T: type, str: []const u8) !T {
     return res;
 }
 
-fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, seen_countries: *[65536]bool, country_map: *const [65536]u16) !Stats {
+fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, seen_countries: *[65536]bool, country_map: *const [65536]u16, filter_map: *const [65536]bool) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
@@ -483,9 +519,19 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
         var c_val: u16 = 0;
         if (country.len >= 2) {
             c_val = (@as(u16, country[0]) << 8) | @as(u16, country[1]);
+            if (!filter_map[c_val]) {
+                stats.lines_filtered += 1;
+                continue;
+            }
             c_val = country_map[c_val];
             seen_countries[c_val] = true;
+        } else {
+            if (!filter_map[0]) {
+                stats.lines_filtered += 1;
+                continue;
+            }
         }
+        
         try ranges.append(alloc, .{
             .start = start,
             .end = end,
@@ -526,5 +572,21 @@ fn parseGroupLine(line: []const u8, country_map: *[65536]u16) void {
     } else {
         std.log.err("Invalid group format '{s}'. Expected TARGET:SRC1,SRC2", .{g});
         std.process.exit(1);
+    }
+}
+fn parseFilterLine(line: []const u8, filter_map: *[65536]bool) void {
+    const f = std.mem.trim(u8, line, " \t\r\n");
+    if (f.len == 0 or f[0] == '#') return;
+
+    var it = std.mem.splitScalar(u8, f, ',');
+    while (it.next()) |src_str| {
+        const s_str = std.mem.trim(u8, src_str, " \t");
+        if (s_str.len == 0) continue;
+        if (s_str.len != 2) {
+            std.log.err("Filter country code must be exactly 2 characters (got '{s}')", .{s_str});
+            std.process.exit(1);
+        }
+        const src_u16 = (@as(u16, s_str[0]) << 8) | @as(u16, s_str[1]);
+        filter_map.*[src_u16] = true;
     }
 }
