@@ -192,7 +192,7 @@ pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Ar
                 continue;
             }
         }
-        
+
         try ranges.append(alloc, .{
             .start = start,
             .end = end,

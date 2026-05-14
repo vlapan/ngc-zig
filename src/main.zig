@@ -76,11 +76,11 @@ pub fn main(init: std.process.Init) void {
     var v6_countries: usize = 0;
     var v4_flattened: usize = 0;
     var v6_flattened: usize = 0;
-    
+
     var time_io_ns: i128 = 0;
     var time_flatten_ns: i128 = 0;
     var time_trie_ns: i128 = 0;
-    
+
     var v4_nodes: usize = 0;
     var v6_nodes: usize = 0;
     var v4_merges: usize = 0;
@@ -142,7 +142,7 @@ pub fn main(init: std.process.Init) void {
         v4_stats.collisions = flatten_stats.collisions;
         v4_merges = flatten_stats.merges;
         v4_flattened = flatten_stats.flattened;
-        
+
         const ts_v4_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_flatten_ns += ts_v4_flattened - ts_v4_parsed;
 
@@ -158,10 +158,10 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v4_nodes = trie_v4.nodes.items.len;
-        
+
         const ts_v4_trie = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_trie_ns += ts_v4_trie - ts_v4_flattened;
-        
+
         for (seen_v4) |seen| {
             if (seen) v4_countries += 1;
         }
@@ -197,7 +197,7 @@ pub fn main(init: std.process.Init) void {
         v6_stats.collisions = flatten_v6_stats.collisions;
         v6_merges = flatten_v6_stats.merges;
         v6_flattened = flatten_v6_stats.flattened;
-        
+
         const ts_v6_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_flatten_ns += ts_v6_flattened - ts_v6_parsed;
 
@@ -213,10 +213,10 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v6_nodes = trie_v6.nodes.items.len;
-        
+
         const ts_v6_trie = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_trie_ns += ts_v6_trie - ts_v6_flattened;
-        
+
         for (seen_v6) |seen| {
             if (seen) v6_countries += 1;
         }
@@ -272,13 +272,13 @@ pub fn main(init: std.process.Init) void {
         static_stats.lines_parsed,
         total_cidrs,
     });
-    
+
     // Heuristic: ~64 bytes per IPv4 CIDR, ~128 bytes per IPv6 CIDR in Nginx's ngx_radix_tree_t
     const est_ram_v4 = v4_cidrs * 64;
     const est_ram_v6 = v6_cidrs * 128;
     const est_ram_mb = (est_ram_v4 + est_ram_v6) / (1024 * 1024);
     std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (heuristic: 64B/v4, 128B/v6 node)\n", .{est_ram_mb});
-    
+
     std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (Radix): {}ms\n", .{
         @divTrunc(time_io_ns, 1_000_000),
         @divTrunc(time_flatten_ns, 1_000_000),

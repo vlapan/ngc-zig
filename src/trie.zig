@@ -201,4 +201,3 @@ test "IPv4 Trie optimization of siblings" {
     const expected = "0.0.0.0/0 FR;\n";
     try testing.expectEqualStrings(expected, aw.writer.buffered());
 }
-

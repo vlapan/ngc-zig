@@ -110,7 +110,7 @@ const testing = std.testing;
 test "flatten disjoint ranges" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
     defer aw.deinit();
-    
+
     var trie = try trie_mod.IpTrie(u32).init(testing.allocator, &aw.writer);
     defer trie.nodes.deinit(testing.allocator);
 
@@ -126,7 +126,7 @@ test "flatten disjoint ranges" {
     try ranges.append(testing.allocator, .{ .start = 256, .end = 511, .country = ca_idx, .size = 256 });
 
     const stats = try flatten(u32, testing.allocator, ranges.items, &trie);
-    
+
     try testing.expectEqual(@as(usize, 0), stats.collisions);
     try testing.expectEqual(@as(usize, 0), stats.merges);
     try testing.expectEqual(@as(usize, 2), stats.flattened);
@@ -141,7 +141,7 @@ test "flatten disjoint ranges" {
 test "flatten overlapping ranges smaller overrides larger" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
     defer aw.deinit();
-    
+
     var trie = try trie_mod.IpTrie(u32).init(testing.allocator, &aw.writer);
     defer trie.nodes.deinit(testing.allocator);
 
@@ -153,12 +153,12 @@ test "flatten overlapping ranges smaller overrides larger" {
 
     // Large background block: 0.0.0.0 - 0.0.1.255 (US)
     try ranges.append(testing.allocator, .{ .start = 0, .end = 511, .country = us_idx, .size = 512 });
-    
+
     // Small override block: 0.0.0.128 - 0.0.0.255 (CA)
     try ranges.append(testing.allocator, .{ .start = 128, .end = 255, .country = ca_idx, .size = 128 });
 
     const stats = try flatten(u32, testing.allocator, ranges.items, &trie);
-    
+
     try testing.expectEqual(@as(usize, 1), stats.collisions);
     try testing.expectEqual(@as(usize, 0), stats.merges);
     try testing.expectEqual(@as(usize, 3), stats.flattened); // [0..127 US], [128..255 CA], [256..511 US]
@@ -173,7 +173,7 @@ test "flatten overlapping ranges smaller overrides larger" {
 test "flatten contiguous sibling merge" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
     defer aw.deinit();
-    
+
     var trie = try trie_mod.IpTrie(u32).init(testing.allocator, &aw.writer);
     defer trie.nodes.deinit(testing.allocator);
 
@@ -189,7 +189,7 @@ test "flatten contiguous sibling merge" {
     try ranges.append(testing.allocator, .{ .start = 128, .end = 255, .country = us_idx, .size = 128 });
 
     const stats = try flatten(u32, testing.allocator, ranges.items, &trie);
-    
+
     try testing.expectEqual(@as(usize, 0), stats.collisions);
     try testing.expectEqual(@as(usize, 1), stats.merges);
     try testing.expectEqual(@as(usize, 1), stats.flattened); // [0..255 US]

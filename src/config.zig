@@ -96,7 +96,7 @@ pub fn parseGroupLine(line: []const u8, country_map: *[65536]u16) !void {
             return error.InvalidGroupFormat;
         }
         const target_u16 = (@as(u16, target_str[0]) << 8) | @as(u16, target_str[1]);
-        
+
         var it = std.mem.splitScalar(u8, g[colon_idx + 1 ..], ',');
         while (it.next()) |src_str| {
             const s_str = std.mem.trim(u8, src_str, " \t");
@@ -143,7 +143,7 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
         if (stat.size > 0) {
             const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
             defer std.posix.munmap(mapped);
-            
+
             var it = std.mem.splitScalar(u8, mapped, '\n');
             while (it.next()) |line| {
                 try parseGroupLine(line, country_map);
@@ -166,7 +166,7 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
             if (stat.size > 0) {
                 const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
                 defer std.posix.munmap(mapped);
-                
+
                 var it = std.mem.splitScalar(u8, mapped, '\n');
                 while (it.next()) |line| {
                     try parseFilterLine(line, filter_map);
@@ -176,12 +176,11 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
     }
 }
 
-
 const testing = std.testing;
 
 test "parseGroupLine handles normal, empty, and whitespace correctly" {
     var cmap = [_]u16{0} ** 65536;
-    
+
     // Valid cases
     try parseGroupLine("EU:FR,DE", &cmap);
     const eu_idx = (@as(u16, 'E') << 8) | @as(u16, 'U');
@@ -194,7 +193,7 @@ test "parseGroupLine handles normal, empty, and whitespace correctly" {
     try parseGroupLine("   \t  \n ", &cmap);
     try parseGroupLine("", &cmap);
     try parseGroupLine("# comment", &cmap);
-    
+
     // Invalid cases
     try testing.expectError(error.InvalidGroupFormat, parseGroupLine("E:FR,DE", &cmap));
     try testing.expectError(error.InvalidGroupFormat, parseGroupLine("EU:F,DE", &cmap));
@@ -203,7 +202,7 @@ test "parseGroupLine handles normal, empty, and whitespace correctly" {
 
 test "parseFilterLine handles normal, empty, and whitespace correctly" {
     var fmap = [_]bool{false} ** 65536;
-    
+
     // Valid cases
     try parseFilterLine("FR, DE", &fmap);
     const fr_idx = (@as(u16, 'F') << 8) | @as(u16, 'R');
