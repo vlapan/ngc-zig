@@ -12,7 +12,12 @@ Updated: 2026-05-13
 - Keep state files updated frequently
 - Commit incrementally
 - Write state frequently for session survival
+- **Explicit Review Gates:** User constraints always override kernel defaults. If the user requests a review, uses phrases like "report before commit", or asks to "see it first", you MUST halt execution, present the code diff and `make bench` results, and enter a "Review Gate". Do NOT execute `git commit` or `make tag` until the user explicitly approves the reported changes.
+- **Holistic Benchmark Reporting:** Never cherry-pick positive metrics. When comparing `make bench` runs, you must actively scan for and explicitly report **regressions** (e.g., increased Max RSS, higher Context Switches) just as prominently as improvements. Every trade-off must be explicitly acknowledged.
+- **Explicit Release Authorization:** Never execute deployment or release scripts (e.g., `make tag`) autonomously. Modifying and committing code is permitted, but cutting a new semantic version tag requires explicit, unambiguous authorization from the user.
+- **Coupled Artifact Integrity:** Never split coupled state across tracked and untracked git boundaries. If a dataset (e.g., CSV) is tracked in git, its associated cache metadata (e.g., `.etag`) MUST also be tracked alongside it.
 - **Telemetry Validity**: Always ensure that console outputs and tracking metrics (`Stats`) accurately reflect the current physical architecture. If a major pipeline refactor happens (e.g. moving from Trie-based collision resolution to Sweep-Line pre-flattening), the CLI output *must* be updated to track the new distinct phases of the pipeline so the user understands exactly what the machine is doing.
+
 
 
 ## Files
