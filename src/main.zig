@@ -95,6 +95,35 @@ pub fn main(init: std.process.Init) void {
     var static_v4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     var static_v6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
 
+    var country_map = [_]u16{0} ** 65536;
+    for (0..65536) |i| {
+        country_map[i] = @intCast(i);
+    }
+    for (config.groups) |g| {
+        if (std.mem.indexOfScalar(u8, g, ':')) |colon_idx| {
+            const target_str = g[0..colon_idx];
+            if (target_str.len != 2) {
+                std.log.err("Target group name must be exactly 2 characters (got '{s}')", .{target_str});
+                std.process.exit(1);
+            }
+            const target_u16 = (@as(u16, target_str[0]) << 8) | @as(u16, target_str[1]);
+            
+            var it = std.mem.splitScalar(u8, g[colon_idx + 1 ..], ',');
+            while (it.next()) |src_str| {
+                const s_str = std.mem.trim(u8, src_str, " \t");
+                if (s_str.len != 2) {
+                    std.log.err("Source country code must be exactly 2 characters (got '{s}')", .{s_str});
+                    std.process.exit(1);
+                }
+                const src_u16 = (@as(u16, s_str[0]) << 8) | @as(u16, s_str[1]);
+                country_map[src_u16] = target_u16;
+            }
+        } else {
+            std.log.err("Invalid --group format '{s}'. Expected TARGET:SRC1,SRC2", .{g});
+            std.process.exit(1);
+        }
+    }
+
     if (config.static_file) |static_path| {
         const ts_static_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         static_stats = appendStaticFile(init.io, static_path, writer, alloc, &static_v4_ranges, &static_v6_ranges) catch |err| {
@@ -111,7 +140,7 @@ pub fn main(init: std.process.Init) void {
     if (config.ipv4_csv) |v4_path| {
         const ts_v4_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &seen_v4) catch |err| {
+        v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &seen_v4, &country_map) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv4 CSV file not found: '{s}'", .{v4_path});
             } else {
@@ -166,7 +195,7 @@ pub fn main(init: std.process.Init) void {
     if (config.ipv6_csv) |v6_path| {
         const ts_v6_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
-        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &seen_v6) catch |err| {
+        v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &seen_v6, &country_map) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv6 CSV file not found: '{s}'", .{v6_path});
             } else {
@@ -396,7 +425,7 @@ fn fastParseInt(comptime T: type, str: []const u8) !T {
     return res;
 }
 
-fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, seen_countries: *[65536]bool) !Stats {
+fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, seen_countries: *[65536]bool, country_map: *const [65536]u16) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
@@ -451,6 +480,7 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
         var c_val: u16 = 0;
         if (country.len >= 2) {
             c_val = (@as(u16, country[0]) << 8) | @as(u16, country[1]);
+            c_val = country_map[c_val];
             seen_countries[c_val] = true;
         }
         try ranges.append(alloc, .{
