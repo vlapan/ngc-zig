@@ -7,15 +7,19 @@ pub fn IPRange(comptime T: type) type {
 pub const IPv4Range = IPRange(u32);
 pub const IPv6Range = IPRange(u128);
 
-pub fn sortRangesBySizeDesc(comptime T: type, ranges: []IPRange(T)) void {
-    std.mem.sort(IPRange(T), ranges, {}, struct {
-        fn less(_: void, a: IPRange(T), b: IPRange(T)) bool {
+pub fn sortIndicesBySizeDesc(comptime T: type, ranges: []IPRange(T), indices: []u32) void {
+    const Context = struct {
+        r: []IPRange(T),
+        fn less(ctx: @This(), a_idx: u32, b_idx: u32) bool {
+            const a = ctx.r[a_idx];
+            const b = ctx.r[b_idx];
             // Largest size first
             if (a.size != b.size) return a.size > b.size;
             if (a.end != b.end) return a.end > b.end;
             return a.country > b.country;
         }
-    }.less);
+    };
+    std.mem.sort(u32, indices, Context{ .r = ranges }, Context.less);
 }
 
 pub fn countCollisions(comptime T: type, ranges: []IPRange(T)) usize {

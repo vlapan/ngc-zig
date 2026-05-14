@@ -106,7 +106,13 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v4_stats.collisions = ip_mod.countCollisions(u32, ipv4_ranges.items);
-        ip_mod.sortRangesBySizeDesc(u32, ipv4_ranges.items);
+        
+        const v4_indices = alloc.alloc(u32, ipv4_ranges.items.len) catch |err| {
+            std.log.err("Failed to allocate IPv4 indices: {}", .{err});
+            std.process.exit(1);
+        };
+        for (v4_indices, 0..) |*idx, i| idx.* = @intCast(i);
+        ip_mod.sortIndicesBySizeDesc(u32, ipv4_ranges.items, v4_indices);
 
         var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
@@ -116,7 +122,8 @@ pub fn main(init: std.process.Init) void {
             std.log.err("Failed to pre-allocate IPv4 Trie: {}", .{err});
             std.process.exit(1);
         };
-        for (ipv4_ranges.items) |r| {
+        for (v4_indices) |idx| {
+            const r = ipv4_ranges.items[idx];
             v4_stats.overrides += trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv4 range: {}", .{err});
                 std.process.exit(1);
@@ -149,7 +156,13 @@ pub fn main(init: std.process.Init) void {
             std.process.exit(1);
         };
         v6_stats.collisions = ip_mod.countCollisions(u128, ipv6_ranges.items);
-        ip_mod.sortRangesBySizeDesc(u128, ipv6_ranges.items);
+        
+        const v6_indices = alloc.alloc(u32, ipv6_ranges.items.len) catch |err| {
+            std.log.err("Failed to allocate IPv6 indices: {}", .{err});
+            std.process.exit(1);
+        };
+        for (v6_indices, 0..) |*idx, i| idx.* = @intCast(i);
+        ip_mod.sortIndicesBySizeDesc(u128, ipv6_ranges.items, v6_indices);
 
         var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
@@ -159,7 +172,8 @@ pub fn main(init: std.process.Init) void {
             std.log.err("Failed to pre-allocate IPv6 Trie: {}", .{err});
             std.process.exit(1);
         };
-        for (ipv6_ranges.items) |r| {
+        for (v6_indices) |idx| {
+            const r = ipv6_ranges.items[idx];
             v6_stats.overrides += trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv6 range: {}", .{err});
                 std.process.exit(1);
