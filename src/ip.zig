@@ -103,27 +103,47 @@ pub fn formatIPv4(writer: anytype, ip: u32, prefix: u8, country: u16) !void {
     try writer.writeAll(";\n");
 }
 
-fn formatU8Int(buf: []u8, val: u8) usize {
-    var v = val;
-    var idx: usize = 0;
-    if (v >= 100) {
-        buf[idx] = '0' + (v / 100);
-        idx += 1;
-        v %= 100;
-        buf[idx] = '0' + (v / 10);
-        idx += 1;
-        buf[idx] = '0' + (v % 10);
-        idx += 1;
-    } else if (v >= 10) {
-        buf[idx] = '0' + (v / 10);
-        idx += 1;
-        buf[idx] = '0' + (v % 10);
-        idx += 1;
-    } else {
-        buf[idx] = '0' + v;
-        idx += 1;
+const OctetStr = struct {
+    len: u8,
+    bytes: [3]u8,
+};
+
+const U8_LUT: [256]OctetStr = init_lut: {
+    @setEvalBranchQuota(10000);
+    var table: [256]OctetStr = undefined;
+    for (0..256) |i| {
+        var buf: [3]u8 = undefined;
+        var len: u8 = 0;
+        var v: usize = i;
+        if (v >= 100) {
+            buf[0] = '0' + @as(u8, @intCast(v / 100));
+            v %= 100;
+            buf[1] = '0' + @as(u8, @intCast(v / 10));
+            buf[2] = '0' + @as(u8, @intCast(v % 10));
+            len = 3;
+        } else if (v >= 10) {
+            buf[0] = '0' + @as(u8, @intCast(v / 10));
+            buf[1] = '0' + @as(u8, @intCast(v % 10));
+            len = 2;
+        } else {
+            buf[0] = '0' + @as(u8, @intCast(v));
+            len = 1;
+        }
+        table[i] = OctetStr{ .len = len, .bytes = buf };
     }
-    return idx;
+    break :init_lut table;
+};
+
+fn formatU8Int(buf: []u8, val: u8) usize {
+    const entry = U8_LUT[val];
+    buf[0] = entry.bytes[0];
+    if (entry.len > 1) {
+        buf[1] = entry.bytes[1];
+        if (entry.len > 2) {
+            buf[2] = entry.bytes[2];
+        }
+    }
+    return entry.len;
 }
 
 const HEX_CHARS = "0123456789abcdef";
@@ -213,7 +233,7 @@ pub fn IpTrie(comptime T: type) type {
                 if (old_c != MIXED and old_c != country) {
                     overrides += 1;
                 }
-                
+
                 self.nodes.items[node_idx].country = country;
                 self.nodes.items[node_idx].left = 0;
                 self.nodes.items[node_idx].right = 0;
