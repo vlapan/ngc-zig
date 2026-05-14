@@ -14,10 +14,11 @@ Updated: 2026-05-13
 
 
 ## Files
+- `knowledge/tasks.md` - The single source of truth for the project roadmap, open tasks, backlog, and feature ideas. **Must be read at the start of every session.**
 - `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
 - `knowledge/architecture.md` - Core system design and radix trie behavior
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps
-- `notes/` - daily session logs with progress
+- `notes/` - Daily session logs with progress. These are strictly append-only historical narratives showing *what was done*. Do NOT trap open tasks or future backlogs in daily notes; put them in `knowledge/tasks.md` and link to the daily note for context.
 - **Benchmarking & Profiling Rules**:
   - Whenever performance optimizations are made, you must compare and record the difference in detail.
   - Do not just compare CPU/User time. Also track: `maximum resident set size`, `peak memory footprint`, `instructions retired`, `cycles elapsed`, `voluntary context switches`, and `involuntary context switches` (from `/usr/bin/time -al`).
