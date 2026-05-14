@@ -3,6 +3,10 @@ Updated: 2026-05-13
 
 
 ## Rules
+- **Conventional Commits:** All commit messages MUST strictly adhere to the Conventional Commits specification.
+  - Format: `<type>[optional scope]: <description>`
+  - Allowed types: `feat`, `fix`, `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`.
+  - Use a `!` after the type/scope or a `BREAKING CHANGE:` footer for breaking changes.
 - Pure Zig 0.16.0, NO C interop
 - No `-lc` link flag
 - Read changelogs from `ZIG-CHANGELOG-*.md`
