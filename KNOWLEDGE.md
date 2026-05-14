@@ -7,6 +7,10 @@ Updated: 2026-05-13
   - Format: `<type>[optional scope]: <description>`
   - Allowed types: `feat`, `fix`, `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`.
   - Use a `!` after the type/scope or a `BREAKING CHANGE:` footer for breaking changes.
+  - **Scopes:** Maximize log utility by heavily utilizing scopes mapped to our architecture:
+    - *Modules:* `(parser)`, `(flatten)`, `(trie)`, `(ip)`, `(config)`, `(main)`
+    - *Domains:* `(cli)`, `(telemetry)`, `(build)`, `(ci)`, `(test)`, `(release)`
+    - *Omit scope* only for broad, cross-cutting changes.
 - Pure Zig 0.16.0, NO C interop
 - No `-lc` link flag
 - Read changelogs from `ZIG-CHANGELOG-*.md`
