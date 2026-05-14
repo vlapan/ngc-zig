@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-# formatting helpers
-BOLD="\033[1m"
-RED="\033[31m"
-GREEN="\033[32m"
-YELLOW="\033[33m"
-RESET="\033[0m"
+if [ -t 1 ]; then
+    BOLD="\033[1m"
+    RED="\033[31m"
+    GREEN="\033[32m"
+    YELLOW="\033[33m"
+    RESET="\033[0m"
+else
+    BOLD=""
+    RED=""
+    GREEN=""
+    YELLOW=""
+    RESET=""
+fi
 
 echo "======================================================================"
 DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")

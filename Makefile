@@ -65,7 +65,7 @@ test:
 	@echo "MAKE:INFO: Tests passed!"
 
 bench:
-	@bash test/benchmark.sh | tee >(perl -pe 's/\x1b\[[0-9;]*m//g' >> benchmarks.log)
+	@bash test/benchmark.sh | tee -a benchmarks.log
 
 tag:
 	@bash test/tag-release.sh
