@@ -7,8 +7,10 @@ Updated: 2026-05-12
 - Args via `init.minimal.args.iterate()` (returns iterator)
 - `std.process.run(b.allocator, b.graph.io, ...)` (replaces deprecated `std.process.Child.run`)
 
-## Time
-- `std.Io.Timestamp.now(b.graph.io, .real)` (replaces deprecated `std.time.milliTimestamp`)
+## Time & Benchmarking
+- `std.time.Timer` has been removed or restructured in `std.time`.
+- Use `std.Io.Timestamp.now(init.io, .awake).nanoseconds` to get monotonic uptime (maps to POSIX `CLOCK_MONOTONIC` / `CLOCK_MONOTONIC_RAW`). This is required for accurate benchmarking without NTP drift.
+- Use `std.Io.Timestamp.now(init.io, .real)` for wall-clock time (replaces deprecated `std.time.milliTimestamp`).
 
 ## File/Directory Operations
 - `std.Io.Dir.cwd()` - get current working directory
