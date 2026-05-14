@@ -16,6 +16,7 @@ Updated: 2026-05-13
 ## Files
 - `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
 - `knowledge/architecture.md` - Core system design and radix trie behavior
+- `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps
 - `notes/` - daily session logs with progress
 - **Benchmarking & Profiling Rules**:
   - Whenever performance optimizations are made, you must compare and record the difference in detail.
