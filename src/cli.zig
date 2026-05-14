@@ -6,6 +6,7 @@ pub const Config = struct {
     output: []const u8,
     static_file: ?[]const u8 = null,
     groups: []const []const u8 = &[_][]const u8{},
+    groups_file: ?[]const u8 = null,
 };
 
 pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
@@ -16,6 +17,7 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
     var ipv6: ?[]const u8 = null;
     var out: ?[]const u8 = null;
     var static_f: ?[]const u8 = null;
+    var groups_f: ?[]const u8 = null;
     var groups = std.ArrayList([]const u8).empty;
     defer groups.deinit(alloc);
 
@@ -28,6 +30,8 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
             out = args.next();
         } else if (std.mem.eql(u8, arg, "--static")) {
             static_f = args.next();
+        } else if (std.mem.eql(u8, arg, "--groups-file")) {
+            groups_f = args.next();
         } else if (std.mem.eql(u8, arg, "--group")) {
             if (args.next()) |g| {
                 try groups.append(alloc, g);
@@ -38,7 +42,7 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
     }
 
     if (out == null) {
-        std.debug.print("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] --output <file>\n", .{});
+        std.debug.print("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] --output <file>\n", .{});
         return error.InvalidArgs;
     }
 
@@ -58,5 +62,6 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
         .output = try alloc.dupe(u8, out.?),
         .static_file = if (static_f) |f| try alloc.dupe(u8, f) else null,
         .groups = duped_groups,
+        .groups_file = if (groups_f) |f| try alloc.dupe(u8, f) else null,
     };
 }

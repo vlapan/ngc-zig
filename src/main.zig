@@ -100,27 +100,30 @@ pub fn main(init: std.process.Init) void {
         country_map[i] = @intCast(i);
     }
     for (config.groups) |g| {
-        if (std.mem.indexOfScalar(u8, g, ':')) |colon_idx| {
-            const target_str = g[0..colon_idx];
-            if (target_str.len != 2) {
-                std.log.err("Target group name must be exactly 2 characters (got '{s}')", .{target_str});
-                std.process.exit(1);
-            }
-            const target_u16 = (@as(u16, target_str[0]) << 8) | @as(u16, target_str[1]);
-            
-            var it = std.mem.splitScalar(u8, g[colon_idx + 1 ..], ',');
-            while (it.next()) |src_str| {
-                const s_str = std.mem.trim(u8, src_str, " \t");
-                if (s_str.len != 2) {
-                    std.log.err("Source country code must be exactly 2 characters (got '{s}')", .{s_str});
-                    std.process.exit(1);
-                }
-                const src_u16 = (@as(u16, s_str[0]) << 8) | @as(u16, s_str[1]);
-                country_map[src_u16] = target_u16;
-            }
-        } else {
-            std.log.err("Invalid --group format '{s}'. Expected TARGET:SRC1,SRC2", .{g});
+        parseGroupLine(g, &country_map);
+    }
+
+    if (config.groups_file) |gf| {
+        var file = std.Io.Dir.cwd().openFile(init.io, gf, .{}) catch |err| {
+            std.log.err("Failed to open groups file '{s}': {}", .{gf, err});
             std.process.exit(1);
+        };
+        defer file.close(init.io);
+        const stat = file.stat(init.io) catch |err| {
+            std.log.err("Failed to stat groups file: {}", .{err});
+            std.process.exit(1);
+        };
+        if (stat.size > 0) {
+            const mapped = std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0) catch |err| {
+                std.log.err("Failed to mmap groups file: {}", .{err});
+                std.process.exit(1);
+            };
+            defer std.posix.munmap(mapped);
+            
+            var it = std.mem.splitScalar(u8, mapped, '\n');
+            while (it.next()) |line| {
+                parseGroupLine(line, &country_map);
+            }
         }
     }
 
@@ -496,4 +499,32 @@ fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayL
 
 test {
     std.testing.refAllDecls(@This());
+}
+fn parseGroupLine(line: []const u8, country_map: *[65536]u16) void {
+    const g = std.mem.trim(u8, line, " \t\r\n");
+    if (g.len == 0 or g[0] == '#') return;
+
+    if (std.mem.indexOfScalar(u8, g, ':')) |colon_idx| {
+        const target_str = std.mem.trim(u8, g[0..colon_idx], " \t");
+        if (target_str.len != 2) {
+            std.log.err("Target group name must be exactly 2 characters (got '{s}')", .{target_str});
+            std.process.exit(1);
+        }
+        const target_u16 = (@as(u16, target_str[0]) << 8) | @as(u16, target_str[1]);
+        
+        var it = std.mem.splitScalar(u8, g[colon_idx + 1 ..], ',');
+        while (it.next()) |src_str| {
+            const s_str = std.mem.trim(u8, src_str, " \t");
+            if (s_str.len == 0) continue;
+            if (s_str.len != 2) {
+                std.log.err("Source country code must be exactly 2 characters (got '{s}')", .{s_str});
+                std.process.exit(1);
+            }
+            const src_u16 = (@as(u16, s_str[0]) << 8) | @as(u16, s_str[1]);
+            country_map.*[src_u16] = target_u16;
+        }
+    } else {
+        std.log.err("Invalid group format '{s}'. Expected TARGET:SRC1,SRC2", .{g});
+        std.process.exit(1);
+    }
 }
