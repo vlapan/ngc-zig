@@ -80,6 +80,15 @@ pub fn main(init: std.process.Init) void {
     var v6_countries: usize = 0;
     var v4_flattened: usize = 0;
     var v6_flattened: usize = 0;
+    
+    var time_io_ns: i128 = 0;
+    var time_flatten_ns: i128 = 0;
+    var time_trie_ns: i128 = 0;
+    
+    var v4_nodes: usize = 0;
+    var v6_nodes: usize = 0;
+    var v4_merges: usize = 0;
+    var v6_merges: usize = 0;
 
     var seen_v4 = [_]bool{false} ** 65536;
     var seen_v6 = [_]bool{false} ** 65536;
@@ -87,6 +96,7 @@ pub fn main(init: std.process.Init) void {
     var static_v6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
 
     if (config.static_file) |static_path| {
+        const ts_static_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         static_stats = appendStaticFile(init.io, static_path, writer, alloc, &static_v4_ranges, &static_v6_ranges) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("Static file not found: '{s}'", .{static_path});
@@ -95,9 +105,11 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
+        time_io_ns += std.Io.Timestamp.now(init.io, .awake).nanoseconds - ts_static_start;
     }
 
     if (config.ipv4_csv) |v4_path| {
+        const ts_v4_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
         v4_stats = parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &seen_v4) catch |err| {
             if (err == error.FileNotFound) {
@@ -107,13 +119,20 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
+        const ts_v4_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_io_ns += ts_v4_parsed - ts_v4_start;
+
         var flattened_v4 = std.ArrayList(ip_mod.IPv4Range).empty;
         const flatten_stats = ip_mod.flatten(u32, alloc, ipv4_ranges.items, &flattened_v4) catch |err| {
             std.log.err("Failed to flatten IPv4 ranges: {}", .{err});
             std.process.exit(1);
         };
         v4_stats.collisions = flatten_stats.collisions;
+        v4_merges = flatten_stats.merges;
         v4_flattened = flattened_v4.items.len;
+        
+        const ts_v4_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_flatten_ns += ts_v4_flattened - ts_v4_parsed;
 
         var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
@@ -140,12 +159,18 @@ pub fn main(init: std.process.Init) void {
             std.log.err("Failed to write IPv4 output: {}", .{err});
             std.process.exit(1);
         };
+        v4_nodes = trie_v4.nodes.items.len;
+        
+        const ts_v4_trie = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_trie_ns += ts_v4_trie - ts_v4_flattened;
+        
         for (seen_v4) |seen| {
             if (seen) v4_countries += 1;
         }
     }
 
     if (config.ipv6_csv) |v6_path| {
+        const ts_v6_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
         v6_stats = parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &seen_v6) catch |err| {
             if (err == error.FileNotFound) {
@@ -155,13 +180,20 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
+        const ts_v6_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_io_ns += ts_v6_parsed - ts_v6_start;
+
         var flattened_v6 = std.ArrayList(ip_mod.IPv6Range).empty;
         const flatten_v6_stats = ip_mod.flatten(u128, alloc, ipv6_ranges.items, &flattened_v6) catch |err| {
             std.log.err("Failed to flatten IPv6 ranges: {}", .{err});
             std.process.exit(1);
         };
         v6_stats.collisions = flatten_v6_stats.collisions;
+        v6_merges = flatten_v6_stats.merges;
         v6_flattened = flattened_v6.items.len;
+        
+        const ts_v6_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_flatten_ns += ts_v6_flattened - ts_v6_parsed;
 
         var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
@@ -188,6 +220,11 @@ pub fn main(init: std.process.Init) void {
             std.log.err("Failed to write IPv6 output: {}", .{err});
             std.process.exit(1);
         };
+        v6_nodes = trie_v6.nodes.items.len;
+        
+        const ts_v6_trie = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_trie_ns += ts_v6_trie - ts_v6_flattened;
+        
         for (seen_v6) |seen| {
             if (seen) v6_countries += 1;
         }
@@ -215,9 +252,17 @@ pub fn main(init: std.process.Init) void {
         v4_stats.collisions,
         v6_stats.collisions,
     });
+    std.debug.print("  Phase 1 (Sweep Line): Contiguous Merges: IPv4: {}, IPv6: {}\n", .{
+        v4_merges,
+        v6_merges,
+    });
     std.debug.print("  Phase 1 (Sweep Line): Disjoint Segments: IPv4: {}, IPv6: {}\n", .{
         v4_flattened,
         v6_flattened,
+    });
+    std.debug.print("  Phase 2 (Radix Trie): Nodes Allocated: IPv4: {}, IPv6: {}\n", .{
+        v4_nodes,
+        v6_nodes,
     });
     std.debug.print("  Phase 2 (Radix Trie): Static Overrides: IPv4: {}, IPv6: {}\n", .{
         v4_stats.overrides,
@@ -232,6 +277,11 @@ pub fn main(init: std.process.Init) void {
         v6_cidrs,
         static_stats.lines_parsed,
         total_cidrs,
+    });
+    std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (Radix): {}ms\n", .{
+        @divTrunc(time_io_ns, 1_000_000),
+        @divTrunc(time_flatten_ns, 1_000_000),
+        @divTrunc(time_trie_ns, 1_000_000),
     });
 }
 

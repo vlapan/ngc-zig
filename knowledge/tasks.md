@@ -5,15 +5,13 @@ Updated: 2026-05-14
 - [ ] **Custom Country Grouping**: Allow aggregating specific countries into custom regions (e.g., grouping `FR`, `DE`, `ES` into an `EU` block) to further compress Nginx CIDR output. Include an "Estimated Nginx RAM footprint" output metric. (Details: `notes/2026-05-13.md`)
 
 ## Backlog / Enhancements
-- [ ] **Telemetry: Radix Trie Node Count**: Track total allocated Trie nodes to measure fragmentation. (Details: `notes/2026-05-14.md`)
-- [ ] **Telemetry: Contiguous Merges**: Track how many adjacent identical blocks were merged during Phase 1. (Details: `notes/2026-05-14.md`)
-- [ ] **Telemetry: Pipeline Profiling (Phase Timing)**: Break down total execution time into granular phases (I/O vs Flattening vs Radix). (Details: `notes/2026-05-14.md`)
 - [ ] **Memory Optimization: Stream Flattened Output to Trie**: The sweep-line `flatten()` algorithm currently buffers its output into intermediate arrays, causing Max RSS to peak at ~80MB. Refactor `flatten` to stream segments directly into the `IpTrie` to eliminate the `flattened_vX` array allocations and drop memory usage. (Details: `notes/2026-05-14.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
+- [x] **Telemetry Enhancements**: Added tracking for Radix Nodes, Contiguous Merges, and Granular Pipeline Profiling to CLI output. (Completed: 2026-05-14)
 - [x] **Algorithmic Pre-Flattening**: Repurpose the sweep-line 1D collision algorithm to resolve overlaps *before* Radix tree insertion, eliminating fragmentation and backtracking overhead entirely. (Completed: 2026-05-14)
 - [x] **Branchless Trie Node Allocation**: Switch `Trie.append()` to `.appendAssumeCapacity()` in the inner loop, stripping bounds-check branches since the tree is mathematically pre-allocated. (Completed: 2026-05-14)
 - [x] **Lightweight Index Sorting**: Run `std.sort` on a tightly packed `[]u32` array of array indices instead of swapping bulky 64-byte IPv6 structs in memory. (Completed: 2026-05-14)
