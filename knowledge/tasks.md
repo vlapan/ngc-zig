@@ -2,15 +2,15 @@
 Updated: 2026-05-14
 
 ## Active / Next Up
-- [ ] **Algorithmic Pre-Flattening**: Repurpose the sweep-line 1D collision algorithm to resolve overlaps *before* Radix tree insertion, eliminating fragmentation and backtracking overhead entirely. (Details: `notes/2026-05-13.md`)
+- [ ] **Custom Country Grouping**: Allow aggregating specific countries into custom regions (e.g., grouping `FR`, `DE`, `ES` into an `EU` block) to further compress Nginx CIDR output. Include an "Estimated Nginx RAM footprint" output metric. (Details: `notes/2026-05-13.md`)
 
 ## Backlog / Enhancements
-- [ ] **Custom Country Grouping**: Allow aggregating specific countries into custom regions (e.g., grouping `FR`, `DE`, `ES` into an `EU` block) to further compress Nginx CIDR output. Include an "Estimated Nginx RAM footprint" output metric. (Details: `notes/2026-05-13.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
+- [x] **Algorithmic Pre-Flattening**: Repurpose the sweep-line 1D collision algorithm to resolve overlaps *before* Radix tree insertion, eliminating fragmentation and backtracking overhead entirely. (Completed: 2026-05-14)
 - [x] **Branchless Trie Node Allocation**: Switch `Trie.append()` to `.appendAssumeCapacity()` in the inner loop, stripping bounds-check branches since the tree is mathematically pre-allocated. (Completed: 2026-05-14)
 - [x] **Lightweight Index Sorting**: Run `std.sort` on a tightly packed `[]u32` array of array indices instead of swapping bulky 64-byte IPv6 structs in memory. (Completed: 2026-05-14)
 - [x] **Branchless IPv6 Formatting**: Replaced boolean flags and branches in the IPv6 text formatter with hardware Count Leading Zeros (`@clz`). (Completed: 2026-05-14)

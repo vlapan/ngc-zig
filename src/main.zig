@@ -17,7 +17,7 @@ pub const Stats = struct {
 };
 
 pub fn main(init: std.process.Init) void {
-    const ts_start = std.Io.Timestamp.now(init.io, .real).nanoseconds;
+    const ts_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
 
     std.debug.print("NGC v{s}-{s} (Zig) ({s})\n", .{
         build_options.version,
@@ -105,25 +105,22 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
-        v4_stats.collisions = ip_mod.countCollisions(u32, ipv4_ranges.items);
-
-        const v4_indices = alloc.alloc(u32, ipv4_ranges.items.len) catch |err| {
-            std.log.err("Failed to allocate IPv4 indices: {}", .{err});
+        var flattened_v4 = std.ArrayList(ip_mod.IPv4Range).empty;
+        const flatten_stats = ip_mod.flatten(u32, alloc, ipv4_ranges.items, &flattened_v4) catch |err| {
+            std.log.err("Failed to flatten IPv4 ranges: {}", .{err});
             std.process.exit(1);
         };
-        for (v4_indices, 0..) |*idx, i| idx.* = @intCast(i);
-        ip_mod.sortIndicesBySizeDesc(u32, ipv4_ranges.items, v4_indices);
+        v4_stats.collisions = flatten_stats.collisions;
 
         var trie_v4 = ip_mod.IpTrie(u32).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
             std.process.exit(1);
         };
-        trie_v4.nodes.ensureTotalCapacity(alloc, ipv4_ranges.items.len * 4) catch |err| {
+        trie_v4.nodes.ensureTotalCapacity(alloc, flattened_v4.items.len * 4) catch |err| {
             std.log.err("Failed to pre-allocate IPv4 Trie: {}", .{err});
             std.process.exit(1);
         };
-        for (v4_indices) |idx| {
-            const r = ipv4_ranges.items[idx];
+        for (flattened_v4.items) |r| {
             v4_stats.overrides += trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv4 range: {}", .{err});
                 std.process.exit(1);
@@ -155,25 +152,22 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
-        v6_stats.collisions = ip_mod.countCollisions(u128, ipv6_ranges.items);
-
-        const v6_indices = alloc.alloc(u32, ipv6_ranges.items.len) catch |err| {
-            std.log.err("Failed to allocate IPv6 indices: {}", .{err});
+        var flattened_v6 = std.ArrayList(ip_mod.IPv6Range).empty;
+        const flatten_v6_stats = ip_mod.flatten(u128, alloc, ipv6_ranges.items, &flattened_v6) catch |err| {
+            std.log.err("Failed to flatten IPv6 ranges: {}", .{err});
             std.process.exit(1);
         };
-        for (v6_indices, 0..) |*idx, i| idx.* = @intCast(i);
-        ip_mod.sortIndicesBySizeDesc(u128, ipv6_ranges.items, v6_indices);
+        v6_stats.collisions = flatten_v6_stats.collisions;
 
         var trie_v6 = ip_mod.IpTrie(u128).init(alloc, writer) catch |err| {
             std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
             std.process.exit(1);
         };
-        trie_v6.nodes.ensureTotalCapacity(alloc, ipv6_ranges.items.len * 8) catch |err| {
+        trie_v6.nodes.ensureTotalCapacity(alloc, flattened_v6.items.len * 8) catch |err| {
             std.log.err("Failed to pre-allocate IPv6 Trie: {}", .{err});
             std.process.exit(1);
         };
-        for (v6_indices) |idx| {
-            const r = ipv6_ranges.items[idx];
+        for (flattened_v6.items) |r| {
             v6_stats.overrides += trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, r.country) catch |err| {
                 std.log.err("Failed to insert IPv6 range: {}", .{err});
                 std.process.exit(1);
@@ -200,7 +194,7 @@ pub fn main(init: std.process.Init) void {
         std.process.exit(1);
     };
 
-    const ts_end = std.Io.Timestamp.now(init.io, .real).nanoseconds;
+    const ts_end = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
     const elapsed_ms = @divTrunc(ts_end - ts_start, 1_000_000);
 
     const total_skipped = static_stats.lines_skipped + v4_stats.lines_skipped + v6_stats.lines_skipped;

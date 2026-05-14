@@ -7,65 +7,109 @@ pub fn IPRange(comptime T: type) type {
 pub const IPv4Range = IPRange(u32);
 pub const IPv6Range = IPRange(u128);
 
-pub fn sortIndicesBySizeDesc(comptime T: type, ranges: []IPRange(T), indices: []u32) void {
-    const Context = struct {
-        r: []IPRange(T),
-        fn less(ctx: @This(), a_idx: u32, b_idx: u32) bool {
-            const a = ctx.r[a_idx];
-            const b = ctx.r[b_idx];
-            // Largest size first
-            if (a.size != b.size) return a.size > b.size;
-            if (a.end != b.end) return a.end > b.end;
-            return a.country > b.country;
-        }
+pub const FlattenStats = struct {
+    collisions: usize,
+};
+
+pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const IPRange(T), out_ranges: *std.ArrayList(IPRange(T))) !FlattenStats {
+    const Event = struct {
+        val: T,
+        is_end: bool,
+        id: u32,
     };
-    std.mem.sort(u32, indices, Context{ .r = ranges }, Context.less);
-}
 
-pub fn countCollisions(comptime T: type, ranges: []IPRange(T)) usize {
-    if (ranges.len < 2) return 0;
+    var stats = FlattenStats{ .collisions = 0 };
+    if (ranges.len == 0) return stats;
 
-    std.mem.sort(IPRange(T), ranges, {}, struct {
-        fn less(_: void, a: IPRange(T), b: IPRange(T)) bool {
-            if (a.start != b.start) return a.start < b.start;
-            return a.end > b.end;
-        }
-    }.less);
+    var events = try std.ArrayList(Event).initCapacity(alloc, ranges.len * 2);
+    defer events.deinit(alloc);
 
-    var collisions: usize = 0;
-    var active_ranges: [16]IPRange(T) = undefined;
-    var active_count: usize = 0;
-
-    for (ranges) |r| {
-        var i: usize = 0;
-        while (i < active_count) {
-            if (active_ranges[i].end < r.start) {
-                active_count -= 1;
-                active_ranges[i] = active_ranges[active_count];
-            } else {
-                i += 1;
-            }
-        }
-
-        for (active_ranges[0..active_count]) |active| {
-            if (active.country != r.country) {
-                collisions += 1;
-                break;
-            }
-        }
-
-        if (active_count < active_ranges.len) {
-            active_ranges[active_count] = r;
-            active_count += 1;
-        } else {
-            // Unlikely to ever happen since max depth in reality is < 5.
-            // If it does, we safely overwrite the last slot to prevent out-of-bounds.
-            active_ranges[active_count - 1] = r;
+    for (ranges, 0..) |r, i| {
+        events.appendAssumeCapacity(.{ .val = r.start, .is_end = false, .id = @intCast(i) });
+        if (r.end < std.math.maxInt(T)) {
+            events.appendAssumeCapacity(.{ .val = r.end + 1, .is_end = true, .id = @intCast(i) });
         }
     }
 
-    return collisions;
+    std.mem.sort(Event, events.items, {}, struct {
+        fn less(_: void, a: Event, b: Event) bool {
+            if (a.val != b.val) return a.val < b.val;
+            return @intFromBool(a.is_end) > @intFromBool(b.is_end);
+        }
+    }.less);
+
+    var active_ids = try std.ArrayList(u32).initCapacity(alloc, 64);
+    defer active_ids.deinit(alloc);
+
+    var current_country: ?u16 = null;
+    var segment_start: T = 0;
+
+    var i: usize = 0;
+    while (i < events.items.len) {
+        const current_val = events.items[i].val;
+
+        while (i < events.items.len and events.items[i].val == current_val) {
+            const ev = events.items[i];
+            i += 1;
+
+            if (ev.is_end) {
+                for (active_ids.items, 0..) |id, idx| {
+                    if (id == ev.id) {
+                        _ = active_ids.swapRemove(idx);
+                        break;
+                    }
+                }
+            } else {
+                for (active_ids.items) |id| {
+                    if (ranges[id].country != ranges[ev.id].country) {
+                        stats.collisions += 1;
+                        break;
+                    }
+                }
+                try active_ids.append(alloc, ev.id);
+            }
+        }
+
+        var best_id: ?u32 = null;
+
+        for (active_ids.items) |id| {
+            if (best_id == null) {
+                best_id = id;
+            } else {
+                const current_best = ranges[best_id.?];
+                const candidate = ranges[id];
+                
+                if (candidate.size != current_best.size) {
+                    if (candidate.size < current_best.size) best_id = id;
+                } else if (candidate.end != current_best.end) {
+                    if (candidate.end < current_best.end) best_id = id;
+                } else if (candidate.country != current_best.country) {
+                    if (candidate.country < current_best.country) best_id = id;
+                }
+            }
+        }
+
+        const new_country = if (best_id) |id| ranges[id].country else null;
+
+        if (new_country != current_country) {
+            if (current_country) |c| {
+                if (current_val > segment_start) {
+                    try out_ranges.append(alloc, .{
+                        .start = segment_start,
+                        .end = current_val - 1,
+                        .country = c,
+                        .size = (current_val - 1) - segment_start + 1,
+                    });
+                }
+            }
+            current_country = new_country;
+            segment_start = current_val;
+        }
+    }
+    
+    return stats;
 }
+
 
 pub fn isPrivateIPv4(ip: u32) bool {
     return (ip & 0xFF000000) == 0x7F000000 or // 127.0.0.0/8
