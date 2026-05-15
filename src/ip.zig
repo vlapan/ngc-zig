@@ -196,7 +196,7 @@ fn formatU8Int(buf: []u8, val: u8) usize {
 const HEX_CHARS = "0123456789abcdef";
 
 pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
-    var buf: [128]u8 = undefined;
+    var buf: [48]u8 = undefined;
     var idx: usize = 0;
 
     var chunks: [8]u16 = undefined;
