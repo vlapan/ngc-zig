@@ -23,7 +23,7 @@ parse() {
 		($t.frameTable.address[$t.stackTable.frame[$t.samples.stack[$i]]]) as $addr |
 		.[($addr + 4294967296) | tostring] += $t.samples.weight[$i]
 	) |
-	to_entries[] | "\(.value) \($tp) \(.key)"' | sort -rn | head -n 20)"
+	to_entries[] | "\(.value) \($tp) \(.key)"' | sort -rn | head -n 50)"
 
 	# 2. Run LLDB and create a map keyed by DECIMAL address to avoid hex padding issues
 	SYMBOLS="$(lldb "${BINARY}" --batch -s <(

@@ -1,5 +1,6 @@
 const std = @import("std");
 const ip_mod = @import("ip.zig");
+const swar_mod = @import("swar.zig");
 
 pub const Stats = struct {
     lines_parsed: usize = 0,
@@ -152,16 +153,17 @@ pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Ar
             continue;
         }
 
-        const comma1 = std.mem.indexOfScalar(u8, line, ',') orelse {
+        const comma1 = swar_mod.findByte(line, ',') orelse {
             @branchHint(.cold);
             stats.lines_skipped += 1;
             continue;
         };
-        const comma2 = std.mem.indexOfScalarPos(u8, line, comma1 + 1, ',') orelse {
+        const comma2_rel = swar_mod.findByte(line[comma1 + 1 ..], ',') orelse {
             @branchHint(.cold);
             stats.lines_skipped += 1;
             continue;
         };
+        const comma2 = comma1 + 1 + comma2_rel;
 
         const start_str = line[0..comma1];
         const end_str = line[comma1 + 1 .. comma2];

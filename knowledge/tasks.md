@@ -43,7 +43,7 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 
 ### Tier 2: Medium Impact (5-10% speedup)
 - [x] ~~**Replace `std.mem.sort` with radix sort for events**~~: Rejected. +10.3% instructions, +35.8% RSS due to 4-8 allocation passes and memory bandwidth overhead. `std.mem.sort` (Introsort) is already optimal for 660k integer events. (Evaluated: 2026-05-16)
-- [ ] **SWAR CSV tokenization**: Replace `findScalarPos` (linear comma scan, 3.7%) with 8-byte-at-once SWAR search. 550k lines × 2 commas = 1.1M scans. Est: ~2ms savings. (Details: `notes/2026-05-16.md`)
+- [x] ~~**SWAR CSV tokenization**~~: Completed. Created `src/swar.zig` with `findChar()`. -22.9M instructions (-2.7%), -6.0M cycles (-2.9%). I/O & Parsing: 51ms → 48ms. (Completed: 2026-05-16)
 
 ### Tier 3: Low Impact (marginal gains)
 - [x] ~~**Reduce `formatIPv6` buffer from 128 to 48**~~: Completed. Max IPv6 string is 39 chars; buffer is 48 bytes. (Completed: 2026-05-16)

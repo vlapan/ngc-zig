@@ -88,3 +88,11 @@ Initializing a large array like `var arr = [_]bool{runtime_expr} ** 65536;` forc
 - `io.concurrent(fn, args)` requires actual parallelism. Fails with `error.ConcurrencyUnavailable` if not possible.
 - Pattern: `var future = io.async(fn, .{args}); const result = try future.await(io);`
 - Group pattern: `var group: std.Io.Group = .init; defer group.cancel(io); group.async(io, fn, .{args}); try group.await(io);`
+
+## SWAR Character Search
+- **Algorithm**: Load 8 bytes as u64 (little-endian), XOR with replicated needle (`needle * 0x0101010101010101`), detect zero bytes via `(chunk - 0x0101010101010101) & ~chunk & 0x8080808080808080`, use `@ctz(has_zero) >> 3` for byte position.
+- **Fallback**: Linear scan for remaining < 8 bytes.
+- **Result**: Fewer iterations than `std.mem.indexOfScalar` for strings > 8 bytes. Measured -2.7% total instructions on 550k CSV lines (dataset-dependent).
+- **Assembly**: Verified clean ReleaseFast output. No bounds checks in hot loop. `while (i + 8 <= len)` guard is sufficient.
+- **Implementation**: `src/swar.zig` with `findByte(haystack: []const u8, needle: u8) ?usize` and `findTwoBytes(haystack: []const u8, needle: u8) ?TwoBytes`.
+- **Note**: `findTwoBytes` (single-pass, finds first two occurrences) was evaluated but found slightly slower than two `findByte` calls for short CSV lines (~30-40 bytes). The nested match-tracking overhead outweighs the single-pass benefit when commas span different 8-byte chunks. Kept in module for other use cases.

@@ -1155,3 +1155,87 @@ Date: 2026-05-15 22:30:29 UTC | Commit: fa03c87  | Mode: baseline
 [5/5] Output Verification:
       [OK] No changes in test/output.txt. Output exactly matches baseline.
 ======================================================================
+======================================================================
+Date: 2026-05-15 22:39:41 UTC | Commit: a66c55d - DIRTY | Mode: baseline
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 22M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 337272, IPv6: 212932, Static: 5, Skipped: 3, Filtered: 0
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5660, IPv6: 564
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337209, IPv6: 212925
+      Phase 2 (CIDR Gen): Segments processed: IPv4: 337209, IPv6: 212925
+      Phase 2 (CIDR Gen): Static Overrides: IPv4: 5, IPv6: 0
+      Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 250, IPv6: 251
+      Outputs (CIDR networks generated): IPv4: 498745, IPv6: 507843, Static: 5, Total: 1006593
+      Estimated Nginx RAM footprint: ~92 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 48ms, Phase 1 (Flatten): 17ms, Phase 2 (CIDR Gen): 43ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.43s |  0.05s |  0.02s | 54.5 MB |    851,370,521 |    223,567,218 |   68/398 |
+| Hot1 |  0.07s |  0.04s |  0.01s | 54.5 MB |    819,138,839 |    199,800,784 |    36/27 |
+| Hot2 |  0.08s |  0.04s |  0.01s | 54.5 MB |    818,706,246 |    201,762,568 |    36/28 |
+| Hot3 |  0.07s |  0.04s |  0.01s | 54.5 MB |    818,594,930 |    202,039,367 |    30/32 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output.txt. Output exactly matches baseline.
+======================================================================
+======================================================================
+Date: 2026-05-15 22:43:48 UTC | Commit: a66c55d - DIRTY | Mode: baseline
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 22M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 337272, IPv6: 212932, Static: 5, Skipped: 3, Filtered: 0
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5660, IPv6: 564
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337209, IPv6: 212925
+      Phase 2 (CIDR Gen): Segments processed: IPv4: 337209, IPv6: 212925
+      Phase 2 (CIDR Gen): Static Overrides: IPv4: 5, IPv6: 0
+      Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 250, IPv6: 251
+      Outputs (CIDR networks generated): IPv4: 498745, IPv6: 507843, Static: 5, Total: 1006593
+      Estimated Nginx RAM footprint: ~92 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 48ms, Phase 1 (Flatten): 19ms, Phase 2 (CIDR Gen): 42ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.44s |  0.05s |  0.02s | 54.5 MB |    851,076,161 |    214,768,879 |   67/361 |
+| Hot1 |  0.08s |  0.04s |  0.01s | 54.5 MB |    820,558,224 |    195,517,950 |    38/14 |
+| Hot2 |  0.08s |  0.04s |  0.01s | 54.5 MB |    819,481,491 |    191,761,182 |    37/23 |
+| Hot3 |  0.08s |  0.04s |  0.01s | 54.5 MB |    820,551,752 |    193,401,174 |    35/19 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output.txt. Output exactly matches baseline.
+======================================================================
+======================================================================
+Date: 2026-05-15 22:56:00 UTC | Commit: a66c55d - DIRTY | Mode: baseline
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 263K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 22M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 337272, IPv6: 212932, Static: 5, Skipped: 3, Filtered: 0
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5660, IPv6: 564
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 337209, IPv6: 212925
+      Phase 2 (CIDR Gen): Segments processed: IPv4: 337209, IPv6: 212925
+      Phase 2 (CIDR Gen): Static Overrides: IPv4: 5, IPv6: 0
+      Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 250, IPv6: 251
+      Outputs (CIDR networks generated): IPv4: 498745, IPv6: 507843, Static: 5, Total: 1006593
+      Estimated Nginx RAM footprint: ~92 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 52ms, Phase 1 (Flatten): 17ms, Phase 2 (CIDR Gen): 28ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.41s |  0.05s |  0.02s | 54.5 MB |    851,464,910 |    218,574,144 |   29/377 |
+| Hot1 |  0.07s |  0.04s |  0.01s | 54.5 MB |    821,797,397 |    199,115,561 |     9/38 |
+| Hot2 |  0.06s |  0.04s |  0.01s | 54.5 MB |    820,489,383 |    200,775,492 |     6/31 |
+| Hot3 |  0.07s |  0.04s |  0.01s | 54.5 MB |    822,819,468 |    203,491,015 |     8/46 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output.txt. Output exactly matches baseline.
+======================================================================

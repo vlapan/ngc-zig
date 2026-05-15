@@ -7,8 +7,9 @@ The `NGC` CLI processes raw GeoIP CSV files, normalizes overlapping blocks, and 
 ## Core Mechanisms
 The system processes data in a strictly pipelined architecture, decoupled into distinct single-responsibility modules:
 
-### Phase 0: High-Speed Parsing (`src/parser.zig` & `src/config.zig`)
+### Phase 0: High-Speed Parsing (`src/parser.zig` & `src/config.zig` & `src/swar.zig`)
 - **Memory-Mapped I/O**: Upstream CSVs are loaded via zero-copy `std.posix.mmap` with aggressive OS prefetching (`MADV.SEQUENTIAL`) to eliminate SSD I/O stalls.
+- **SWAR CSV Tokenization**: Comma delimiters are found 8 bytes at a time using SIMD Within A Register bit manipulation (`src/swar.zig`). Replaces linear `std.mem.indexOfScalar` scans. -2.7% total instructions.
 - **SWAR Integer Parsing**: Sequential loops and byte-by-byte parsing are bypassed entirely. A SIMD Within A Register (SWAR) algorithm chunks 8 ASCII digits into a 64-bit integer, calculating base-10 representations via bit-shifting, destroying millions of logic instructions.
 - **Zero-Cost Filtering & Grouping**: `src/config.zig` translates incoming 2-byte country strings immediately into `u16` tokens via an O(1) Look-Up Table (LUT). Allowlist filters aggressively drop unwanted networks here before they consume memory or processing time.
 

@@ -174,3 +174,31 @@ Date: 2026-05-15 22:04:10 UTC | Commit: d0a7d4f  | Mode: filter
 [5/5] Output Verification:
       [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
 ======================================================================
+======================================================================
+Date: 2026-05-15 22:45:24 UTC | Commit: a66c55d - DIRTY | Mode: filter
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 7.6M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 100095, IPv6: 57300, Static: 5, Skipped: 3, Filtered: 392809
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 842, IPv6: 45
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 99916, IPv6: 57272
+      Phase 2 (CIDR Gen): Segments processed: IPv4: 99916, IPv6: 57272
+      Phase 2 (CIDR Gen): Static Overrides: IPv4: 5, IPv6: 0
+      Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 5, IPv6: 5
+      Outputs (CIDR networks generated): IPv4: 180451, IPv6: 167043, Static: 5, Total: 347499
+      Estimated Nginx RAM footprint: ~31 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 49ms, Phase 1 (Flatten): 6ms, Phase 2 (CIDR Gen): 10ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.40s |  0.03s |  0.01s | 27.8 MB |    439,084,226 |    118,317,250 |   25/352 |
+| Hot1 |  0.04s |  0.02s |  0.00s | 27.8 MB |    409,661,920 |    103,654,616 |    14/19 |
+| Hot2 |  0.03s |  0.02s |  0.00s | 27.8 MB |    408,979,353 |     99,894,155 |    14/12 |
+| Hot3 |  0.03s |  0.02s |  0.00s | 27.8 MB |    408,972,572 |    100,150,635 |    12/18 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
+======================================================================
