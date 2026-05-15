@@ -3,8 +3,26 @@ Updated: 2026-05-16
 
 ## Active / Next Up
 
-- [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
-- [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
+- [ ] **Remove Dead Code**: Delete `src/trie.zig`, dead `flatten`/`IpTrie` in `src/ip.zig:10-111,300-452`, unused `build_info` import. ~250 lines. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix Silent Error Swallowing**: Fail or warn on invalid static file data (bad prefix, invalid IPs, parse errors). `parser.zig:58,68,71,81,176-182`. (Details: `notes/2026-05-16.md`)
+- [ ] **Fail on Unknown CLI Args**: Return error on unrecognized flags instead of silently ignoring. `config.zig:50-52`. (Details: `notes/2026-05-16.md`)
+- [ ] **Add `--help` / `--version` Flags**: Basic CLI usability. (Details: `notes/2026-05-16.md`)
+- [ ] **Add `config.zig` Tests**: Test `parseArgs()`, `setupMaps()`, edge cases. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix CI: Build Binary Step**: Add `zig build` to CI workflow to verify compilation. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix CI: Run Tests Before Release**: Add test step to release workflow. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix Makefile Hardcoded SHELL**: Replace `/opt/homebrew/bin/zsh` with portable path. (Details: `notes/2026-05-16.md`)
+- [ ] **Extract Generic `processStream()`**: Eliminate IPv4/IPv6 copy-paste in `main.zig:112-214`. (Details: `notes/2026-05-16.md`)
+- [ ] **Remove Redundant Pre-flight File Checks**: Delete double I/O in `main.zig:35-58`. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix O(65536) Country Counting**: Replace array iteration with O(1) counter. `main.zig:159-161,211-213`. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Digit Validation to `fastParseInt`**: Reject non-digit characters. `parser.zig:93-129`. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Input Validation**: Check `start <= end`, country code format, file size limits. (Details: `notes/2026-05-16.md`)
+- [ ] **Add `--quiet` / `--verbose` Flags**: Suppress output for CI, debug mode for troubleshooting. (Details: `notes/2026-05-16.md`)
+- [ ] **Improve README**: Add install instructions, benchmarks, license, Nginx example, CSV format docs. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Progress Indication**: Show progress for large files (1M+ ranges). (Details: `notes/2026-05-16.md`)
+- [ ] **Add Linux Profiling Scripts**: Replace macOS-only `samply` with portable alternative. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Dry-Run Mode**: Validate input without producing output. (Details: `notes/2026-05-16.md`)
+- [ ] **Verify RAM Footprint Heuristic**: Profile actual Nginx memory usage vs `64B/v4, 128B/v6` estimate. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Benchmark Regression Detection to CI**: Run `make bench` in CI, fail on regression. (Details: `notes/2026-05-16.md`)
 
 ## Completed (Recent)
 - [x] **Eliminate Recursive Trie `insertRange`**: Converted to iterative stack-based traversal. -708M instructions (-30%), -18% cycles, -20% runtime. (Completed: 2026-05-15)
@@ -61,6 +79,8 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 
 - [ ] **Single Config File**: Replace `--static`, `--groups-file`, `--filters-file` with one flat key-value file. ~30 lines parser, ~2ms startup, zero dependencies. CLI args as overrides. (Details: `notes/2026-05-16.md`)
 - [ ] **Io Concurrency API**: Zig 0.16.0 `io.async`/`io.concurrent`/`std.Io.Group` provides Promise-like parallelism. Revisit if dataset grows 10x+ or becomes real-time service. (Details: `notes/2026-05-16.md`)
+- [ ] **Machine-Readable Telemetry**: Add `--json` flag to export stats as JSON for CI/CD ingestion. (Details: `notes/2026-05-13.md`)
+- [ ] **Automatic Diffing**: Output `+ Added`, `- Removed`, `~ Changed` delta log between runs. (Details: `notes/2026-05-13.md`)
 
 ## Validation Rule Noted:
 *In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*
