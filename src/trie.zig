@@ -116,7 +116,7 @@ pub fn IpTrie(comptime T: type) type {
             return overrides;
         }
 
-        fn getCountry(self: *IpTrie(T), idx: u24) u16 {
+        inline fn getCountry(self: *IpTrie(T), idx: u24) u16 {
             if (idx == 0) return HOLE;
             return self.nodes.items[idx].country;
         }

@@ -1,14 +1,17 @@
 # Project Tasks & Backlog
-Updated: 2026-05-14
+Updated: 2026-05-15
 
 ## Active / Next Up
 
-- [ ] **Performance: Future Optimizations**: Continuously profile and research new algorithmic or structural optimization possibilities. (Details: `notes/2026-05-14.md`)
+- [ ] **Performance: Future Optimizations**: Continuously profile and research new algorithmic or structural optimization possibilities. (Details: `notes/2026-05-15.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
+- [x] **Eliminate Recursive Trie `insertRange`**: Converted to iterative stack-based traversal. -708M instructions (-30%), -18% cycles, -20% runtime. (Completed: 2026-05-15)
+- [x] **Evaluate `@branchHint` placement**: Audited hot loops for predictable branches. Removed dynamic filter hint, fixed backwards flatten hints. (Completed: 2026-05-15)
+- [x] **Remove duplicate `madvise` calls**: `MADV.SEQUENTIAL` called twice on same region. (Completed: 2026-05-15)
 - [x] **Test Engineering: TDD & Expanded Coverage**: Unit tests generated for pure algorithmic components, including `src/flatten.zig` (1D Sweep-Line Pre-Flattening merges and priorities) and `src/ip.zig` IPv4 routines. (Completed: 2026-05-14)
 - [x] **Architecture: Module Separation**: Decoupled monolithic files into `trie.zig`, `flatten.zig`, `parser.zig`, `config.zig`, `ip.zig`, and `main.zig`. (Completed: 2026-05-14)
 - [x] **Test Infrastructure: Feature-Specific Benchmarking**: Created dedicated `Makefile` commands to benchmark filtering and grouping isolated from the baseline, capturing metrics in separate log files. (Completed: 2026-05-14)
@@ -38,24 +41,21 @@ Updated: 2026-05-14
 Sorted by estimated theoretical impact. **Validate first** (per Validation Rule) before implementing any item.
 
 ### Tier 1: High Impact (10-50% speedup)
-- [ ] **Eliminate Recursive Trie `insertRange`**: Convert recursive descent to iterative stack-based traversal. (Details: `notes/2026-05-15.md`)
 - [ ] **Direct CIDR output from sweep-line**: Skip the Trie entirely, convert pre-flattened ranges to CIDR mathematically. (Details: `notes/2026-05-15.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize independent IPv4 and IPv6 streams using `std.Thread`. Est: 35-45% wall-clock reduction. (Details: `notes/2026-05-15.md`)
 
-### Rejected / Invalidated (Learnings)
-- [x] ~~**Replace `active_ids` linear scan with O(1) lookup**~~: Rejected. Telemetry proved that BGP data overlaps are incredibly shallow (nesting depth 1-3). A linear `for` loop over a 3-element array sitting in L1 cache is significantly faster than allocating and initializing a 1.3MB O(1) index map. (Evaluated: 2026-05-15)
-
 ### Tier 2: Medium Impact (5-10% speedup)
-- [ ] **Pre-allocate `active_ids` with known max**: Avoid `ArrayList` growth overhead during sweep. (Details: `notes/2026-05-15.md`)
-- [ ] **Batch writer flushes**: Single `writeAll` per line instead of two in `formatIPv4`/`formatIPv6`. (Details: `notes/2026-05-15.md`)
-- [ ] **Replace `std.mem.sort` with radix sort for events**: O(N) vs O(N log N) for 660k integer events. (Details: `notes/2026-05-15.md`)
-- [ ] **Avoid `@intCast` in hot trie paths**: Use `u32` internally, cast only at boundaries. (Details: `notes/2026-05-15.md`)
+- [ ] **Replace `std.mem.sort` with radix sort for events**: O(N) vs O(N log N) for 660k integer events. Sort runs once per IP version. (Details: `notes/2026-05-15.md`)
 
 ### Tier 3: Low Impact (marginal gains)
-- [x] **Remove duplicate `madvise` calls**: `MADV.SEQUENTIAL` called twice on same region. (Completed: 2026-05-15)
-- [x] **Evaluate `@branchHint` placement**: Audited hot loops for predictable branches. Removed dynamic filter hint, fixed backwards flatten hints. (Completed: 2026-05-15)
-- [ ] **Inline `getCountry`**: Tiny function in `optimize` hot loop. (Details: `notes/2026-05-15.md`)
-- [ ] **Reduce `formatIPv6` buffer from 128 to 48**: Max IPv6 string is 39 chars; shrink to save L1 cache. (Details: `notes/2026-05-15.md`)
+- [ ] **Reduce `formatIPv6` buffer from 128 to 48**: Max IPv6 string is 39 chars; shrink to save stack space. (Details: `notes/2026-05-15.md`)
+
+### Rejected / Invalidated (Learnings)
+- [x] ~~**Replace `active_ids` linear scan with O(1) lookup**~~: Rejected. BGP data overlaps are shallow (depth 1-3). Linear scan over 3 elements in L1 cache beats O(1) map overhead. (Evaluated: 2026-05-15)
+- [x] ~~**Avoid `@intCast` in hot trie paths**~~: Invalidated. `insertRange` is now iterative. The only remaining cast (`usize`→`u24`) is a deliberate 8-byte packing trade-off; removing it bloats `TrieNode` by 25%. (Evaluated: 2026-05-15)
+- [x] ~~**Pre-allocate `active_ids` with known max**~~: Invalidated. Already `initCapacity(alloc, 64)`. BGP nesting depth is 1-3, so capacity is 20x over-provisioned. Growth never triggers. (Evaluated: 2026-05-15)
+- [x] ~~**Batch writer flushes**~~: Invalidated. `formatIPv4`/`formatIPv6` write to a 64KB buffered writer. Multiple `writeAll` calls are memcpy into buffer, not syscalls. Flush only on buffer fill. (Evaluated: 2026-05-15)
+- [x] ~~**Inline `getCountry`**~~: Completed. Changed to `inline fn` for explicit zero-overhead guarantee in recursive `optimize()` path. (Completed: 2026-05-15)
 
 ## Validation Rule Noted:
 *In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*
