@@ -53,7 +53,7 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 
 ### Tier 3: Low Impact (marginal gains)
 - [x] **Remove duplicate `madvise` calls**: `MADV.SEQUENTIAL` called twice on same region. (Completed: 2026-05-15)
-- [ ] **Evaluate `@branchHint` placement**: Audit hot loops for predictable branches where `.likely`/`.unlikely`/`.cold` hints could improve branch prediction. (Details: `notes/2026-05-15.md`)
+- [x] **Evaluate `@branchHint` placement**: Audited hot loops for predictable branches. Removed dynamic filter hint, fixed backwards flatten hints. (Completed: 2026-05-15)
 - [ ] **Inline `getCountry`**: Tiny function in `optimize` hot loop. (Details: `notes/2026-05-15.md`)
 - [ ] **Reduce `formatIPv6` buffer from 128 to 48**: Max IPv6 string is 39 chars; shrink to save L1 cache. (Details: `notes/2026-05-15.md`)
 
