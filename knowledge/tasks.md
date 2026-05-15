@@ -34,5 +34,25 @@ Updated: 2026-05-14
 - [x] **Look-Up Table (LUT) for Zero-Division IP Formatting**. (Completed: 2026-05-13)
 - [x] **ETag Desynchronization Fix**: Store `.etag` in git. (Completed: 2026-05-14)
 
+## Performance Optimization Backlog
+Sorted by estimated theoretical impact. **Validate first** (per Validation Rule) before implementing any item.
+
+### Tier 1: High Impact (10-50% speedup)
+- [ ] **Eliminate Recursive Trie `insertRange`**: Convert recursive descent to iterative stack-based traversal. (Details: `notes/2026-05-15.md`)
+- [ ] **Replace `active_ids` linear scan with O(1) lookup**: Current `swapRemove` is O(N) per event end; hash set or bitset would be O(1). (Details: `notes/2026-05-15.md`)
+- [ ] **Direct CIDR output from sweep-line**: Skip the Trie entirely, convert pre-flattened ranges to CIDR mathematically. (Details: `notes/2026-05-15.md`)
+- [ ] **Multi-threading / Parallel Pipelines**: Parallelize independent IPv4 and IPv6 streams using `std.Thread`. Est: 35-45% wall-clock reduction. (Details: `notes/2026-05-15.md`)
+
+### Tier 2: Medium Impact (5-10% speedup)
+- [ ] **Pre-allocate `active_ids` with known max**: Avoid `ArrayList` growth overhead during sweep. (Details: `notes/2026-05-15.md`)
+- [ ] **Batch writer flushes**: Single `writeAll` per line instead of two in `formatIPv4`/`formatIPv6`. (Details: `notes/2026-05-15.md`)
+- [ ] **Replace `std.mem.sort` with radix sort for events**: O(N) vs O(N log N) for 660k integer events. (Details: `notes/2026-05-15.md`)
+- [ ] **Avoid `@intCast` in hot trie paths**: Use `u32` internally, cast only at boundaries. (Details: `notes/2026-05-15.md`)
+
+### Tier 3: Low Impact (marginal gains)
+- [ ] **Remove duplicate `madvise` calls**: `MADV.SEQUENTIAL` called twice on same region. (Details: `notes/2026-05-15.md`)
+- [ ] **Inline `getCountry`**: Tiny function in `optimize` hot loop. (Details: `notes/2026-05-15.md`)
+- [ ] **Reduce `formatIPv6` buffer from 128 to 48**: Max IPv6 string is 39 chars; shrink to save L1 cache. (Details: `notes/2026-05-15.md`)
+
 ## Validation Rule Noted:
 *In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*
