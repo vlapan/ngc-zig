@@ -3,7 +3,6 @@ const ip_mod = @import("ip.zig");
 
 pub const FlattenStats = struct {
     collisions: usize,
-    merges: usize,
     flattened: usize,
     overrides: usize,
 };
@@ -23,7 +22,7 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mo
         id: u32,
     };
 
-    var stats = FlattenStats{ .collisions = 0, .merges = 0, .flattened = 0, .overrides = 0 };
+    var stats = FlattenStats{ .collisions = 0, .flattened = 0, .overrides = 0 };
     if (ranges.len == 0) return stats;
 
     var events = try std.ArrayList(Event).initCapacity(alloc, ranges.len * 2);
@@ -107,9 +106,6 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mo
             }
             current_country = new_country;
             segment_start = current_val;
-        } else if (current_country != null) {
-            @branchHint(.unlikely);
-            stats.merges += 1;
         }
     }
 
@@ -139,7 +135,6 @@ test "flatten disjoint ranges" {
     const stats = try flatten(u32, testing.allocator, ranges.items, &segments);
 
     try testing.expectEqual(@as(usize, 0), stats.collisions);
-    try testing.expectEqual(@as(usize, 0), stats.merges);
     try testing.expectEqual(@as(usize, 2), stats.flattened);
     try testing.expectEqual(@as(usize, 2), segments.items.len);
 
@@ -174,7 +169,6 @@ test "flatten overlapping ranges smaller overrides larger" {
     const stats = try flatten(u32, testing.allocator, ranges.items, &segments);
 
     try testing.expectEqual(@as(usize, 1), stats.collisions);
-    try testing.expectEqual(@as(usize, 0), stats.merges);
     try testing.expectEqual(@as(usize, 3), stats.flattened); // [0..127 US], [128..255 CA], [256..511 US]
     try testing.expectEqual(@as(usize, 3), segments.items.len);
 
@@ -208,7 +202,6 @@ test "flatten contiguous sibling merge" {
     const stats = try flatten(u32, testing.allocator, ranges.items, &segments);
 
     try testing.expectEqual(@as(usize, 0), stats.collisions);
-    try testing.expectEqual(@as(usize, 1), stats.merges);
     try testing.expectEqual(@as(usize, 1), stats.flattened); // [0..255 US]
     try testing.expectEqual(@as(usize, 1), segments.items.len);
 
