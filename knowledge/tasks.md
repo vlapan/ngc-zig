@@ -39,9 +39,11 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 
 ### Tier 1: High Impact (10-50% speedup)
 - [ ] **Eliminate Recursive Trie `insertRange`**: Convert recursive descent to iterative stack-based traversal. (Details: `notes/2026-05-15.md`)
-- [ ] **Replace `active_ids` linear scan with O(1) lookup**: Current `swapRemove` is O(N) per event end; hash set or bitset would be O(1). (Details: `notes/2026-05-15.md`)
 - [ ] **Direct CIDR output from sweep-line**: Skip the Trie entirely, convert pre-flattened ranges to CIDR mathematically. (Details: `notes/2026-05-15.md`)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize independent IPv4 and IPv6 streams using `std.Thread`. Est: 35-45% wall-clock reduction. (Details: `notes/2026-05-15.md`)
+
+### Rejected / Invalidated (Learnings)
+- [x] ~~**Replace `active_ids` linear scan with O(1) lookup**~~: Rejected. Telemetry proved that BGP data overlaps are incredibly shallow (nesting depth 1-3). A linear `for` loop over a 3-element array sitting in L1 cache is significantly faster than allocating and initializing a 1.3MB O(1) index map. (Evaluated: 2026-05-15)
 
 ### Tier 2: Medium Impact (5-10% speedup)
 - [ ] **Pre-allocate `active_ids` with known max**: Avoid `ArrayList` growth overhead during sweep. (Details: `notes/2026-05-15.md`)
