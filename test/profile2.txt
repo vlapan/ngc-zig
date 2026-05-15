@@ -1,62 +1,95 @@
 TIME (ms)    PROBES       REL %    OFFSET       SYMBOL / SOURCE LINE (INLINED)
 ---------    ------       -----    ------       ------------------------------
-30.13ms      30135        12.2%    0x100002e9c  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:106)
+7.74ms       7740         4.4%     0x10000357c  Io.Writer.write (in ngc) (Writer.zig:539)
+                                                Io.Writer.writeAll (in ngc) (Writer.zig:551)
+                                                Io.Writer.print__anon_26079 (in ngc) (Writer.zig:658)
+                                                debug.print__anon_3082 (in ngc) (debug.zig:311)
+                                                config.parseArgs (in ngc) (config.zig:51)
+                                                main.main (in ngc) (main.zig:26)
                                                 
 --------------------------------------------------------------------------------
-18.28ms      18279        7.4%     0x100002620  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:106)
+5.76ms       5756         3.3%     0x10000297c  ip.formatIPv6__anon_4127 (in ngc) (ip.zig:0)
                                                 
 --------------------------------------------------------------------------------
-13.30ms      13302        5.4%     0x100002f24  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:95)
+5.13ms       5127         2.9%     0x10000fbfc  Io.Writer.writeAll (in ngc) (Writer.zig:551)
+                                                Io.Writer.print__anon_6595 (in ngc) (Writer.zig:658)
+                                                debug.printSourceAtAddress (in ngc) (debug.zig:1221)
+                                                debug.writeCurrentStackTrace (in ngc) (debug.zig:778)
                                                 
 --------------------------------------------------------------------------------
-10.28ms      10277        4.2%     0x100002f30  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:98)
+4.85ms       4852         2.7%     0x100003584  Io.Writer.write (in ngc) (Writer.zig:539)
+                                                Io.Writer.writeAll (in ngc) (Writer.zig:551)
+                                                Io.Writer.print__anon_26079 (in ngc) (Writer.zig:658)
+                                                debug.print__anon_3082 (in ngc) (debug.zig:311)
+                                                config.parseArgs (in ngc) (config.zig:51)
+                                                main.main (in ngc) (main.zig:26)
                                                 
 --------------------------------------------------------------------------------
-9.06ms       9058         3.7%     0x100002e80  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:95)
+3.72ms       3722         2.1%     0x10000690c  parser.fastParseInt__anon_4012 (in ngc) (parser.zig:125)
+                                                parser.parseFile__anon_4002 (in ngc) (parser.zig:178)
+                                                main.main (in ngc) (main.zig:167)
                                                 
 --------------------------------------------------------------------------------
-5.69ms       5694         2.3%     0x100002618  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:98)
+3.12ms       3117         1.8%     0x100006844  parser.fastParseInt__anon_4012 (in ngc) (parser.zig:125)
+                                                parser.parseFile__anon_4002 (in ngc) (parser.zig:174)
+                                                main.main (in ngc) (main.zig:167)
                                                 
 --------------------------------------------------------------------------------
-3.80ms       3803         1.5%     0x100002608  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:93)
+3.02ms       3025         1.7%     0x100006a1c  array_list.Aligned(ip.IPRange(u128),null).append (in ngc) (array_list.zig:905)
+                                                parser.parseFile__anon_4002 (in ngc) (parser.zig:201)
+                                                main.main (in ngc) (main.zig:167)
                                                 
 --------------------------------------------------------------------------------
-3.71ms       3715         1.5%     0x1000025d0  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:0)
+2.92ms       2923         1.7%     0x1000450bc  mem.findScalarPos__anon_3756 (in ngc) (mem.zig:1267)
                                                 
 --------------------------------------------------------------------------------
-3.64ms       3643         1.5%     0x1000025c4  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:75)
+2.87ms       2870         1.6%     0x10004d494  DYLD-STUB$$memcpy (in ngc) + 4
                                                 
 --------------------------------------------------------------------------------
-3.64ms       3640         1.5%     0x100002ed4  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:0)
+2.82ms       2817         1.6%     0x1000077d0  array_list.Aligned(flatten.flatten__anon_4055.Event,null).appendAssumeCapacity (in ngc) (array_list.zig:914)
+                                                flatten.flatten__anon_4055 (in ngc) (flatten.zig:35)
+                                                main.main (in ngc) (main.zig:188)
                                                 
 --------------------------------------------------------------------------------
-3.23ms       3228         1.3%     0x1000025c0  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:75)
+2.42ms       2419         1.4%     0x100042d5c  flatten.flatten__anon_3841__struct_3881.less (in ngc) (flatten.zig:41)
+                                                sort.block.block__anon_24463 (in ngc) (block.zig:628)
                                                 
 --------------------------------------------------------------------------------
-3.16ms       3160         1.3%     0x1000025dc  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:87)
+2.25ms       2255         1.3%     0x10000356c  main.main (in ngc) (main.zig:15)
                                                 
 --------------------------------------------------------------------------------
-2.93ms       2932         1.2%     0x100002ec8  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:75)
+2.13ms       2128         1.2%     0x10000619c  cidr.rangeToCidrs__anon_3955 (in ngc) (cidr.zig:29)
+                                                main.main (in ngc) (main.zig:148)
                                                 
 --------------------------------------------------------------------------------
-2.85ms       2853         1.2%     0x100002ee0  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:87)
+1.97ms       1973         1.1%     0x1000033cc  mem.findSentinel__anon_7297 (in ngc) (mem.zig:1128)
+                                                mem.lenSliceTo__anon_17230 (in ngc) (mem.zig:1031)
+                                                mem.sliceTo__anon_17153 (in ngc) (mem.zig:958)
+                                                process.Args.Iterator.Posix.next (in ngc) (Args.zig:364)
+                                                process.Args.Iterator.next (in ngc) (Args.zig:63)
+                                                config.parseArgs (in ngc) (config.zig:41)
+                                                main.main (in ngc) (main.zig:26)
                                                 
 --------------------------------------------------------------------------------
-2.83ms       2833         1.1%     0x100002638  trie.IpTrie(u32).insertRange (in ngc) (trie.zig:64)
+1.95ms       1954         1.1%     0x100006808  parser.fastParseInt__anon_4012 (in ngc) (parser.zig:120)
+                                                parser.parseFile__anon_4002 (in ngc) (parser.zig:174)
+                                                main.main (in ngc) (main.zig:167)
                                                 
 --------------------------------------------------------------------------------
-2.57ms       2569         1.0%     0x10003a0e4  trie.IpTrie(u128).optimize (in ngc) (trie.zig:0)
+1.95ms       1946         1.1%     0x1000068c0  parser.fastParseInt__anon_4012 (in ngc) (parser.zig:120)
+                                                parser.parseFile__anon_4002 (in ngc) (parser.zig:178)
+                                                main.main (in ngc) (main.zig:167)
                                                 
 --------------------------------------------------------------------------------
-2.49ms       2492         1.0%     0x100002ea0  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:106)
+1.94ms       1941         1.1%     0x10000298c  ip.formatIPv6__anon_4127 (in ngc) (ip.zig:248)
                                                 
 --------------------------------------------------------------------------------
-2.46ms       2455         1.0%     0x100002eb0  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:64)
+1.84ms       1839         1.0%     0x100003574  main.main (in ngc) (main.zig:15)
                                                 
 --------------------------------------------------------------------------------
-2.32ms       2323         0.9%     0x100002ea8  trie.IpTrie(u128).insertRange (in ngc) (trie.zig:106)
+1.77ms       1774         1.0%     0x1000450a4  mem.findScalarPos__anon_3756 (in ngc) (mem.zig:1267)
                                                 
 --------------------------------------------------------------------------------
-2.24ms       2238         0.9%     0x100002a08  trie.IpTrie(u32).dump (in ngc) (trie.zig:166)
+1.73ms       1733         1.0%     0x100045240  mem.findScalarPos__anon_3756 (in ngc) (mem.zig:0)
                                                 
 --------------------------------------------------------------------------------
