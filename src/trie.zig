@@ -155,6 +155,7 @@ pub fn IpTrie(comptime T: type) type {
                 if (c != HOLE) {
                     if (T == u32) {
                         if (!ip_mod.isPrivateIPv4(@intCast(ip))) {
+                            @branchHint(.likely);
                             try ip_mod.formatIPv4(self.writer, @intCast(ip), depth, c);
                             return 1;
                         }

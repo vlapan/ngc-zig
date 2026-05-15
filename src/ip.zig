@@ -228,6 +228,7 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
     }
 
     if (longest_len == 1) {
+        @branchHint(.unlikely);
         longest_len = 0;
     }
 

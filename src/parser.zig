@@ -23,14 +23,17 @@ pub fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, al
 
     while (it.next()) |line| {
         if (line.len == 0) {
+            @branchHint(.cold);
             stats.lines_skipped += 1;
             continue;
         }
         var final_line = line;
         if (final_line[final_line.len - 1] == '\r') {
+            @branchHint(.unlikely);
             final_line = final_line[0 .. final_line.len - 1];
         }
         if (final_line.len == 0) {
+            @branchHint(.cold);
             stats.lines_skipped += 1;
             continue;
         }
@@ -180,6 +183,7 @@ pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Ar
 
         var c_val: u16 = 0;
         if (country.len >= 2) {
+            @branchHint(.likely);
             c_val = (@as(u16, country[0]) << 8) | @as(u16, country[1]);
             if (!filter_map[c_val]) {
                 stats.lines_filtered += 1;

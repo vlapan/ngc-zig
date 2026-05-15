@@ -89,6 +89,7 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mo
         const new_country = if (best_id) |id| ranges[id].country else null;
 
         if (new_country != current_country) {
+            @branchHint(.likely);
             if (current_country) |c| {
                 if (current_val > segment_start) {
                     stats.flattened += 1;
@@ -98,6 +99,7 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mo
             current_country = new_country;
             segment_start = current_val;
         } else if (current_country != null) {
+            @branchHint(.unlikely);
             stats.merges += 1;
         }
     }

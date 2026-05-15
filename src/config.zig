@@ -141,6 +141,7 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
         defer file.close(io);
         const stat = try file.stat(io);
         if (stat.size > 0) {
+            @branchHint(.likely);
             const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
             defer std.posix.munmap(mapped);
 
