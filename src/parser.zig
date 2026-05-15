@@ -144,15 +144,18 @@ pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Ar
 
     while (it.next()) |line| {
         if (line.len == 0) {
+            @branchHint(.cold);
             stats.lines_skipped += 1;
             continue;
         }
 
         const comma1 = std.mem.indexOfScalar(u8, line, ',') orelse {
+            @branchHint(.cold);
             stats.lines_skipped += 1;
             continue;
         };
         const comma2 = std.mem.indexOfScalarPos(u8, line, comma1 + 1, ',') orelse {
+            @branchHint(.cold);
             stats.lines_skipped += 1;
             continue;
         };
