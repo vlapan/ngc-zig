@@ -76,3 +76,15 @@ Must be the **first statement** inside a control flow branch or function. Not an
 Initializing a large array like `var arr = [_]bool{runtime_expr} ** 65536;` forces the compiler to embed a 65KB block of initialization loops/data directly into the executable because the expression is evaluated per-element at runtime.
 - **BAD**: `var filter_map = [_]bool{!has_filters} ** 65536;` -> Bloats binary by ~1MB!
 - **GOOD**: `var filter_map: [65536]bool = undefined; @memset(&filter_map, !has_filters);` -> 0 bytes of binary bloat.
+
+## Threading & Concurrency (Zig 0.16.0)
+- `std.Thread.Pool` **REMOVED**. Use `std.Io.async` / `std.Io.concurrent` / `std.Io.Group` instead.
+- `std.Thread.WaitGroup` → `std.Io.Group`
+- Sync primitives migrated: `std.Thread.Mutex` → `std.Io.Mutex`, `std.Thread.Condition` → `std.Io.Condition`, etc.
+- `heap.ArenaAllocator` is now **thread-safe and lock-free**. Single arena can be shared across threads.
+- `heap.ThreadSafeAllocator` **REMOVED** (no longer needed).
+- `init.io` is `Io.Threaded` by default (real OS threads).
+- `io.async(fn, args)` returns `Future(T)`. May run sequentially on limited Io implementations.
+- `io.concurrent(fn, args)` requires actual parallelism. Fails with `error.ConcurrencyUnavailable` if not possible.
+- Pattern: `var future = io.async(fn, .{args}); const result = try future.await(io);`
+- Group pattern: `var group: std.Io.Group = .init; defer group.cancel(io); group.async(io, fn, .{args}); try group.await(io);`

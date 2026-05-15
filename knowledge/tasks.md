@@ -40,7 +40,6 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 
 ### Tier 1: High Impact (10-50% speedup)
 - [x] ~~**Direct CIDR output from sweep-line**~~: Completed. Eliminated Trie entirely, replaced with iterative rangeToCidrs(). -52.4% instructions, -66.2% cycles, -34.0% RSS. (Completed: 2026-05-16)
-- [ ] **Multi-threading / Parallel Pipelines**: Parallelize independent IPv4 and IPv6 streams using `std.Thread`. Est: 35-45% wall-clock reduction. (Details: `notes/2026-05-16.md`)
 
 ### Tier 2: Medium Impact (5-10% speedup)
 - [x] ~~**Replace `std.mem.sort` with radix sort for events**~~: Rejected. +10.3% instructions, +35.8% RSS due to 4-8 allocation passes and memory bandwidth overhead. `std.mem.sort` (Introsort) is already optimal for 660k integer events. (Evaluated: 2026-05-16)
@@ -50,6 +49,7 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 - [x] ~~**Reduce `formatIPv6` buffer from 128 to 48**~~: Completed. Max IPv6 string is 39 chars; buffer is 48 bytes. (Completed: 2026-05-16)
 
 ### Rejected / Invalidated (Learnings)
+- [x] ~~**Multi-threading / Parallel Pipelines**~~: Rejected. 10ms wall-clock savings for ~165 lines of complexity and +30% RSS. Tool runs in 80ms already; cost-benefit unfavorable. Reconsider if dataset grows 10x+ or becomes a real-time service. (Evaluated: 2026-05-16)
 - [x] ~~**Replace `active_ids` linear scan with O(1) lookup**~~: Rejected. BGP data overlaps are shallow (depth 1-3). Linear scan over 3 elements in L1 cache beats O(1) map overhead. (Evaluated: 2026-05-15)
 - [x] ~~**Avoid `@intCast` in hot trie paths**~~: Invalidated. `insertRange` is now iterative. The only remaining cast (`usize`→`u24`) is a deliberate 8-byte packing trade-off; removing it bloats `TrieNode` by 25%. (Evaluated: 2026-05-15)
 - [x] ~~**Pre-allocate `active_ids` with known max**~~: Invalidated. Already `initCapacity(alloc, 64)`. BGP nesting depth is 1-3, so capacity is 20x over-provisioned. Growth never triggers. (Evaluated: 2026-05-15)
