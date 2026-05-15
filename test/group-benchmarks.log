@@ -85,3 +85,35 @@ Date: 2026-05-14 17:18:43 UTC | Commit: b03c4ef - DIRTY | Mode: group
 [5/5] Output Verification:
       [OK] No changes in test/output-group.txt. Output exactly matches baseline.
 ======================================================================
+======================================================================
+Date: 2026-05-15 17:51:01 UTC | Commit: fbbf910  | Mode: group
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 17M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 337272, IPv6: 212932, Static: 5, Skipped: 3, Filtered: 0
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 4138, IPv6: 412
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 93623, IPv6: 58704
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 243742, IPv6: 154236
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 797062, IPv6: 1309734
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 2, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 218, IPv6: 219
+      Outputs (CIDR networks generated): IPv4: 386708, IPv6: 376434, Static: 5, Total: 763147
+      Estimated Nginx RAM footprint: ~69 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 46ms, Phase 1 (Flatten): 97ms, Phase 2 (Radix): 34ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.49s |  0.13s |  0.02s | 57.1 MB |  1,764,218,869 |    470,929,690 |   28/395 |
+| Hot1 |  0.14s |  0.12s |  0.01s | 57.1 MB |  1,734,125,274 |    452,167,985 |    11/29 |
+| Hot2 |  0.14s |  0.12s |  0.01s | 57.1 MB |  1,736,443,267 |    456,481,709 |     8/40 |
+| Hot3 |  0.15s |  0.12s |  0.01s | 57.1 MB |  1,738,010,459 |    455,103,356 |     8/44 |
+
+[5/5] Output Verification:
+      [NOTICE] test/output-group.txt has changed!
+      If this is an intentional formatting or feature change, review the diff:
+       test/output-group.txt | 14856 ++++++++----------------------------------------
+       1 file changed, 2394 insertions(+), 12462 deletions(-)
+======================================================================

@@ -56,3 +56,35 @@ Date: 2026-05-14 17:06:30 UTC | Commit: b03c4ef - DIRTY | Mode: filter
 [5/5] Output Verification:
       [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
 ======================================================================
+======================================================================
+Date: 2026-05-15 17:50:47 UTC | Commit: fbbf910  | Mode: filter
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 7.7M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 100095, IPv6: 57300, Static: 5, Skipped: 3, Filtered: 392809
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 842, IPv6: 45
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 1065, IPv6: 101
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 99911, IPv6: 57272
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 640654, IPv6: 685502
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 0, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 5, IPv6: 5
+      Outputs (CIDR networks generated): IPv4: 180451, IPv6: 167043, Static: 5, Total: 347499
+      Estimated Nginx RAM footprint: ~31 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 18ms, Phase 1 (Flatten): 46ms, Phase 2 (Radix): 23ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.39s |  0.08s |  0.01s | 30.7 MB |    899,946,826 |    257,421,333 |     9/48 |
+| Hot1 |  0.08s |  0.07s |  0.00s | 30.7 MB |    899,708,903 |    253,421,671 |     2/27 |
+| Hot2 |  0.08s |  0.07s |  0.00s | 30.7 MB |    898,764,586 |    250,934,625 |     1/18 |
+| Hot3 |  0.08s |  0.07s |  0.00s | 30.7 MB |    898,538,709 |    251,569,105 |     2/18 |
+
+[5/5] Output Verification:
+      [NOTICE] test/output-filter.txt has changed!
+      If this is an intentional formatting or feature change, review the diff:
+       test/output-filter.txt | 5042 ++++++++----------------------------------------
+       1 file changed, 770 insertions(+), 4272 deletions(-)
+======================================================================
