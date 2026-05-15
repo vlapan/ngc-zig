@@ -55,6 +55,12 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 - [x] ~~**Pre-allocate `active_ids` with known max**~~: Invalidated. Already `initCapacity(alloc, 64)`. BGP nesting depth is 1-3, so capacity is 20x over-provisioned. Growth never triggers. (Evaluated: 2026-05-15)
 - [x] ~~**Batch writer flushes**~~: Invalidated. `formatIPv4`/`formatIPv6` write to a 64KB buffered writer. Multiple `writeAll` calls are memcpy into buffer, not syscalls. Flush only on buffer fill. (Evaluated: 2026-05-15)
 - [x] ~~**Inline `getCountry`**~~: Completed. Changed to `inline fn` for explicit zero-overhead guarantee in recursive `optimize()` path. (Completed: 2026-05-15)
+- [x] ~~**SWAR/SIMD further optimization**~~: Exhausted. Pipeline limited by I/O and control flow, not byte scanning. Remaining targets are branch-heavy or variable-length. (Evaluated: 2026-05-16)
+
+## Explored / Backlog (Future Research)
+
+- [ ] **Single Config File**: Replace `--static`, `--groups-file`, `--filters-file` with one flat key-value file. ~30 lines parser, ~2ms startup, zero dependencies. CLI args as overrides. (Details: `notes/2026-05-16.md`)
+- [ ] **Io Concurrency API**: Zig 0.16.0 `io.async`/`io.concurrent`/`std.Io.Group` provides Promise-like parallelism. Revisit if dataset grows 10x+ or becomes real-time service. (Details: `notes/2026-05-16.md`)
 
 ## Validation Rule Noted:
 *In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*
