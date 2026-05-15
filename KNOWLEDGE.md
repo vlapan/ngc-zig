@@ -17,6 +17,7 @@ Updated: 2026-05-13
 - Use real test data from `test/geo-whois-asn-country-ipv4-num.csv` and `test/geo-whois-asn-country-ipv6-num.csv`
 - Always verify output changes (`git diff test/output.txt`) to track expected vs unexpected changes before committing code
 - **Validate Before Implementing:** Before starting work on an item from `knowledge/tasks.md` (especially specific code optimizations), quickly `grep` or `cat` the relevant source code to verify the targeted logic still exists in the assumed state. Code evolves, and backlog plans can become obsolete or conceptually flawed over time.
+- **Mechanical Sympathy Pre-Check:** Before implementing any performance optimization that swaps a standard algorithm (e.g., `std.mem.sort`) for a theoretically "faster" Big-O algorithm (e.g., Radix Sort), you MUST perform a back-of-the-napkin hardware calculation in your reasoning. Calculate the exact struct byte sizes, the number of elements, the required allocations, and the number of memory passes. If the new algorithm requires dropping out of in-place `O(N log N)` into out-of-place memory allocations that exceed typical L2/L3 cache sizes (~8-12MB), you must reject the task without implementing it. Big-O notation is subservient to memory bandwidth and cache locality.
 - Keep state files updated frequently
 - Commit incrementally
 - Write state frequently for session survival

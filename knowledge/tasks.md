@@ -45,7 +45,7 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize independent IPv4 and IPv6 streams using `std.Thread`. Est: 35-45% wall-clock reduction. (Details: `notes/2026-05-15.md`)
 
 ### Tier 2: Medium Impact (5-10% speedup)
-- [ ] **Replace `std.mem.sort` with radix sort for events**: O(N) vs O(N log N) for 660k integer events. Sort runs once per IP version. (Details: `notes/2026-05-15.md`)
+- [x] ~~**Replace `std.mem.sort` with radix sort for events**~~: Rejected. +10.3% instructions, +35.8% RSS due to 4-8 allocation passes and memory bandwidth overhead. `std.mem.sort` (Introsort) is already optimal for 660k integer events. (Evaluated: 2026-05-16)
 
 ### Tier 3: Low Impact (marginal gains)
 - [ ] **Reduce `formatIPv6` buffer from 128 to 48**: Max IPv6 string is 39 chars; shrink to save stack space. (Details: `notes/2026-05-15.md`)
