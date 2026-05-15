@@ -6,7 +6,7 @@ Updated: 2026-05-15
 - [ ] **Performance: Future Optimizations**: Continuously profile and research new algorithmic or structural optimization possibilities. (Details: `notes/2026-05-15.md`)
 - [ ] **Machine-Readable Telemetry**: Add a `--json` or `--quiet` flag to export strictly machine-readable JSON stats (collisions, overrides, runtime) for CI/CD ingestion and historical tracking. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output a clean `+ Added`, `- Removed`, `~ Changed` delta log instead of a raw dump when generating new routing tables. (Details: `notes/2026-05-13.md`)
-- [ ] **Multi-threading / Parallel Pipelines**: Parallelize the independent IPv4 and IPv6 Trie construction/parsing streams. (Details: `notes/2026-05-13.md`)
+- [ ] **Multi-threading / Parallel Pipelines**: Parallelize independent IPv4 and IPv6 parsing/flattening/CIDR streams using `std.Thread`. Est: 35-45% wall-clock reduction. (Details: `notes/2026-05-13.md`)
 
 ## Completed (Recent)
 - [x] **Eliminate Recursive Trie `insertRange`**: Converted to iterative stack-based traversal. -708M instructions (-30%), -18% cycles, -20% runtime. (Completed: 2026-05-15)
@@ -41,14 +41,14 @@ Updated: 2026-05-15
 Sorted by estimated theoretical impact. **Validate first** (per Validation Rule) before implementing any item.
 
 ### Tier 1: High Impact (10-50% speedup)
-- [ ] **Direct CIDR output from sweep-line**: Skip the Trie entirely, convert pre-flattened ranges to CIDR mathematically. (Details: `notes/2026-05-15.md`)
+- [x] ~~**Direct CIDR output from sweep-line**~~: Completed. Eliminated Trie entirely, replaced with iterative rangeToCidrs(). -52.4% instructions, -66.2% cycles, -34.0% RSS. (Completed: 2026-05-16)
 - [ ] **Multi-threading / Parallel Pipelines**: Parallelize independent IPv4 and IPv6 streams using `std.Thread`. Est: 35-45% wall-clock reduction. (Details: `notes/2026-05-15.md`)
 
 ### Tier 2: Medium Impact (5-10% speedup)
 - [x] ~~**Replace `std.mem.sort` with radix sort for events**~~: Rejected. +10.3% instructions, +35.8% RSS due to 4-8 allocation passes and memory bandwidth overhead. `std.mem.sort` (Introsort) is already optimal for 660k integer events. (Evaluated: 2026-05-16)
 
 ### Tier 3: Low Impact (marginal gains)
-- [ ] **Reduce `formatIPv6` buffer from 128 to 48**: Max IPv6 string is 39 chars; shrink to save stack space. (Details: `notes/2026-05-15.md`)
+- [x] ~~**Reduce `formatIPv6` buffer from 128 to 48**~~: Completed. Max IPv6 string is 39 chars; buffer is 48 bytes. (Completed: 2026-05-16)
 
 ### Rejected / Invalidated (Learnings)
 - [x] ~~**Replace `active_ids` linear scan with O(1) lookup**~~: Rejected. BGP data overlaps are shallow (depth 1-3). Linear scan over 3 elements in L1 cache beats O(1) map overhead. (Evaluated: 2026-05-15)

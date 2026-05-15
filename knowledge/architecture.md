@@ -1,5 +1,5 @@
 # Architecture
-Updated: 2026-05-14
+Updated: 2026-05-16
 
 ## Overview
 The `NGC` CLI processes raw GeoIP CSV files, normalizes overlapping blocks, and outputs a mathematically flat and perfectly aggregated format for the Nginx Geo module.
@@ -15,13 +15,12 @@ The system processes data in a strictly pipelined architecture, decoupled into d
 ### Phase 1: Conflict Resolution (`src/flatten.zig`)
 Upstream datasets are "dirty" and contain heavily overlapping, nested, and conflicting subnets.
 - **Input Sorting**: Raw IP blocks are sorted by size descending using a lightweight index array (`[]u32`). This enforces producer priority (`GeoFeed > Whois > ASN`), meaning small specific blocks logically "overwrite" large generalized blocks.
-- **1D Sweep-Line Pre-Flattening**: Before hitting the Trie, a sweep-line algorithm walks all IP boundaries, mathematically resolving overlaps, collisions, and subsumptions. Contiguous sibling blocks belonging to the same country are seamlessly merged.
-- **Result**: The output of this phase is a mathematically perfect, non-overlapping stream of disjoint IP segments.
+- **1D Sweep-Line Pre-Flattening**: A sweep-line algorithm walks all IP boundaries, mathematically resolving overlaps, collisions, and subsumptions. Contiguous sibling blocks belonging to the same country are seamlessly merged. Static overrides (HOLE entries) are appended to the input with `size=0`, ensuring they naturally win every collision via the priority rule.
+- **Result**: The output of this phase is a `[]Segment(T)` array of mathematically perfect, non-overlapping, disjoint IP segments with resolved country assignments.
 
-### Phase 2: CIDR Generation & Aggregation (`src/trie.zig` & `src/ip.zig`)
+### Phase 2: CIDR Generation (`src/cidr.zig` & `src/ip.zig`)
 Nginx does not accept arbitrary `start-end` IP ranges; it strictly requires power-of-two aligned CIDR blocks.
-- **Binary Prefix Tree (`IpTrie`)**: The Radix Trie acts strictly as a CIDR boundary generator. When the pre-flattened disjoint segments are streamed into the Trie, its binary math naturally fractures them into the absolute minimum number of valid Nginx CIDRs (e.g., `/32`, `/31`, `/29`).
-- **Memory**: The tree uses `std.ArrayListUnmanaged` with an 8-byte packed AoS layout, backed by branchless allocations (`appendAssumeCapacity`) for extreme memory locality.
-- **Static Overrides**: `--static` network files are stamped at the very end as a `HOLE` to forcefully punch out internal IP ranges.
-- **Bottom-Up Optimization**: A post-order traversal (`optimize()`) sweeps the tree to merge any adjacent `/24` siblings back into a `/23` if they somehow share the exact same country.
-- **Branchless Formatting**: A pre-order traversal dumps the networks using LUTs for IPv4 and hardware Count Leading Zeros (`@clz`) for RFC 5952 compliant IPv6 zero-compression.
+- **Iterative Range-to-CIDR**: Each disjoint segment is converted to minimum CIDR blocks via a tight iterative loop. For each position, the largest power-of-2 aligned block fitting within the remaining range is emitted, then the cursor advances. Zero allocations, zero recursion.
+- **HOLE Handling**: Segments with `country=HOLE` produce no output, effectively punching holes for private/static ranges.
+- **Private IPv4 Filtering**: RFC1918 ranges are automatically suppressed from output.
+- **Branchless Formatting**: IPv4 uses LUTs, IPv6 uses hardware Count Leading Zeros (`@clz`) for RFC 5952 compliant zero-compression.

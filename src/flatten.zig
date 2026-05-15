@@ -1,21 +1,29 @@
 const std = @import("std");
 const ip_mod = @import("ip.zig");
-const trie_mod = @import("trie.zig");
 
 pub const FlattenStats = struct {
     collisions: usize,
     merges: usize,
     flattened: usize,
+    overrides: usize,
 };
 
-pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mod.IPRange(T), trie: *trie_mod.IpTrie(T)) !FlattenStats {
+pub fn Segment(comptime T: type) type {
+    return struct {
+        start: T,
+        end: T,
+        country: u16,
+    };
+}
+
+pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mod.IPRange(T), segments: *std.ArrayList(Segment(T))) !FlattenStats {
     const Event = struct {
         val: T,
         is_end: bool,
         id: u32,
     };
 
-    var stats = FlattenStats{ .collisions = 0, .merges = 0, .flattened = 0 };
+    var stats = FlattenStats{ .collisions = 0, .merges = 0, .flattened = 0, .overrides = 0 };
     if (ranges.len == 0) return stats;
 
     var events = try std.ArrayList(Event).initCapacity(alloc, ranges.len * 2);
@@ -93,7 +101,8 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mo
             if (current_country) |c| {
                 if (current_val > segment_start) {
                     stats.flattened += 1;
-                    _ = try trie.insertRange(1, 0, std.math.maxInt(T), segment_start, current_val - 1, c);
+                    if (c == ip_mod.HOLE) stats.overrides += 1;
+                    try segments.append(alloc, .{ .start = segment_start, .end = current_val - 1, .country = c });
                 }
             }
             current_country = new_country;
@@ -113,8 +122,8 @@ test "flatten disjoint ranges" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
     defer aw.deinit();
 
-    var trie = try trie_mod.IpTrie(u32).init(testing.allocator, &aw.writer);
-    defer trie.nodes.deinit(testing.allocator);
+    var segments = std.ArrayList(Segment(u32)).empty;
+    defer segments.deinit(testing.allocator);
 
     var ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     defer ranges.deinit(testing.allocator);
@@ -127,14 +136,17 @@ test "flatten disjoint ranges" {
     // 0.0.1.0 - 0.0.1.255 (CA)
     try ranges.append(testing.allocator, .{ .start = 256, .end = 511, .country = ca_idx, .size = 256 });
 
-    const stats = try flatten(u32, testing.allocator, ranges.items, &trie);
+    const stats = try flatten(u32, testing.allocator, ranges.items, &segments);
 
     try testing.expectEqual(@as(usize, 0), stats.collisions);
     try testing.expectEqual(@as(usize, 0), stats.merges);
     try testing.expectEqual(@as(usize, 2), stats.flattened);
+    try testing.expectEqual(@as(usize, 2), segments.items.len);
 
-    trie.optimize(1);
-    _ = try trie.dump(1, 0, 0);
+    const cidr_mod = @import("cidr.zig");
+    for (segments.items) |seg| {
+        _ = try cidr_mod.rangeToCidrs(u32, &aw.writer, seg.start, seg.end, seg.country);
+    }
 
     const expected = "0.0.0.0/24 US;\n0.0.1.0/24 CA;\n";
     try testing.expectEqualStrings(expected, aw.writer.buffered());
@@ -144,8 +156,8 @@ test "flatten overlapping ranges smaller overrides larger" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
     defer aw.deinit();
 
-    var trie = try trie_mod.IpTrie(u32).init(testing.allocator, &aw.writer);
-    defer trie.nodes.deinit(testing.allocator);
+    var segments = std.ArrayList(Segment(u32)).empty;
+    defer segments.deinit(testing.allocator);
 
     var ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     defer ranges.deinit(testing.allocator);
@@ -159,14 +171,17 @@ test "flatten overlapping ranges smaller overrides larger" {
     // Small override block: 0.0.0.128 - 0.0.0.255 (CA)
     try ranges.append(testing.allocator, .{ .start = 128, .end = 255, .country = ca_idx, .size = 128 });
 
-    const stats = try flatten(u32, testing.allocator, ranges.items, &trie);
+    const stats = try flatten(u32, testing.allocator, ranges.items, &segments);
 
     try testing.expectEqual(@as(usize, 1), stats.collisions);
     try testing.expectEqual(@as(usize, 0), stats.merges);
     try testing.expectEqual(@as(usize, 3), stats.flattened); // [0..127 US], [128..255 CA], [256..511 US]
+    try testing.expectEqual(@as(usize, 3), segments.items.len);
 
-    trie.optimize(1);
-    _ = try trie.dump(1, 0, 0);
+    const cidr_mod = @import("cidr.zig");
+    for (segments.items) |seg| {
+        _ = try cidr_mod.rangeToCidrs(u32, &aw.writer, seg.start, seg.end, seg.country);
+    }
 
     const expected = "0.0.0.0/25 US;\n0.0.0.128/25 CA;\n0.0.1.0/24 US;\n";
     try testing.expectEqualStrings(expected, aw.writer.buffered());
@@ -176,8 +191,8 @@ test "flatten contiguous sibling merge" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
     defer aw.deinit();
 
-    var trie = try trie_mod.IpTrie(u32).init(testing.allocator, &aw.writer);
-    defer trie.nodes.deinit(testing.allocator);
+    var segments = std.ArrayList(Segment(u32)).empty;
+    defer segments.deinit(testing.allocator);
 
     var ranges = std.ArrayList(ip_mod.IPv4Range).empty;
     defer ranges.deinit(testing.allocator);
@@ -190,15 +205,48 @@ test "flatten contiguous sibling merge" {
     // 0.0.0.128 - 0.0.0.255 (US)
     try ranges.append(testing.allocator, .{ .start = 128, .end = 255, .country = us_idx, .size = 128 });
 
-    const stats = try flatten(u32, testing.allocator, ranges.items, &trie);
+    const stats = try flatten(u32, testing.allocator, ranges.items, &segments);
 
     try testing.expectEqual(@as(usize, 0), stats.collisions);
     try testing.expectEqual(@as(usize, 1), stats.merges);
     try testing.expectEqual(@as(usize, 1), stats.flattened); // [0..255 US]
+    try testing.expectEqual(@as(usize, 1), segments.items.len);
 
-    trie.optimize(1);
-    _ = try trie.dump(1, 0, 0);
+    const cidr_mod = @import("cidr.zig");
+    for (segments.items) |seg| {
+        _ = try cidr_mod.rangeToCidrs(u32, &aw.writer, seg.start, seg.end, seg.country);
+    }
 
     const expected = "0.0.0.0/24 US;\n";
+    try testing.expectEqualStrings(expected, aw.writer.buffered());
+}
+
+test "flatten with static HOLE override" {
+    var aw: std.Io.Writer.Allocating = .init(testing.allocator);
+    defer aw.deinit();
+
+    var segments = std.ArrayList(Segment(u32)).empty;
+    defer segments.deinit(testing.allocator);
+
+    var ranges = std.ArrayList(ip_mod.IPv4Range).empty;
+    defer ranges.deinit(testing.allocator);
+
+    const us_idx: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
+    const hole: u16 = 0xFFFF;
+
+    try ranges.append(testing.allocator, .{ .start = 0, .end = 255, .country = us_idx, .size = 256 });
+    try ranges.append(testing.allocator, .{ .start = 10, .end = 20, .country = hole, .size = 0 });
+
+    const stats = try flatten(u32, testing.allocator, ranges.items, &segments);
+
+    try testing.expectEqual(@as(usize, 1), stats.collisions);
+    try testing.expectEqual(@as(usize, 3), stats.flattened);
+
+    const cidr_mod = @import("cidr.zig");
+    for (segments.items) |seg| {
+        _ = try cidr_mod.rangeToCidrs(u32, &aw.writer, seg.start, seg.end, seg.country);
+    }
+
+    const expected = "0.0.0.0/29 US;\n0.0.0.8/31 US;\n0.0.0.21/32 US;\n0.0.0.22/31 US;\n0.0.0.24/29 US;\n0.0.0.32/27 US;\n0.0.0.64/26 US;\n0.0.0.128/25 US;\n";
     try testing.expectEqualStrings(expected, aw.writer.buffered());
 }

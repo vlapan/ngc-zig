@@ -8,7 +8,7 @@ Updated: 2026-05-13
   - Allowed types: `feat`, `fix`, `build`, `chore`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`.
   - Use a `!` after the type/scope or a `BREAKING CHANGE:` footer for breaking changes.
   - **Scopes:** Maximize log utility by heavily utilizing scopes mapped to our architecture:
-    - *Modules:* `(parser)`, `(flatten)`, `(trie)`, `(ip)`, `(config)`, `(main)`
+    - *Modules:* `(parser)`, `(flatten)`, `(cidr)`, `(ip)`, `(config)`, `(main)`
     - *Domains:* `(cli)`, `(telemetry)`, `(build)`, `(ci)`, `(test)`, `(release)`
     - *Omit scope* only for broad, cross-cutting changes.
 - Pure Zig 0.16.0, NO C interop
@@ -37,7 +37,7 @@ Updated: 2026-05-13
 - `knowledge/tasks.md` - The single source of truth for the project roadmap, open tasks, backlog, and feature ideas. **Must be read at the start of every session.**
 - `knowledge/release-process.md` - The strict, step-by-step checklist required for tagging and deploying new versions.
 - `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
-- `knowledge/architecture.md` - Core system design and radix trie behavior
+- `knowledge/architecture.md` - Core system design and CIDR generation pipeline
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps
 - `notes/` - Daily session logs with progress. These are strictly append-only historical narratives showing *what was done*. Do NOT trap open tasks or future backlogs in daily notes. Conversely, do NOT put detailed task specifications in `tasks.md`. `knowledge/tasks.md` must be strictly limited to a concise 1-line checklist. ALL rationale, examples, and detailed specifications MUST go into the daily `notes/YYYY-MM-DD.md` file, which is then linked at the end of the 1-line task (e.g., `(Details: notes/2026-05-14.md)`).
 - **Benchmarking & Profiling Rules**:

@@ -2,7 +2,7 @@
 
 A highly optimized, pure Zig CLI tool for converting integer-range GeoIP CSV databases into mathematically flat Nginx `geo` module format.
 
-It handles "dirty" upstream data via a 1D sweep-line algorithm to resolve overlapping blocks (enforcing specificity priorities), then uses a Radix Trie to safely punch holes for static network overrides, automatically fracturing IP ranges into valid Nginx CIDRs, and merging contiguous sibling subnets.
+It handles "dirty" upstream data via a 1D sweep-line algorithm to resolve overlapping blocks (enforcing specificity priorities), then converts disjoint segments directly to minimum CIDRs. Static overrides are baked into the sweep-line as highest-priority entries, automatically fracturing IP ranges into valid Nginx CIDRs and merging contiguous sibling subnets.
 
 ## Usage
 
@@ -37,7 +37,7 @@ You can radically reduce the memory footprint of your Nginx configuration by agg
 - You can also provide these via files using `--groups-file` and `--filters-file`.
 
 ### Output (`--output`)
-Space-separated, semicolon-terminated CIDR-to-string mappings directly loadable by the Nginx `geo` module. Output strictness is guaranteed via post-order traversal optimization.
+Space-separated, semicolon-terminated CIDR-to-string mappings directly loadable by the Nginx `geo` module. Output strictness is guaranteed via sweep-line collision resolution and iterative CIDR fragmentation.
 ```text
 1.0.0.0/24 AU;
 1.0.1.0/24 CN;

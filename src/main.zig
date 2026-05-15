@@ -1,9 +1,9 @@
 const std = @import("std");
 const config_mod = @import("config.zig");
 const ip_mod = @import("ip.zig");
-const trie_mod = @import("trie.zig");
 const flatten_mod = @import("flatten.zig");
 const parser_mod = @import("parser.zig");
+const cidr_mod = @import("cidr.zig");
 const build_options = @import("build_options.zig");
 
 pub const std_options: std.Options = .{
@@ -76,15 +76,12 @@ pub fn main(init: std.process.Init) void {
     var v6_countries: usize = 0;
     var v4_flattened: usize = 0;
     var v6_flattened: usize = 0;
+    var v4_segments: usize = 0;
+    var v6_segments: usize = 0;
 
     var time_io_ns: i128 = 0;
     var time_flatten_ns: i128 = 0;
-    var time_trie_ns: i128 = 0;
-
-    var v4_nodes: usize = 0;
-    var v6_nodes: usize = 0;
-    var v4_merges: usize = 0;
-    var v6_merges: usize = 0;
+    var time_cidr_ns: i128 = 0;
 
     var seen_v4 = [_]bool{false} ** 65536;
     var seen_v6 = [_]bool{false} ** 65536;
@@ -126,41 +123,38 @@ pub fn main(init: std.process.Init) void {
         const ts_v4_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_io_ns += ts_v4_parsed - ts_v4_start;
 
-        var trie_v4 = trie_mod.IpTrie(u32).init(alloc, writer) catch |err| {
-            std.log.err("Failed to initialize IPv4 Trie: {}", .{err});
-            std.process.exit(1);
-        };
-        trie_v4.nodes.ensureTotalCapacity(alloc, ipv4_ranges.items.len * 4) catch |err| {
-            std.log.err("Failed to pre-allocate IPv4 Trie: {}", .{err});
-            std.process.exit(1);
-        };
+        for (static_v4_ranges.items) |r| {
+            ipv4_ranges.append(alloc, r) catch |err| {
+                std.log.err("Failed to append static IPv4 range: {}", .{err});
+                std.process.exit(1);
+            };
+        }
 
-        const flatten_stats = flatten_mod.flatten(u32, alloc, ipv4_ranges.items, &trie_v4) catch |err| {
+        var segments = std.ArrayList(flatten_mod.Segment(u32)).empty;
+        defer segments.deinit(alloc);
+
+        const flatten_stats = flatten_mod.flatten(u32, alloc, ipv4_ranges.items, &segments) catch |err| {
             std.log.err("Failed to flatten IPv4 ranges: {}", .{err});
             std.process.exit(1);
         };
         v4_stats.collisions = flatten_stats.collisions;
-        v4_merges = flatten_stats.merges;
+        v4_stats.overrides = flatten_stats.overrides;
         v4_flattened = flatten_stats.flattened;
 
         const ts_v4_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_flatten_ns += ts_v4_flattened - ts_v4_parsed;
 
-        for (static_v4_ranges.items) |r| {
-            v4_stats.overrides += trie_v4.insertRange(1, 0, std.math.maxInt(u32), r.start, r.end, trie_mod.HOLE) catch |err| {
-                std.log.err("Failed to insert static IPv4 hole: {}", .{err});
+        for (segments.items) |seg| {
+            const cidr_stats = cidr_mod.rangeToCidrs(u32, writer, seg.start, seg.end, seg.country) catch |err| {
+                std.log.err("Failed to generate IPv4 CIDRs: {}", .{err});
                 std.process.exit(1);
             };
+            v4_cidrs += cidr_stats.cidrs;
         }
-        trie_v4.optimize(1);
-        v4_cidrs = trie_v4.dump(1, 0, 0) catch |err| {
-            std.log.err("Failed to write IPv4 output: {}", .{err});
-            std.process.exit(1);
-        };
-        v4_nodes = trie_v4.nodes.items.len;
+        v4_segments = segments.items.len;
 
-        const ts_v4_trie = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_trie_ns += ts_v4_trie - ts_v4_flattened;
+        const ts_v4_cidr = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_cidr_ns += ts_v4_cidr - ts_v4_flattened;
 
         for (seen_v4) |seen| {
             if (seen) v4_countries += 1;
@@ -181,41 +175,38 @@ pub fn main(init: std.process.Init) void {
         const ts_v6_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_io_ns += ts_v6_parsed - ts_v6_start;
 
-        var trie_v6 = trie_mod.IpTrie(u128).init(alloc, writer) catch |err| {
-            std.log.err("Failed to initialize IPv6 Trie: {}", .{err});
-            std.process.exit(1);
-        };
-        trie_v6.nodes.ensureTotalCapacity(alloc, ipv6_ranges.items.len * 8) catch |err| {
-            std.log.err("Failed to pre-allocate IPv6 Trie: {}", .{err});
-            std.process.exit(1);
-        };
+        for (static_v6_ranges.items) |r| {
+            ipv6_ranges.append(alloc, r) catch |err| {
+                std.log.err("Failed to append static IPv6 range: {}", .{err});
+                std.process.exit(1);
+            };
+        }
 
-        const flatten_v6_stats = flatten_mod.flatten(u128, alloc, ipv6_ranges.items, &trie_v6) catch |err| {
+        var segments = std.ArrayList(flatten_mod.Segment(u128)).empty;
+        defer segments.deinit(alloc);
+
+        const flatten_v6_stats = flatten_mod.flatten(u128, alloc, ipv6_ranges.items, &segments) catch |err| {
             std.log.err("Failed to flatten IPv6 ranges: {}", .{err});
             std.process.exit(1);
         };
         v6_stats.collisions = flatten_v6_stats.collisions;
-        v6_merges = flatten_v6_stats.merges;
+        v6_stats.overrides = flatten_v6_stats.overrides;
         v6_flattened = flatten_v6_stats.flattened;
 
         const ts_v6_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
         time_flatten_ns += ts_v6_flattened - ts_v6_parsed;
 
-        for (static_v6_ranges.items) |r| {
-            v6_stats.overrides += trie_v6.insertRange(1, 0, std.math.maxInt(u128), r.start, r.end, trie_mod.HOLE) catch |err| {
-                std.log.err("Failed to insert static IPv6 hole: {}", .{err});
+        for (segments.items) |seg| {
+            const cidr_stats = cidr_mod.rangeToCidrs(u128, writer, seg.start, seg.end, seg.country) catch |err| {
+                std.log.err("Failed to generate IPv6 CIDRs: {}", .{err});
                 std.process.exit(1);
             };
+            v6_cidrs += cidr_stats.cidrs;
         }
-        trie_v6.optimize(1);
-        v6_cidrs = trie_v6.dump(1, 0, 0) catch |err| {
-            std.log.err("Failed to write IPv6 output: {}", .{err});
-            std.process.exit(1);
-        };
-        v6_nodes = trie_v6.nodes.items.len;
+        v6_segments = segments.items.len;
 
-        const ts_v6_trie = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_trie_ns += ts_v6_trie - ts_v6_flattened;
+        const ts_v6_cidr = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+        time_cidr_ns += ts_v6_cidr - ts_v6_flattened;
 
         for (seen_v6) |seen| {
             if (seen) v6_countries += 1;
@@ -246,23 +237,19 @@ pub fn main(init: std.process.Init) void {
         v4_stats.collisions,
         v6_stats.collisions,
     });
-    std.debug.print("  Phase 1 (Sweep Line): Contiguous Merges: IPv4: {}, IPv6: {}\n", .{
-        v4_merges,
-        v6_merges,
-    });
     std.debug.print("  Phase 1 (Sweep Line): Disjoint Segments: IPv4: {}, IPv6: {}\n", .{
         v4_flattened,
         v6_flattened,
     });
-    std.debug.print("  Phase 2 (Radix Trie): Nodes Allocated: IPv4: {}, IPv6: {}\n", .{
-        v4_nodes,
-        v6_nodes,
+    std.debug.print("  Phase 2 (CIDR Gen): Segments processed: IPv4: {}, IPv6: {}\n", .{
+        v4_segments,
+        v6_segments,
     });
-    std.debug.print("  Phase 2 (Radix Trie): Static Overrides: IPv4: {}, IPv6: {}\n", .{
+    std.debug.print("  Phase 2 (CIDR Gen): Static Overrides: IPv4: {}, IPv6: {}\n", .{
         v4_stats.overrides,
         v6_stats.overrides,
     });
-    std.debug.print("  Phase 2 (Radix Trie): Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
+    std.debug.print("  Phase 2 (CIDR Gen): Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
         v4_countries,
         v6_countries,
     });
@@ -273,16 +260,15 @@ pub fn main(init: std.process.Init) void {
         total_cidrs,
     });
 
-    // Heuristic: ~64 bytes per IPv4 CIDR, ~128 bytes per IPv6 CIDR in Nginx's ngx_radix_tree_t
     const est_ram_v4 = v4_cidrs * 64;
     const est_ram_v6 = v6_cidrs * 128;
     const est_ram_mb = (est_ram_v4 + est_ram_v6) / (1024 * 1024);
     std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (heuristic: 64B/v4, 128B/v6 node)\n", .{est_ram_mb});
 
-    std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (Radix): {}ms\n", .{
+    std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (CIDR Gen): {}ms\n", .{
         @divTrunc(time_io_ns, 1_000_000),
         @divTrunc(time_flatten_ns, 1_000_000),
-        @divTrunc(time_trie_ns, 1_000_000),
+        @divTrunc(time_cidr_ns, 1_000_000),
     });
 }
 
