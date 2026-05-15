@@ -63,6 +63,13 @@ Updated: 2026-05-12
 - `@clz(x)`: Count leading zeros. Compiles directly to the hardware `lzcnt` ASM instruction. Extremely useful for eliminating `if` branches inside tight loops (e.g., stripping leading zeros in Hex formatting).
 - `@ctz(x)`: Count trailing zeros. Compiles to `tzcnt`.
 
+## Branch Hints (`@branchHint`)
+Must be the **first statement** inside a control flow branch or function. Not an expression wrapper.
+- `@branchHint(.likely)` -- branch taken most of the time
+- `@branchHint(.unlikely)` -- branch taken less often than peers
+- `@branchHint(.cold)` -- almost never reached; optimizer may move to separate memory page (error/panic paths)
+- `@branchHint(.unpredictable)` -- hard to predict; optimizer avoids expensive misprediction penalties
+
 
 ## Arrays & Binary Bloat
 **Avoid Array Initialization with Runtime Expressions using `**` repetition.**

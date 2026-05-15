@@ -88,3 +88,61 @@ Date: 2026-05-15 17:50:47 UTC | Commit: fbbf910  | Mode: filter
        test/output-filter.txt | 5042 ++++++++----------------------------------------
        1 file changed, 770 insertions(+), 4272 deletions(-)
 ======================================================================
+======================================================================
+Date: 2026-05-15 19:44:49 UTC | Commit: ae0bdd0 - DIRTY | Mode: filter
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 7.6M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 100095, IPv6: 57300, Static: 5, Skipped: 3, Filtered: 392809
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 842, IPv6: 45
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 1065, IPv6: 101
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 99911, IPv6: 57272
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 640654, IPv6: 685502
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 0, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 5, IPv6: 5
+      Outputs (CIDR networks generated): IPv4: 180451, IPv6: 167043, Static: 5, Total: 347499
+      Estimated Nginx RAM footprint: ~31 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 55ms, Phase 1 (Flatten): 30ms, Phase 2 (Radix): 24ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.41s |  0.06s |  0.01s | 30.7 MB |    727,897,442 |    235,332,573 |   18/379 |
+| Hot1 |  0.07s |  0.06s |  0.00s | 30.7 MB |    699,905,142 |    225,626,059 |     4/44 |
+| Hot2 |  0.07s |  0.06s |  0.00s | 30.7 MB |    700,094,668 |    219,193,032 |     0/30 |
+| Hot3 |  0.07s |  0.06s |  0.00s | 30.7 MB |    699,916,883 |    218,772,751 |     4/21 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
+======================================================================
+======================================================================
+Date: 2026-05-15 20:01:48 UTC | Commit: ae0bdd0  | Mode: filter
+----------------------------------------------------------------------
+[1/5] Compiling Release Binary...
+      OK
+[2/5] File Metrics:
+      Binary: 280K | IPv4 CSV: 7.9M | IPv6 CSV: 16M | Output: 7.6M
+[3/5] Application Stats (Cold Run):
+      Inputs (ranges parsed): IPv4: 100095, IPv6: 57300, Static: 5, Skipped: 3, Filtered: 392809
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 842, IPv6: 45
+      Phase 1 (Sweep Line): Contiguous Merges: IPv4: 1065, IPv6: 101
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 99911, IPv6: 57272
+      Phase 2 (Radix Trie): Nodes Allocated: IPv4: 640654, IPv6: 685502
+      Phase 2 (Radix Trie): Static Overrides: IPv4: 0, IPv6: 0
+      Phase 2 (Radix Trie): Unique countries mapped: IPv4: 5, IPv6: 5
+      Outputs (CIDR networks generated): IPv4: 180451, IPv6: 167043, Static: 5, Total: 347499
+      Estimated Nginx RAM footprint: ~31 MB (heuristic: 64B/v4, 128B/v6 node)
+      Pipeline Profiling: I/O & Parsing: 48ms, Phase 1 (Flatten): 33ms, Phase 2 (Radix): 24ms
+[4/5] Performance Metrics:
+| Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
+|------|--------|--------|--------|---------|----------------|----------------|----------|
+| Cold |  0.43s |  0.07s |  0.01s | 30.7 MB |    731,428,551 |    237,466,467 |   15/364 |
+| Hot1 |  0.07s |  0.06s |  0.00s | 30.7 MB |    703,121,480 |    219,528,753 |     6/14 |
+| Hot2 |  0.07s |  0.06s |  0.00s | 30.7 MB |    702,626,412 |    220,666,514 |     8/16 |
+| Hot3 |  0.07s |  0.06s |  0.00s | 30.7 MB |    702,485,647 |    220,897,137 |     4/21 |
+
+[5/5] Output Verification:
+      [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
+======================================================================
