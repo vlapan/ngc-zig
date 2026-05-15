@@ -41,54 +41,78 @@ pub fn IpTrie(comptime T: type) type {
         pub fn insertRange(self: *IpTrie(T), node_idx: u24, node_start: T, node_end: T, rs: T, re: T, country: u16) !usize {
             var overrides: usize = 0;
 
-            if (rs <= node_start and re >= node_end) {
-                const old_c = self.nodes.items[node_idx].country;
-                if (old_c != MIXED and old_c != country) {
-                    overrides += 1;
+            const StackFrame = struct {
+                idx: u24,
+                start: T,
+                end: T,
+            };
+
+            var stack: [128]StackFrame = undefined;
+            var sp: usize = 1;
+
+            stack[0] = .{ .idx = node_idx, .start = node_start, .end = node_end };
+
+            while (sp > 0) {
+                sp -= 1;
+                const frame = stack[sp];
+
+                var cur_idx = frame.idx;
+                var cur_start = frame.start;
+                var cur_end = frame.end;
+
+                while (true) {
+                    if (rs <= cur_start and re >= cur_end) {
+                        const old_c = self.nodes.items[cur_idx].country;
+                        if (old_c != MIXED and old_c != country) {
+                            overrides += 1;
+                        }
+                        self.nodes.items[cur_idx].country = country;
+                        self.nodes.items[cur_idx].left = 0;
+                        self.nodes.items[cur_idx].right = 0;
+                        break;
+                    }
+
+                    var left_idx = self.nodes.items[cur_idx].left;
+                    if (left_idx == 0) {
+                        left_idx = try self.allocNode();
+                        self.nodes.items[cur_idx].left = left_idx;
+                    }
+                    var right_idx = self.nodes.items[cur_idx].right;
+                    if (right_idx == 0) {
+                        right_idx = try self.allocNode();
+                        self.nodes.items[cur_idx].right = right_idx;
+                    }
+
+                    const c = self.nodes.items[cur_idx].country;
+                    if (c != MIXED) {
+                        self.nodes.items[left_idx].country = c;
+                        self.nodes.items[right_idx].country = c;
+                        self.nodes.items[cur_idx].country = MIXED;
+                    }
+
+                    const mid = cur_start + (cur_end - cur_start) / 2;
+
+                    const go_left = rs <= mid;
+                    const go_right = re > mid;
+
+                    if (go_left and go_right) {
+                        @branchHint(.unlikely);
+                        std.debug.assert(sp < stack.len - 1);
+                        stack[sp] = .{ .idx = right_idx, .start = mid + 1, .end = cur_end };
+                        sp += 1;
+                        cur_idx = left_idx;
+                        cur_end = mid;
+                        continue;
+                    } else if (go_left) {
+                        cur_idx = left_idx;
+                        cur_end = mid;
+                    } else {
+                        cur_idx = right_idx;
+                        cur_start = mid + 1;
+                    }
                 }
-
-                self.nodes.items[node_idx].country = country;
-                self.nodes.items[node_idx].left = 0;
-                self.nodes.items[node_idx].right = 0;
-                return overrides;
             }
 
-            const c = self.nodes.items[node_idx].country;
-            if (c != MIXED) {
-                var left_idx = self.nodes.items[node_idx].left;
-                if (left_idx == 0) {
-                    left_idx = try self.allocNode();
-                    self.nodes.items[node_idx].left = left_idx;
-                }
-                var right_idx = self.nodes.items[node_idx].right;
-                if (right_idx == 0) {
-                    right_idx = try self.allocNode();
-                    self.nodes.items[node_idx].right = right_idx;
-                }
-                self.nodes.items[left_idx].country = c;
-                self.nodes.items[right_idx].country = c;
-                self.nodes.items[node_idx].country = MIXED;
-            }
-
-            var left_idx = self.nodes.items[node_idx].left;
-            if (left_idx == 0) {
-                left_idx = try self.allocNode();
-                self.nodes.items[node_idx].left = left_idx;
-            }
-            var right_idx = self.nodes.items[node_idx].right;
-            if (right_idx == 0) {
-                right_idx = try self.allocNode();
-                self.nodes.items[node_idx].right = right_idx;
-            }
-
-            const mid = node_start + (node_end - node_start) / 2;
-
-            if (rs <= mid) {
-                overrides += try self.insertRange(left_idx, node_start, mid, rs, re, country);
-            }
-            if (re > mid) {
-                overrides += try self.insertRange(right_idx, mid + 1, node_end, rs, re, country);
-            }
             return overrides;
         }
 
@@ -101,7 +125,10 @@ pub fn IpTrie(comptime T: type) type {
             if (node_idx == 0) return;
 
             const c = self.nodes.items[node_idx].country;
-            if (c != MIXED) return;
+            if (c != MIXED) {
+                @branchHint(.likely);
+                return;
+            }
 
             const left_idx = self.nodes.items[node_idx].left;
             const right_idx = self.nodes.items[node_idx].right;
@@ -124,6 +151,7 @@ pub fn IpTrie(comptime T: type) type {
 
             const c = self.nodes.items[node_idx].country;
             if (c != MIXED) {
+                @branchHint(.likely);
                 if (c != HOLE) {
                     if (T == u32) {
                         if (!ip_mod.isPrivateIPv4(@intCast(ip))) {
