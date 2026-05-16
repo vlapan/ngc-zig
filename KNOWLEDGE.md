@@ -24,13 +24,12 @@ Updated: 2026-05-16
 - **Task Table Generation:** Whenever the user explicitly asks to print a "task table" (or variations thereof), the table must include a "Score" column. The score should be calculated as: `Score = (Lines Changed / 10) × Difficulty(1-3) × Impact(1-3)`. See `knowledge/tasks.md` for the scoring rule and examples.
 - **Telemetry Validity**: Always ensure that console outputs and tracking metrics (`Stats`) accurately reflect the current physical architecture. If a major pipeline refactor happens (e.g. moving from Trie-based collision resolution to Sweep-Line pre-flattening), the CLI output *must* be updated to track the new distinct phases of the pipeline so the user understands exactly what the machine is doing.
 - **Pre-Commit Checklist**: Before every `git commit`, run `make check` and verify:
-  1. `zig fmt --check` passes (no formatting changes)
-  2. `zig build test` passes (all tests green)
-  3. Binary size is reasonable (`ls -lh zig-out/bin/ngc`) — flag if >2x previous
-  4. No absolute paths in source code (`rg 'Users/vlapan|/home/' src/`)
-  5. Commit message follows Conventional Commits format (see `knowledge/commit-conventions.md`)
-  6. If performance change: run `make bench` and report all metrics including regressions
-  7. If output changed: verify `git diff test/output.txt` contains only expected changes
+  1. `zig fmt --check` passes (formatting is correct)
+  2. `make test` passes (all tests green)
+  3. No absolute paths in source code (`rg '/Users/|/home/' src/`)
+  4. Commit message follows Conventional Commits format (see `knowledge/commit-conventions.md`)
+  5. If performance change: run `make bench` and report all metrics including regressions
+  6. If output changed: verify `git diff test/output.txt` contains only expected changes
 
 
 
