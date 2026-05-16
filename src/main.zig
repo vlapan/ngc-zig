@@ -25,11 +25,10 @@ pub fn main(init: std.process.Init) void {
     const alloc = init.arena.allocator();
 
     const config = config_mod.parseArgs(init, alloc) catch |err| {
-        if (err == error.InvalidArgs) {
-            std.process.exit(1);
+        switch (err) {
+            error.HelpRequested, error.VersionRequested => std.process.exit(0),
+            error.InvalidArgs, error.MissingValue, error.UnknownArgument, error.OutOfMemory => std.process.exit(1),
         }
-        std.log.err("Failed to parse arguments: {}", .{err});
-        std.process.exit(1);
     };
 
     // Pre-flight checks: ensure all provided input files exist before starting
