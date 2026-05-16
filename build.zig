@@ -62,10 +62,6 @@ pub fn build(b: *Build) void {
         }),
     });
 
-    exe.root_module.addImport("build_info", b.createModule(.{
-        .root_source_file = b.path("build.zig.zon"),
-    }));
-
     const options = b.addOptions();
     options.addOption([]const u8, "version", zon.version);
     options.addOption([]const u8, "git_hash", clean_hash);
