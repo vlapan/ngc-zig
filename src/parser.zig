@@ -8,6 +8,7 @@ pub const Stats = struct {
     lines_filtered: usize = 0,
     collisions: usize = 0,
     overrides: usize = 0,
+    countries_seen: usize = 0,
 };
 
 pub fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: std.mem.Allocator, static_v4: *std.ArrayList(ip_mod.IPv4Range), static_v6: *std.ArrayList(ip_mod.IPv6Range)) !Stats {
@@ -192,7 +193,10 @@ pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Ar
                 continue;
             }
             c_val = country_map[c_val];
-            seen_countries[c_val] = true;
+            if (!seen_countries[c_val]) {
+                seen_countries[c_val] = true;
+                stats.countries_seen += 1;
+            }
         } else {
             if (!filter_map[0]) {
                 stats.lines_filtered += 1;

@@ -59,15 +59,10 @@ pub fn processStream(
     const ts_cidr = std.Io.Timestamp.now(io, .awake).nanoseconds;
     const time_cidr_ns = ts_cidr - ts_flattened;
 
-    var countries: usize = 0;
-    for (seen_countries) |seen| {
-        if (seen) countries += 1;
-    }
-
     return StreamResult{
         .stats = stats,
         .cidrs = cidrs,
-        .countries = countries,
+        .countries = stats.countries_seen,
         .flattened = flattened,
         .segments = seg_count,
         .time_io_ns = time_io_ns,
@@ -235,4 +230,30 @@ test "pipeline.processStream: country grouping remaps" {
     try testing.expect(result.stats.lines_parsed > 0);
     try testing.expectEqual(@as(usize, 1), result.countries);
     try testing.expect(env.seen_countries[eu_idx]);
+}
+
+test "pipeline.processStream: country counter matches manual iteration" {
+    var env = TestEnv.init();
+    defer env.deinit();
+
+    const static_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
+
+    const result = try processStream(
+        u32,
+        std.testing.io,
+        "test/ipv4.csv",
+        static_ranges.items,
+        &env.seen_countries,
+        &env.aw.writer,
+        testing.allocator,
+        &env.country_map,
+        &env.filter_map,
+    );
+
+    var manual_count: usize = 0;
+    for (env.seen_countries) |seen| {
+        if (seen) manual_count += 1;
+    }
+    try testing.expectEqual(manual_count, result.countries);
+    try testing.expectEqual(manual_count, result.stats.countries_seen);
 }
