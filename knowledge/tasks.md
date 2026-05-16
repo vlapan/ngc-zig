@@ -15,7 +15,7 @@ Sorted by score descending. Score = Impact(1-10) / Difficulty(1-10).
 - [x] **Remove Redundant Pre-flight File Checks** `[S: 2.0]`: Deleted 25 lines of double I/O in `main.zig:33-56`. Files are opened once during processing with proper error handling. No functional change. (Completed: 2026-05-16)
 - [x] **Add `--help` / `--version` Flags** `[S: 2.0]`: `--help`/`-h` prints usage, `--version`/`-v` prints version. Both exit 0. `config.zig:80-85`, `main.zig:28`. 4 tests. (Completed: 2026-05-16)
 - [ ] **Add Digit Validation to `fastParseInt`** `[S: 2.0]`: Reject non-digit characters. `parser.zig:93-129`. ~10 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
-- [ ] **Fail on Unknown CLI Args** `[S: 2.0]`: Return error on unrecognized flags instead of silently ignoring. `config.zig:50-52`. ~5 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [x] **Fail on Unknown CLI Args** `[S: 2.0]`: Returns `error.UnknownArgument` for unrecognized flags. `config.zig:87`, `main.zig:29`. 1 test. (Completed: 2026-05-16)
 - [ ] **Add Dry-Run Mode** `[S: 1.0]`: Validate input without producing output. ~30 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Benchmark Regression Detection to CI** `[S: 1.0]`: Run `make bench` in CI, fail on regression. ~20 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Improve README** `[S: 1.0]`: Add install instructions, benchmarks, license, Nginx example, CSV format docs. ~100 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
