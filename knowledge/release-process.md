@@ -47,4 +47,4 @@ Rules:
 - Group by impact area: Performance, Reliability, Features, Maintenance
 - Include concrete numbers where available (percentages, millisecond improvements, lines removed)
 - Place new version at the top, below the header
-- Commit the updated `CHANGELOG.md` as a separate commit after the tag
+- Commit the updated `CHANGELOG.md` **before** cutting the tag, so it is included in the release

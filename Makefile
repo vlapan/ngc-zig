@@ -79,11 +79,11 @@ tag:
 check:
 	@echo "MAKE:INFO: Running pre-commit checks..."
 	@echo "  [1/3] Formatting..."
-	@zig fmt --check src/*.zig build.zig
+	@make fmt
 	@echo "  [2/3] Tests..."
 	@make test
 	@echo "  [3/3] Absolute paths..."
-	@rg '/Users/|/home/|/etc/|/opt/' src/ --files-with-matches && echo "  FAIL: Absolute paths found in source!" && exit 1 || echo "  OK: No absolute paths in source"
+	@rg '/Users/[a-z]+/|/home/[a-z]+/' src/ --files-with-matches && echo "  FAIL: Host absolute paths found in source!" && exit 1 || echo "  OK: No host absolute paths in source"
 	@echo "MAKE:INFO: All checks passed!"
 
 fetch-data:

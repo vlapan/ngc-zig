@@ -4,7 +4,7 @@ Updated: 2026-05-16
 ## Active / Next Up
 Sorted by score descending. Score = (Lines/10) × Difficulty(1-3) × Impact(1-3).
 
-- [ ] **Add `config.zig` Tests** `[S: 40]`: Test `parseArgs()`, `setupMaps()`, edge cases. ~100 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
+- [x] **Add `config.zig` Tests** `[S: 40]`: Added 12 new tests for `parseArgList()` covering valid args, missing output, no input, unknown args, missing values, help/version flags, multiple groups/filters. Added 4 tests for `setupMapsInline()` covering identity mapping, filter defaults, inline groups, inline filters. Enhanced existing `parseGroupLine` and `parseFilterLine` tests. Refactored `parseArgs()` to use testable `parseArgList(args: []const []const u8, alloc)` with explicit error types (`MissingValue`, `UnknownArgument`, `HelpRequested`, `VersionRequested`). Added `setupMapsInline()` for file-free testing. Total: 79 tests passing. (Completed: 2026-05-16)
 - [ ] **Remove Dead Code** `[S: 25]`: Delete `src/trie.zig`, dead `flatten`/`IpTrie` in `src/ip.zig:10-111,300-452`, unused `build_info` import. ~250 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Input Validation** `[S: 24]`: Check `start <= end`, country code format, file size limits. ~40 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
 - [ ] **Extract Generic `processStream()`** `[S: 20]`: Eliminate IPv4/IPv6 copy-paste in `main.zig:112-214`. ~50 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
@@ -83,11 +83,10 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 - [ ] **Io Concurrency API**: Zig 0.16.0 `io.async`/`io.concurrent`/`std.Io.Group` provides Promise-like parallelism. Revisit if dataset grows 10x+ or becomes real-time service. (Details: `notes/2026-05-16.md`)
 - [ ] **Machine-Readable Telemetry**: Add `--json` flag to export stats as JSON for CI/CD ingestion. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output `+ Added`, `- Removed`, `~ Changed` delta log between runs. (Details: `notes/2026-05-13.md`)
-- [ ] **Add Session Handoff Protocol**: Define what to do when session ends abruptly: save state, push commits, write final note entry. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Error Handling Conventions**: Standardize error unions vs `catch unreachable`, when to fail vs warn, error message formatting. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Naming Conventions**: Document module naming, variable naming (snake_case vs camelCase), constant naming (SCREAMING_SNAKE_CASE), test naming. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Rollback Procedure to Release Process**: Document recovery path: delete tag, revert commit, force push, re-tag. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Module Documentation Conventions**: Require `///` doc comments on all public functions, structs, constants. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Session Handoff Protocol** `[S: 4]`: Define what to do when session ends abruptly: save state, push commits, write final note entry. ~10 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Error Handling Conventions** `[S: 6]`: Standardize error unions vs `catch unreachable`, when to fail vs warn, error message formatting. ~15 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Naming Conventions** `[S: 6]`: Document module naming, variable naming (snake_case vs camelCase), constant naming (SCREAMING_SNAKE_CASE), test naming. ~15 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Module Documentation Conventions** `[S: 6]`: Require `///` doc comments on all public functions, structs, constants. ~15 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
 
 ## Validation Rule Noted:
 *In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*
