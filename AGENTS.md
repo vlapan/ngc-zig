@@ -43,6 +43,7 @@ Two kinds of memory, kept separate:
 - Keep files factual and concise — this is reference material, not documentation
 - Update files when things change (e.g., a container is added/removed, networking is reconfigured)
 - Add dated entries to relevant knowledge files for decisions or plans in progress
+- All paths in the codebase must be relative to the project root. Absolute paths are not allowed in code, configs, or documentation (except IDENTITY.md machine paths). Use `.` or relative paths like `../output.txt`. Nginx configs should use `-p` prefix for path resolution.
 
 ## Approach
 - Read existing files before writing. Don't re-read unless changed.
