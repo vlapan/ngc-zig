@@ -30,31 +30,6 @@ pub fn main(init: std.process.Init) void {
         }
     };
 
-    if (config.static_file) |p| {
-        if (std.Io.Dir.cwd().openFile(init.io, p, .{})) |f| {
-            f.close(init.io);
-        } else |err| {
-            if (err == error.FileNotFound) std.log.err("Static file not found: '{s}'", .{p}) else std.log.err("Cannot access static file '{s}': {}", .{ p, err });
-            std.process.exit(1);
-        }
-    }
-    if (config.ipv4_csv) |p| {
-        if (std.Io.Dir.cwd().openFile(init.io, p, .{})) |f| {
-            f.close(init.io);
-        } else |err| {
-            if (err == error.FileNotFound) std.log.err("IPv4 CSV file not found: '{s}'", .{p}) else std.log.err("Cannot access IPv4 CSV file '{s}': {}", .{ p, err });
-            std.process.exit(1);
-        }
-    }
-    if (config.ipv6_csv) |p| {
-        if (std.Io.Dir.cwd().openFile(init.io, p, .{})) |f| {
-            f.close(init.io);
-        } else |err| {
-            if (err == error.FileNotFound) std.log.err("IPv6 CSV file not found: '{s}'", .{p}) else std.log.err("Cannot access IPv6 CSV file '{s}': {}", .{ p, err });
-            std.process.exit(1);
-        }
-    }
-
     const out_file = std.Io.Dir.cwd().createFile(init.io, config.output, .{}) catch |err| {
         std.log.err("Failed to create output file '{s}': {}", .{ config.output, err });
         std.process.exit(1);
