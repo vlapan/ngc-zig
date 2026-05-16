@@ -1,5 +1,5 @@
 # Knowledge Index
-Updated: 2026-05-13
+Updated: 2026-05-16
 
 
 ## Rules
@@ -21,21 +21,35 @@ Updated: 2026-05-13
 - **Explicit Release Authorization:** Never execute deployment or release scripts (e.g., `make tag`) autonomously. Modifying and committing code is permitted, but cutting a new semantic version tag requires explicit, unambiguous authorization from the user.
 - **Coupled Artifact Integrity:** Never split coupled state across tracked and untracked git boundaries. If a dataset (e.g., CSV) is tracked in git, its associated cache metadata (e.g., `.etag`) MUST also be tracked alongside it.
 - **Knowledge Discovery Protocol:** When a new quirk, API change, or useful insight is discovered through trial and error (e.g., searching source code), you must IMMEDIATELY append it to today's daily note under a `### 🧠 KNOWLEDGE_DISCOVERY` header. This ensures the insight survives context compaction. Before moving to a new major task or ending the session, you must process these tagged blocks and migrate them into the appropriate permanent reference files (e.g., `knowledge/zig-api.md`).
-- **Task Table Generation:** Whenever the user explicitly asks to print a "task table" (or variations thereof), the table must include a "Score" column. The score should be calculated based on an estimation of three metrics: lines of code changed (impact on codebase), implementation difficulty, and expected improvement/performance impact. The table must display these metrics alongside the calculated score (e.g., Score = Improvement / (Difficulty * LOC)).
+- **Task Table Generation:** Whenever the user explicitly asks to print a "task table" (or variations thereof), the table must include a "Score" column. The score should be calculated as: `Score = (Lines Changed / 10) × Difficulty(1-3) × Impact(1-3)`. See `knowledge/tasks.md` for the scoring rule and examples.
 - **Telemetry Validity**: Always ensure that console outputs and tracking metrics (`Stats`) accurately reflect the current physical architecture. If a major pipeline refactor happens (e.g. moving from Trie-based collision resolution to Sweep-Line pre-flattening), the CLI output *must* be updated to track the new distinct phases of the pipeline so the user understands exactly what the machine is doing.
+- **Pre-Commit Checklist**: Before every `git commit`, run `make check` and verify:
+  1. `zig fmt --check` passes (no formatting changes)
+  2. `zig build test` passes (all tests green)
+  3. Binary size is reasonable (`ls -lh zig-out/bin/ngc`) — flag if >2x previous
+  4. No absolute paths in source code (`rg 'Users/vlapan|/home/' src/`)
+  5. Commit message follows Conventional Commits format (see `knowledge/commit-conventions.md`)
+  6. If performance change: run `make bench` and report all metrics including regressions
+  7. If output changed: verify `git diff test/output.txt` contains only expected changes
 
 
 
 ## Files
 - `knowledge/tasks.md` - The single source of truth for the project roadmap, open tasks, backlog, and feature ideas. **Must be read at the start of every session.**
 - `knowledge/release-process.md` - The strict, step-by-step checklist required for tagging and deploying new versions.
+- `knowledge/commit-conventions.md` - Conventional Commits format, types, scopes, and rules.
 - `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
 - `knowledge/architecture.md` - Core system design and CIDR generation pipeline
-- `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps
+- `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps, including Nginx RAM footprint verification
 - `notes/` - Daily session logs with progress. These are strictly append-only historical narratives showing *what was done*. Do NOT trap open tasks or future backlogs in daily notes. Conversely, do NOT put detailed task specifications in `tasks.md`. `knowledge/tasks.md` must be strictly limited to a concise 1-line checklist. ALL rationale, examples, and detailed specifications MUST go into the daily `notes/YYYY-MM-DD.md` file, which is then linked at the end of the 1-line task (e.g., `(Details: notes/2026-05-14.md)`).
 - **Benchmarking & Profiling Rules**:
+  - `test/baseline-benchmarks.log` is **not a log file** — it holds the current pre-commit performance snapshot for the baseline configuration. Each `make bench` overwrites it with fresh data.
+  - To compare performance across commits, use git history:
+    - `git show HEAD:test/baseline-benchmarks.log` — previous commit's baseline
+    - `git show <commit>:test/baseline-benchmarks.log` — any commit's baseline
+    - `diff <(git show HEAD~1:test/baseline-benchmarks.log) <(cat test/baseline-benchmarks.log)` — diff between last commit and current
   - Whenever performance optimizations are made, you must use the `make bench` command.
   - `make bench` will automatically compile a clean release binary, run a Cold Run (to capture I/O overhead), 3 Hot Runs (to capture CPU efficiency), format the output into a clean table, and verify via `git diff` that `test/output.txt` was not corrupted.
-  - The output of `make bench` is automatically appended to `benchmarks.log`.
+  - The output of `make bench` overwrites `test/baseline-benchmarks.log` with the current snapshot.
   - Do NOT manually run `/usr/bin/time -al` and paste walls of raw output into notes or chat. Always use `make bench` for performance proofs.
-  - When committing an optimization, ensure you commit the changes to `benchmarks.log` alongside your source code to permanently document the performance improvement.
+  - When committing an optimization, commit the updated `test/baseline-benchmarks.log` alongside your source code to permanently document the performance improvement at that commit.
