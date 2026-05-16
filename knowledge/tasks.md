@@ -83,6 +83,11 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 - [ ] **Io Concurrency API**: Zig 0.16.0 `io.async`/`io.concurrent`/`std.Io.Group` provides Promise-like parallelism. Revisit if dataset grows 10x+ or becomes real-time service. (Details: `notes/2026-05-16.md`)
 - [ ] **Machine-Readable Telemetry**: Add `--json` flag to export stats as JSON for CI/CD ingestion. (Details: `notes/2026-05-13.md`)
 - [ ] **Automatic Diffing**: Output `+ Added`, `- Removed`, `~ Changed` delta log between runs. (Details: `notes/2026-05-13.md`)
+- [ ] **Add Session Handoff Protocol**: Define what to do when session ends abruptly: save state, push commits, write final note entry. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Error Handling Conventions**: Standardize error unions vs `catch unreachable`, when to fail vs warn, error message formatting. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Naming Conventions**: Document module naming, variable naming (snake_case vs camelCase), constant naming (SCREAMING_SNAKE_CASE), test naming. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Rollback Procedure to Release Process**: Document recovery path: delete tag, revert commit, force push, re-tag. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Module Documentation Conventions**: Require `///` doc comments on all public functions, structs, constants. (Details: `notes/2026-05-16.md`)
 
 ## Validation Rule Noted:
 *In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*
