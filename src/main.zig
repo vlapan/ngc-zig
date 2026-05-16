@@ -4,6 +4,7 @@ const ip_mod = @import("ip.zig");
 const flatten_mod = @import("flatten.zig");
 const parser_mod = @import("parser.zig");
 const cidr_mod = @import("cidr.zig");
+const nginx_mod = @import("nginx.zig");
 const build_options = @import("build_options.zig");
 
 pub const std_options: std.Options = .{
@@ -260,10 +261,8 @@ pub fn main(init: std.process.Init) void {
         total_cidrs,
     });
 
-    const est_ram_v4 = v4_cidrs * 64;
-    const est_ram_v6 = v6_cidrs * 128;
-    const est_ram_mb = (est_ram_v4 + est_ram_v6) / (1024 * 1024);
-    std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (heuristic: 64B/v4, 128B/v6 node)\n", .{est_ram_mb});
+    const est_ram_mb = nginx_mod.estimateRamMB(v4_cidrs, v6_cidrs);
+    std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (based on ngx_http_geo_module.c source analysis)\n", .{est_ram_mb});
 
     std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (CIDR Gen): {}ms\n", .{
         @divTrunc(time_io_ns, 1_000_000),
