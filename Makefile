@@ -60,8 +60,8 @@ fmt:
 
 test:
 	@echo "MAKE:INFO: Building and running unit tests..."
-	@zig build test >/dev/null 2>&1 || { zig build test 2>&1; exit 1; }
-	@./zig-out/bin/ngc-test 2>&1 | tail -1
+	@zig build test
+	@./zig-out/bin/ngc-test
 	@echo "MAKE:INFO: Tests passed!"
 
 bench:
