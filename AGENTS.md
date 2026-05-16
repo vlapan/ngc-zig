@@ -44,7 +44,7 @@ Two kinds of memory, kept separate:
 - Update files when things change (e.g., a container is added/removed, networking is reconfigured)
 - Add dated entries to relevant knowledge files for decisions or plans in progress
 - All paths in the codebase must be relative to the project root. Absolute paths are not allowed in code, configs, or documentation (except IDENTITY.md machine paths). Use `.` or relative paths like `../output.txt`. Tools that require a working directory should use the appropriate flag or prefix for path resolution.
-- All git commits must use Conventional Commits format: `type(scope): description` (e.g., `feat(parser): add SWAR tokenization`, `fix(config): fail on unknown CLI args`, `docs: update RAM heuristic`, `chore: remove dead code`). Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `perf`, `ci`.
+- All git commits must use Conventional Commits format. See `knowledge/commit-conventions.md`.
 
 ## Approach
 - Read existing files before writing. Don't re-read unless changed.
