@@ -10,5 +10,9 @@ test/tmp.csv
 # Generated output files
 out.txt
 
+# Nginx profiling artifacts
+test/nginx-profile/*.log
+test/nginx-profile/*.pid
+
 # Locally compiled binaries
 ngc-static
