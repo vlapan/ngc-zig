@@ -65,28 +65,25 @@ test:
 	@echo "MAKE:INFO: Tests passed!"
 
 bench:
-	@bash test/benchmark.sh baseline | tee -a test/baseline-benchmarks.log
+	@bash test/benchmark.sh baseline | tee test/baseline-benchmarks.log
 
 bench-filter:
-	@bash test/benchmark.sh filter | tee -a test/filter-benchmarks.log
+	@bash test/benchmark.sh filter | tee test/filter-benchmarks.log
 
 bench-group:
-	@bash test/benchmark.sh group | tee -a test/group-benchmarks.log
+	@bash test/benchmark.sh group | tee test/group-benchmarks.log
 
 tag:
 	@bash test/tag-release.sh
 
 check:
 	@echo "MAKE:INFO: Running pre-commit checks..."
-	@echo "  [1/4] Formatting..."
+	@echo "  [1/3] Formatting..."
 	@zig fmt --check src/*.zig build.zig
-	@echo "  [2/4] Tests..."
-	@zig build test
-	@echo "  [3/4] Binary size..."
-	@$(MAKE) release --no-print-directory 2>&1 | grep -v "MAKE:INFO"
-	@ls -lh zig-out/bin/ngc | awk '{print "  Binary: " $$5}'
-	@echo "  [4/4] Absolute paths..."
-	@rg 'Users/vlapan|/home/|/etc/|/opt/' src/ --files-with-matches && echo "  FAIL: Absolute paths found in source!" && exit 1 || echo "  OK: No absolute paths in source"
+	@echo "  [2/3] Tests..."
+	@make test
+	@echo "  [3/3] Absolute paths..."
+	@rg '/Users/|/home/|/etc/|/opt/' src/ --files-with-matches && echo "  FAIL: Absolute paths found in source!" && exit 1 || echo "  OK: No absolute paths in source"
 	@echo "MAKE:INFO: All checks passed!"
 
 fetch-data:
