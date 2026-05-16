@@ -1,7 +1,19 @@
 # Dataset Analysis & Verification Protocol
-Updated: 2026-05-14
+Updated: 2026-05-17
 
 This document defines the standard operating procedure for analyzing the impact of new upstream CSV data on the `ngc` tree structure and Nginx output. This should be run whenever new data is fetched with `./test/fetch-data.sh`.
+
+## Data History
+| Date | IPv4 Ranges | IPv4 Countries | IPv6 Ranges | IPv6 Countries | Total CIDRs | Notes |
+|------|-------------|----------------|-------------|----------------|-------------|-------|
+| 2026-05-17 | 340,753 | 250 | 218,819 | 252 | 1,027,272 | +2.1% vs previous. SU, AN deprecated codes present |
+| 2026-05-16 | 340,753 | 250 | 218,819 | 251 | 1,006,593 | Baseline |
+| 2026-05-14 | 340,753 | 250 | 218,819 | 251 | 1,006,593 | Initial profiling |
+
+## Known Anomalies
+- **SU (Soviet Union)**: 1 IPv6 range, deprecated ISO code. Present in upstream data since at least 2026-05-17.
+- **AN (Netherlands Antilles)**: 1 IPv6 range, deprecated ISO code. Present in upstream data since at least 2026-05-17.
+- Both pass through unchanged — tool is a transparent converter. Users can remap via `--group "RU:SU"` or `--group "NL:AN"`.
 
 ## 1. High-Level Metrics Comparison
 Before diving into the code, always compile the release binary and run it to get the raw numbers.
@@ -87,6 +99,7 @@ cd test/nginx-profile
 
 **Current heuristic**: 97 bytes/CIDR (unified IPv4/IPv6, 64-bit platforms)
 **Measured**: ~96.68 bytes/CIDR (1,006,593 CIDRs, macOS ARM64, nginx 1.31.0)
+**Latest**: 1,027,272 CIDRs → ~95 MB estimated (97B/CIDR), 55.5 MB actual RSS
 
 The script measures:
 - Baseline RSS (no geo rules)
