@@ -1,4 +1,5 @@
 const std = @import("std");
+const build_options = @import("build_options.zig");
 
 pub const Config = struct {
     ipv4_csv: ?[]const u8 = null,
@@ -26,29 +27,33 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
     var filters = std.ArrayList([]const u8).empty;
     defer filters.deinit(alloc);
 
-    while (args.next()) |arg| {
+    while (iter.next()) |arg| {
         if (std.mem.eql(u8, arg, "--ipv4")) {
-            ipv4 = args.next();
+            ipv4 = iter.next() orelse return error.MissingValue;
         } else if (std.mem.eql(u8, arg, "--ipv6")) {
-            ipv6 = args.next();
+            ipv6 = iter.next() orelse return error.MissingValue;
         } else if (std.mem.eql(u8, arg, "--output")) {
-            out = args.next();
+            out = iter.next() orelse return error.MissingValue;
         } else if (std.mem.eql(u8, arg, "--static")) {
-            static_f = args.next();
+            static_f = iter.next() orelse return error.MissingValue;
         } else if (std.mem.eql(u8, arg, "--groups-file")) {
-            groups_f = args.next();
+            groups_f = iter.next() orelse return error.MissingValue;
         } else if (std.mem.eql(u8, arg, "--group")) {
-            if (args.next()) |g| {
-                try groups.append(alloc, g);
-            }
+            const g = iter.next() orelse return error.MissingValue;
+            try groups.append(alloc, try alloc.dupe(u8, g));
         } else if (std.mem.eql(u8, arg, "--filters-file")) {
-            filters_f = args.next();
+            filters_f = iter.next() orelse return error.MissingValue;
         } else if (std.mem.eql(u8, arg, "--filter")) {
-            if (args.next()) |f| {
-                try filters.append(alloc, f);
-            }
+            const f = iter.next() orelse return error.MissingValue;
+            try filters.append(alloc, try alloc.dupe(u8, f));
+        } else if (std.mem.eql(u8, arg, "--help") or std.mem.eql(u8, arg, "-h")) {
+            std.debug.print("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file>\n", .{});
+            return error.HelpRequested;
+        } else if (std.mem.eql(u8, arg, "--version") or std.mem.eql(u8, arg, "-v")) {
+            std.debug.print("ngc {s}\n", .{build_options.version});
+            return error.VersionRequested;
         } else {
-            std.debug.print("Unknown argument: {s}\n", .{arg});
+            return error.UnknownArgument;
         }
     }
 
@@ -58,21 +63,14 @@ pub fn parseArgs(init: std.process.Init, alloc: std.mem.Allocator) !Config {
     }
 
     if (ipv4 == null and ipv6 == null and static_f == null) {
-        std.log.err("At least one input file (--ipv4, --ipv6, or --static) must be provided.\n", .{});
+        std.debug.print("At least one input file (--ipv4, --ipv6, or --static) must be provided.\n", .{});
         return error.InvalidArgs;
     }
 
-    const duped_groups = try alloc.alloc([]const u8, groups.items.len);
-    for (groups.items, 0..) |g, i| {
-        duped_groups[i] = try alloc.dupe(u8, g);
-    }
+    const duped_groups = try groups.toOwnedSlice(alloc);
+    const duped_filters = try filters.toOwnedSlice(alloc);
 
-    const duped_filters = try alloc.alloc([]const u8, filters.items.len);
-    for (filters.items, 0..) |f, i| {
-        duped_filters[i] = try alloc.dupe(u8, f);
-    }
-
-    return Config{
+    var config = Config{
         .ipv4_csv = if (ipv4) |f| try alloc.dupe(u8, f) else null,
         .ipv6_csv = if (ipv6) |f| try alloc.dupe(u8, f) else null,
         .output = try alloc.dupe(u8, out.?),
@@ -112,7 +110,7 @@ pub fn parseGroupLine(line: []const u8, country_map: *[65536]u16) !void {
     }
 }
 
-pub fn parseFilterLine(line: []const u8, filter_map: *[65536]bool) !void {
+pub fn parseFilterLine(line: []const u8, filter_map: *[65536]bool) FormatError!void {
     const f = std.mem.trim(u8, line, " \t\r\n");
     if (f.len == 0 or f[0] == '#') return;
 
@@ -120,21 +118,14 @@ pub fn parseFilterLine(line: []const u8, filter_map: *[65536]bool) !void {
     while (it.next()) |src_str| {
         const s_str = std.mem.trim(u8, src_str, " \t");
         if (s_str.len == 0) continue;
-        if (s_str.len != 2) {
-            return error.InvalidFilterFormat;
-        }
+        if (s_str.len != 2) return error.InvalidFilterFormat;
         const src_u16 = (@as(u16, s_str[0]) << 8) | @as(u16, s_str[1]);
         filter_map.*[src_u16] = true;
     }
 }
 
 pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_map: *[65536]bool) !void {
-    for (0..65536) |i| {
-        country_map[i] = @intCast(i);
-    }
-    for (config.groups) |g| {
-        try parseGroupLine(g, country_map);
-    }
+    try setupMapsInline(config, country_map, filter_map);
 
     if (config.groups_file) |gf| {
         var file = try std.Io.Dir.cwd().openFile(io, gf, .{});
@@ -150,6 +141,30 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
                 try parseGroupLine(line, country_map);
             }
         }
+    }
+
+    if (config.filters_file) |ff| {
+        var file = try std.Io.Dir.cwd().openFile(io, ff, .{});
+        defer file.close(io);
+        const stat = try file.stat(io);
+        if (stat.size > 0) {
+            const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
+            defer std.posix.munmap(mapped);
+
+            var it = std.mem.splitScalar(u8, mapped, '\n');
+            while (it.next()) |line| {
+                try parseFilterLine(line, filter_map);
+            }
+        }
+    }
+}
+
+fn setupMapsInline(config: Config, country_map: *[65536]u16, filter_map: *[65536]bool) !void {
+    for (0..65536) |i| {
+        country_map[i] = @intCast(i);
+    }
+    for (config.groups) |g| {
+        try parseGroupLine(g, country_map);
     }
 
     const has_filters = config.filters.len > 0 or config.filters_file != null;
