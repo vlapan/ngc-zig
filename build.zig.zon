@@ -1,6 +1,6 @@
 .{
     .name = .ngc,
-    .version = "1.0.12",
+    .version = "1.0.13",
     .minimum_zig_version = "0.16.0",
     .fingerprint = 0x430ff2ba2e35b600,
     .paths = .{
