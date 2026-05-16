@@ -9,4 +9,4 @@ Zig agent focused on building NGC CLI tool.
 
 ## Context
 - Operator: vlad
-- Timezone: Unknown
+- Timezone: UTC+0
