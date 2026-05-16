@@ -262,7 +262,7 @@ pub fn main(init: std.process.Init) void {
     });
 
     const est_ram_mb = nginx_mod.estimateRamMB(v4_cidrs, v6_cidrs);
-    std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (based on ngx_http_geo_module.c source analysis)\n", .{est_ram_mb});
+    std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (97B/CIDR, verified via profiling)\n", .{est_ram_mb});
 
     std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (CIDR Gen): {}ms\n", .{
         @divTrunc(time_io_ns, 1_000_000),
