@@ -33,3 +33,11 @@ Optional but recommended. Use the module or area affected:
 - Keep description under 72 characters
 - Body is optional, use for explaining "why" not "what"
 - No co-author lines
+
+## Benchmark Convention
+- `test/baseline-benchmarks.log` must be updated and committed with every change that affects performance
+- Run `make bench` after each code change to append a new entry
+- Do NOT restore to HEAD — the file is a historical performance log
+- Each commit should reflect the actual benchmark state at that point
+- If a change has no performance impact, still commit the updated log to maintain continuity
+- Use `chore(benchmarks): update baseline after <change>` as commit message
