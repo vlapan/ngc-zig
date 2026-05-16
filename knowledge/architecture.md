@@ -26,6 +26,14 @@ Nginx does not accept arbitrary `start-end` IP ranges; it strictly requires powe
 - **Private IPv4 Filtering**: RFC1918 ranges are automatically suppressed from output.
 - **Branchless Formatting**: IPv4 uses LUTs, IPv6 uses hardware Count Leading Zeros (`@clz`) for RFC 5952 compliant zero-compression.
 
+## Pipeline Orchestration (`src/pipeline.zig`)
+The `processStream(comptime T: type, ...)` generic function orchestrates Phases 0-2 for a single IP version (IPv4 or IPv6):
+- **Input**: CSV path, static ranges, country/filter maps, allocator, writer
+- **Flow**: parse → append static → flatten → CIDR gen → count countries
+- **Output**: `StreamResult` struct with stats, CIDR count, country count, segment count, and per-phase timing
+- **Error handling**: Uses `try` for propagation; caller (`main.zig`) produces context-specific error messages
+- **Type-generic**: Instantiated as `processStream(u32, ...)` for IPv4 and `processStream(u128, ...)` for IPv6
+
 ## Nginx Memory Footprint
 The `src/nginx.zig` module provides `estimateRamBytes()` and `estimateRamMB()` for telemetry output.
 
