@@ -18,6 +18,7 @@ Updated: 2026-05-16
 - [ ] **Add Input Validation**: Check `start <= end`, country code format, file size limits. (Details: `notes/2026-05-16.md`)
 - [ ] **Add `--quiet` / `--verbose` Flags**: Suppress output for CI, debug mode for troubleshooting. (Details: `notes/2026-05-16.md`)
 - [ ] **Improve README**: Add install instructions, benchmarks, license, Nginx example, CSV format docs. (Details: `notes/2026-05-16.md`)
+- [x] ~~**Verify RAM Footprint Heuristic**~~: Completed. Created `src/nginx.zig` with constants from Nginx source analysis. IPv4: 56B, IPv6: 72B. Old estimate ~92 MB → new ~61 MB. 10 TDD tests. (Completed: 2026-05-16)
 - [ ] **Add Progress Indication**: Show progress for large files (1M+ ranges). (Details: `notes/2026-05-16.md`)
 - [ ] **Add Linux Profiling Scripts**: Replace macOS-only `samply` with portable alternative. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Dry-Run Mode**: Validate input without producing output. (Details: `notes/2026-05-16.md`)
@@ -77,6 +78,7 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 
 ## Explored / Backlog (Future Research)
 
+- [ ] **Nginx Binary Geo Cache Generation**: Generate `.bin` file alongside text output for instant Nginx reloads. IPv4 only (ranges mode). ~200 lines, auto-loaded by Nginx. (Details: `notes/2026-05-16.md`)
 - [ ] **Single Config File**: Replace `--static`, `--groups-file`, `--filters-file` with one flat key-value file. ~30 lines parser, ~2ms startup, zero dependencies. CLI args as overrides. (Details: `notes/2026-05-16.md`)
 - [ ] **Io Concurrency API**: Zig 0.16.0 `io.async`/`io.concurrent`/`std.Io.Group` provides Promise-like parallelism. Revisit if dataset grows 10x+ or becomes real-time service. (Details: `notes/2026-05-16.md`)
 - [ ] **Machine-Readable Telemetry**: Add `--json` flag to export stats as JSON for CI/CD ingestion. (Details: `notes/2026-05-13.md`)
