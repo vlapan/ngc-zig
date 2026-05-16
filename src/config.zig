@@ -1,5 +1,11 @@
 const std = @import("std");
+const builtin = @import("builtin");
 const build_options = @import("build_options.zig");
+
+inline fn cliPrint(comptime fmt: []const u8, args: anytype) void {
+    if (builtin.is_test) return;
+    std.debug.print(fmt, args);
+}
 
 pub const Config = struct {
     ipv4_csv: ?[]const u8 = null,
@@ -72,10 +78,10 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
             const f = iter.next() orelse return error.MissingValue;
             try filters.append(alloc, try alloc.dupe(u8, f));
         } else if (std.mem.eql(u8, arg, "--help") or std.mem.eql(u8, arg, "-h")) {
-            std.debug.print("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file>\n", .{});
+            cliPrint("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file>\n", .{});
             return error.HelpRequested;
         } else if (std.mem.eql(u8, arg, "--version") or std.mem.eql(u8, arg, "-v")) {
-            std.debug.print("ngc {s}\n", .{build_options.version});
+            cliPrint("v{s}\n", .{build_options.version});
             return error.VersionRequested;
         } else {
             return error.UnknownArgument;
@@ -83,12 +89,12 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
     }
 
     if (out == null) {
-        std.debug.print("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file>\n", .{});
+        cliPrint("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file>\n", .{});
         return error.InvalidArgs;
     }
 
     if (ipv4 == null and ipv6 == null and static_f == null) {
-        std.debug.print("At least one input file (--ipv4, --ipv6, or --static) must be provided.\n", .{});
+        cliPrint("At least one input file (--ipv4, --ipv6, or --static) must be provided.\n", .{});
         return error.InvalidArgs;
     }
 
