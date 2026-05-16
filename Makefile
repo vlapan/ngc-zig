@@ -1,5 +1,5 @@
 # Define phony targets so Make doesn't look for files named 'all' or 'clean'
-.PHONY: all build release clean run test fetch-data bench bench-filter bench-group
+.PHONY: all build release clean run test fetch-data bench bench-filter bench-group check
 
 SHELL := /opt/homebrew/bin/zsh
 .SHELLFLAGS := -e -o pipefail -c
@@ -75,6 +75,19 @@ bench-group:
 
 tag:
 	@bash test/tag-release.sh
+
+check:
+	@echo "MAKE:INFO: Running pre-commit checks..."
+	@echo "  [1/4] Formatting..."
+	@zig fmt --check src/*.zig build.zig
+	@echo "  [2/4] Tests..."
+	@zig build test
+	@echo "  [3/4] Binary size..."
+	@$(MAKE) release --no-print-directory 2>&1 | grep -v "MAKE:INFO"
+	@ls -lh zig-out/bin/ngc | awk '{print "  Binary: " $$5}'
+	@echo "  [4/4] Absolute paths..."
+	@rg 'Users/vlapan|/home/|/etc/|/opt/' src/ --files-with-matches && echo "  FAIL: Absolute paths found in source!" && exit 1 || echo "  OK: No absolute paths in source"
+	@echo "MAKE:INFO: All checks passed!"
 
 fetch-data:
 	@bash test/fetch-data.sh
