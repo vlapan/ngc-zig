@@ -13,7 +13,7 @@ Sorted by score descending. Score = Impact(1-10) / Difficulty(1-10).
 - [ ] **Add Input Validation** `[S: 1.5]`: Check `start <= end`, country code format, file size limits. ~40 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
 - [ ] **Fix Silent Error Swallowing** `[S: 1.5]`: Fail or warn on invalid static file data (bad prefix, invalid IPs, parse errors). `parser.zig:58,68,71,81,176-182`. ~30 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
 - [ ] **Remove Redundant Pre-flight File Checks** `[S: 2.0]`: Delete double I/O in `main.zig:35-58`. ~25 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
-- [ ] **Add `--help` / `--version` Flags** `[S: 2.0]`: Basic CLI usability. ~20 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [x] **Add `--help` / `--version` Flags** `[S: 2.0]`: `--help`/`-h` prints usage, `--version`/`-v` prints version. Both exit 0. `config.zig:80-85`, `main.zig:28`. 4 tests. (Completed: 2026-05-16)
 - [ ] **Add Digit Validation to `fastParseInt`** `[S: 2.0]`: Reject non-digit characters. `parser.zig:93-129`. ~10 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Fail on Unknown CLI Args** `[S: 2.0]`: Return error on unrecognized flags instead of silently ignoring. `config.zig:50-52`. ~5 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Dry-Run Mode** `[S: 1.0]`: Validate input without producing output. ~30 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
