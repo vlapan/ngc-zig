@@ -2,30 +2,30 @@
 Updated: 2026-05-16
 
 ## Active / Next Up
+Sorted by score descending. Score = (Lines/10) × Difficulty(1-3) × Impact(1-3).
 
-- [ ] **Remove Dead Code**: Delete `src/trie.zig`, dead `flatten`/`IpTrie` in `src/ip.zig:10-111,300-452`, unused `build_info` import. ~250 lines. (Details: `notes/2026-05-16.md`)
-- [ ] **Fix Silent Error Swallowing**: Fail or warn on invalid static file data (bad prefix, invalid IPs, parse errors). `parser.zig:58,68,71,81,176-182`. (Details: `notes/2026-05-16.md`)
-- [ ] **Fail on Unknown CLI Args**: Return error on unrecognized flags instead of silently ignoring. `config.zig:50-52`. (Details: `notes/2026-05-16.md`)
-- [ ] **Add `--help` / `--version` Flags**: Basic CLI usability. (Details: `notes/2026-05-16.md`)
-- [ ] **Add `config.zig` Tests**: Test `parseArgs()`, `setupMaps()`, edge cases. (Details: `notes/2026-05-16.md`)
-- [ ] **Fix CI: Build Binary Step**: Add `zig build` to CI workflow to verify compilation. (Details: `notes/2026-05-16.md`)
-- [ ] **Fix CI: Run Tests Before Release**: Add test step to release workflow. (Details: `notes/2026-05-16.md`)
-- [ ] **Fix Makefile Hardcoded SHELL**: Replace `/opt/homebrew/bin/zsh` with portable path. (Details: `notes/2026-05-16.md`)
-- [ ] **Extract Generic `processStream()`**: Eliminate IPv4/IPv6 copy-paste in `main.zig:112-214`. (Details: `notes/2026-05-16.md`)
-- [ ] **Remove Redundant Pre-flight File Checks**: Delete double I/O in `main.zig:35-58`. (Details: `notes/2026-05-16.md`)
-- [ ] **Fix O(65536) Country Counting**: Replace array iteration with O(1) counter. `main.zig:159-161,211-213`. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Digit Validation to `fastParseInt`**: Reject non-digit characters. `parser.zig:93-129`. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Input Validation**: Check `start <= end`, country code format, file size limits. (Details: `notes/2026-05-16.md`)
-- [ ] **Add `--quiet` / `--verbose` Flags**: Suppress output for CI, debug mode for troubleshooting. (Details: `notes/2026-05-16.md`)
-- [ ] **Improve README**: Add install instructions, benchmarks, license, Nginx example, CSV format docs. (Details: `notes/2026-05-16.md`)
-- [x] ~~**Verify RAM Footprint Heuristic**~~: Completed. Created `src/nginx.zig` with constants from Nginx source analysis. IPv4: 56B, IPv6: 72B. Old estimate ~92 MB → new ~61 MB. 10 TDD tests. (Completed: 2026-05-16)
-- [ ] **Add Progress Indication**: Show progress for large files (1M+ ranges). (Details: `notes/2026-05-16.md`)
-- [ ] **Add Linux Profiling Scripts**: Replace macOS-only `samply` with portable alternative. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Dry-Run Mode**: Validate input without producing output. (Details: `notes/2026-05-16.md`)
-- [ ] **Verify RAM Footprint Heuristic**: Profile actual Nginx memory usage vs `64B/v4, 128B/v6` estimate. (Details: `notes/2026-05-16.md`)
-- [ ] **Add Benchmark Regression Detection to CI**: Run `make bench` in CI, fail on regression. (Details: `notes/2026-05-16.md`)
+- [ ] **Add `config.zig` Tests** `[S: 40]`: Test `parseArgs()`, `setupMaps()`, edge cases. ~100 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Remove Dead Code** `[S: 25]`: Delete `src/trie.zig`, dead `flatten`/`IpTrie` in `src/ip.zig:10-111,300-452`, unused `build_info` import. ~250 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Input Validation** `[S: 24]`: Check `start <= end`, country code format, file size limits. ~40 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
+- [ ] **Extract Generic `processStream()`** `[S: 20]`: Eliminate IPv4/IPv6 copy-paste in `main.zig:112-214`. ~50 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix Silent Error Swallowing** `[S: 18]`: Fail or warn on invalid static file data (bad prefix, invalid IPs, parse errors). `parser.zig:58,68,71,81,176-182`. ~30 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Dry-Run Mode** `[S: 12]`: Validate input without producing output. ~30 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Improve README** `[S: 10]`: Add install instructions, benchmarks, license, Nginx example, CSV format docs. ~100 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Linux Profiling Scripts** `[S: 10]`: Replace macOS-only `samply` with portable alternative. ~50 lines, D:2, I:1. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Benchmark Regression Detection to CI** `[S: 8]`: Run `make bench` in CI, fail on regression. ~20 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Remove Redundant Pre-flight File Checks** `[S: 5]`: Delete double I/O in `main.zig:35-58`. ~25 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Add `--help` / `--version` Flags** `[S: 4]`: Basic CLI usability. ~20 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Progress Indication** `[S: 4]`: Show progress for large files (1M+ ranges). ~20 lines, D:2, I:1. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix CI: Build Binary Step** `[S: 3]`: Add `zig build` to CI workflow to verify compilation. ~10 lines, D:1, I:3. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix CI: Run Tests Before Release** `[S: 3]`: Add test step to release workflow. ~10 lines, D:1, I:3. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix O(65536) Country Counting** `[S: 3]`: Replace array iteration with O(1) counter. `main.zig:159-161,211-213`. ~10 lines, D:1, I:3. (Details: `notes/2026-05-16.md`)
+- [ ] **Add `--quiet` / `--verbose` Flags** `[S: 3]`: Suppress output for CI, debug mode for troubleshooting. ~30 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
+- [ ] **Add Digit Validation to `fastParseInt`** `[S: 2]`: Reject non-digit characters. `parser.zig:93-129`. ~10 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Fail on Unknown CLI Args** `[S: 1]`: Return error on unrecognized flags instead of silently ignoring. `config.zig:50-52`. ~5 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix Makefile Hardcoded SHELL** `[S: 0.2]`: Replace `/opt/homebrew/bin/zsh` with portable path. ~2 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
 
 ## Completed (Recent)
+- [x] **Verify RAM Footprint Heuristic**: Profiled actual Nginx RSS with 1M CIDRs. Measured 96.68 bytes/CIDR vs estimated 64B. Updated `src/nginx.zig` to 97B/CIDR (unified v4/v6). Created `test/nginx-profile/profile.sh` for automated profiling. (Completed: 2026-05-16)
 - [x] **Eliminate Recursive Trie `insertRange`**: Converted to iterative stack-based traversal. -708M instructions (-30%), -18% cycles, -20% runtime. (Completed: 2026-05-15)
 - [x] **Evaluate `@branchHint` placement**: Audited hot loops for predictable branches. Removed dynamic filter hint, fixed backwards flatten hints. (Completed: 2026-05-15)
 - [x] **Remove duplicate `madvise` calls**: `MADV.SEQUENTIAL` called twice on same region. (Completed: 2026-05-15)
@@ -36,7 +36,7 @@ Updated: 2026-05-16
 - [x] **Test Infrastructure: Baseline Benchmark Relocation**: Moved `benchmarks.log` to `test/baseline-benchmarks.log` to clarify it tests the raw, unfiltered architecture. (Completed: 2026-05-14)
 - [x] **Country Filtering**: Add `--filter` and `--filters-file` to allowlist specific source countries before grouping. (Completed: 2026-05-14)
 - [x] **Custom Country Grouping**: Implemented `--group` and `--groups-file` to aggregate countries into blocks (e.g., `EU`) and seamlessly merge Nginx output. (Completed: 2026-05-14)
-- [x] **Estimated Nginx RAM footprint**: Added heuristic to approximate RAM usage of resulting Nginx CIDRs (`~64B/v4`, `~128B/v6`). (Completed: 2026-05-14)
+- [x] **Estimated Nginx RAM footprint**: Added heuristic to approximate RAM usage of resulting Nginx CIDRs. Updated to 97B/CIDR (unified v4/v6) after actual profiling showed 64B estimate was 50% low. (Completed: 2026-05-14, Updated: 2026-05-16)
 - [x] **Memory Optimization: Stream Flattened Output to Trie**: Refactored `flatten` to stream segments directly into the `IpTrie`, eliminating intermediate `flattened_vX` arrays and dropping Max RSS by ~18.3MB. (Completed: 2026-05-14)
 - [x] **Telemetry Enhancements**: Added tracking for Radix Nodes, Contiguous Merges, and Granular Pipeline Profiling to CLI output. (Completed: 2026-05-14)
 - [x] **Algorithmic Pre-Flattening**: Repurpose the sweep-line 1D collision algorithm to resolve overlaps *before* Radix tree insertion, eliminating fragmentation and backtracking overhead entirely. (Completed: 2026-05-14)
@@ -86,3 +86,19 @@ Sorted by estimated theoretical impact. **Validate first** (per Validation Rule)
 
 ## Validation Rule Noted:
 *In future sessions, before beginning work on a specific implementation task from the backlog, I must always verify against the current codebase that the underlying assumptions, functions, and architecture it targets have not organically mutated or been rendered obsolete by other changes. Validate first, then implement.*
+
+## Task Scoring Rule:
+Every task in the Active/Next Up table must include a **Score** in the format `[S: X]` where X is calculated as:
+
+**Score = (Lines Changed / 10) × Difficulty × Impact**
+
+- **Lines Changed**: Estimated lines added/removed/modified. Divided by 10 to normalize (1-10 scale).
+- **Difficulty**: 1 (trivial) to 3 (complex/architectural). Accounts for risk, testing needs, and unknowns.
+- **Impact**: 1 (marginal) to 3 (critical). Accounts for performance gains, correctness fixes, or user value.
+
+**Score ranges**: ~0.1 (tiny cleanup) to ~9.0 (major high-impact refactor).
+
+**Priority**: Sort tasks by score descending. High score = high leverage. Low score = quick wins.
+
+**Example**: Remove Dead Code (~250 lines, trivial, low impact) → `(250/10) × 1 × 1 = 25` → `[S: 25]`
+**Example**: Fix O(65536) Country Counting (~10 lines, easy, high impact) → `(10/10) × 1 × 3 = 3` → `[S: 3]`

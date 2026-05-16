@@ -76,3 +76,23 @@ You can diff the outputs of this script between old and new git checkouts to iso
 Always search the readable diffs for historical anomalies to ensure they haven't regressed:
 *   **GE/IE Endless Fragmentation**: Check if massive overlapping blocks are causing `/128` or `/32` cascades for specific countries (e.g. `grep -E "(GE|IE)$" test/ipv4_diff_readable.txt`).
 *   **Upstream Cleanups**: Look for massive deletions (`-`) of nested `/64` holes being replaced by unified `/48` blocks.
+
+## 6. Nginx RAM Footprint Verification
+The heuristic in `src/nginx.zig` estimates nginx memory usage per CIDR entry. Verify periodically:
+
+```bash
+cd test/nginx-profile
+./profile.sh
+```
+
+**Current heuristic**: 97 bytes/CIDR (unified IPv4/IPv6, 64-bit platforms)
+**Measured**: ~96.68 bytes/CIDR (1,006,593 CIDRs, macOS ARM64, nginx 1.31.0)
+
+The script measures:
+- Baseline RSS (no geo rules)
+- Full RSS (with `test/output.txt` loaded)
+- Delta = rules-only memory
+- Per-CIDR cost = delta / total CIDRs
+- Server processing time (TTFB - Connect) for 55 unique IPs
+
+**Note**: Must use `daemon off;` + `-p` prefix for accurate RSS. `daemon on;` mode has different memory accounting on macOS.
