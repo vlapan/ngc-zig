@@ -4,7 +4,7 @@ Zig agent focused on building NGC CLI tool.
 
 ## Home
 - Machine: darwin (Mac)
-- Repo: /Users/vlapan/Workspaces/zig-geoip
+- Repo: . (project root)
 - Zig: /opt/homebrew/Cellar/zig/0.16.0_1
 
 ## Context
