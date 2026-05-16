@@ -1,9 +1,8 @@
 const std = @import("std");
 const config_mod = @import("config.zig");
 const ip_mod = @import("ip.zig");
-const flatten_mod = @import("flatten.zig");
 const parser_mod = @import("parser.zig");
-const cidr_mod = @import("cidr.zig");
+const pipeline_mod = @import("pipeline.zig");
 const nginx_mod = @import("nginx.zig");
 const build_options = @import("build_options.zig");
 
@@ -31,7 +30,6 @@ pub fn main(init: std.process.Init) void {
         }
     };
 
-    // Pre-flight checks: ensure all provided input files exist before starting
     if (config.static_file) |p| {
         if (std.Io.Dir.cwd().openFile(init.io, p, .{})) |f| {
             f.close(init.io);
@@ -110,9 +108,17 @@ pub fn main(init: std.process.Init) void {
     }
 
     if (config.ipv4_csv) |v4_path| {
-        const ts_v4_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        var ipv4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-        v4_stats = parser_mod.parseFile(u32, init.io, v4_path, &ipv4_ranges, alloc, &seen_v4, &country_map, &filter_map) catch |err| {
+        const v4_result = pipeline_mod.processStream(
+            u32,
+            init.io,
+            v4_path,
+            static_v4_ranges.items,
+            &seen_v4,
+            writer,
+            alloc,
+            &country_map,
+            &filter_map,
+        ) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv4 CSV file not found: '{s}'", .{v4_path});
             } else {
@@ -120,51 +126,28 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
-        const ts_v4_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_io_ns += ts_v4_parsed - ts_v4_start;
-
-        for (static_v4_ranges.items) |r| {
-            ipv4_ranges.append(alloc, r) catch |err| {
-                std.log.err("Failed to append static IPv4 range: {}", .{err});
-                std.process.exit(1);
-            };
-        }
-
-        var segments = std.ArrayList(flatten_mod.Segment(u32)).empty;
-        defer segments.deinit(alloc);
-
-        const flatten_stats = flatten_mod.flatten(u32, alloc, ipv4_ranges.items, &segments) catch |err| {
-            std.log.err("Failed to flatten IPv4 ranges: {}", .{err});
-            std.process.exit(1);
-        };
-        v4_stats.collisions = flatten_stats.collisions;
-        v4_stats.overrides = flatten_stats.overrides;
-        v4_flattened = flatten_stats.flattened;
-
-        const ts_v4_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_flatten_ns += ts_v4_flattened - ts_v4_parsed;
-
-        for (segments.items) |seg| {
-            const cidr_stats = cidr_mod.rangeToCidrs(u32, writer, seg.start, seg.end, seg.country) catch |err| {
-                std.log.err("Failed to generate IPv4 CIDRs: {}", .{err});
-                std.process.exit(1);
-            };
-            v4_cidrs += cidr_stats.cidrs;
-        }
-        v4_segments = segments.items.len;
-
-        const ts_v4_cidr = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_cidr_ns += ts_v4_cidr - ts_v4_flattened;
-
-        for (seen_v4) |seen| {
-            if (seen) v4_countries += 1;
-        }
+        v4_stats = v4_result.stats;
+        v4_cidrs = v4_result.cidrs;
+        v4_countries = v4_result.countries;
+        v4_flattened = v4_result.flattened;
+        v4_segments = v4_result.segments;
+        time_io_ns += v4_result.time_io_ns;
+        time_flatten_ns += v4_result.time_flatten_ns;
+        time_cidr_ns += v4_result.time_cidr_ns;
     }
 
     if (config.ipv6_csv) |v6_path| {
-        const ts_v6_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        var ipv6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
-        v6_stats = parser_mod.parseFile(u128, init.io, v6_path, &ipv6_ranges, alloc, &seen_v6, &country_map, &filter_map) catch |err| {
+        const v6_result = pipeline_mod.processStream(
+            u128,
+            init.io,
+            v6_path,
+            static_v6_ranges.items,
+            &seen_v6,
+            writer,
+            alloc,
+            &country_map,
+            &filter_map,
+        ) catch |err| {
             if (err == error.FileNotFound) {
                 std.log.err("IPv6 CSV file not found: '{s}'", .{v6_path});
             } else {
@@ -172,45 +155,14 @@ pub fn main(init: std.process.Init) void {
             }
             std.process.exit(1);
         };
-        const ts_v6_parsed = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_io_ns += ts_v6_parsed - ts_v6_start;
-
-        for (static_v6_ranges.items) |r| {
-            ipv6_ranges.append(alloc, r) catch |err| {
-                std.log.err("Failed to append static IPv6 range: {}", .{err});
-                std.process.exit(1);
-            };
-        }
-
-        var segments = std.ArrayList(flatten_mod.Segment(u128)).empty;
-        defer segments.deinit(alloc);
-
-        const flatten_v6_stats = flatten_mod.flatten(u128, alloc, ipv6_ranges.items, &segments) catch |err| {
-            std.log.err("Failed to flatten IPv6 ranges: {}", .{err});
-            std.process.exit(1);
-        };
-        v6_stats.collisions = flatten_v6_stats.collisions;
-        v6_stats.overrides = flatten_v6_stats.overrides;
-        v6_flattened = flatten_v6_stats.flattened;
-
-        const ts_v6_flattened = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_flatten_ns += ts_v6_flattened - ts_v6_parsed;
-
-        for (segments.items) |seg| {
-            const cidr_stats = cidr_mod.rangeToCidrs(u128, writer, seg.start, seg.end, seg.country) catch |err| {
-                std.log.err("Failed to generate IPv6 CIDRs: {}", .{err});
-                std.process.exit(1);
-            };
-            v6_cidrs += cidr_stats.cidrs;
-        }
-        v6_segments = segments.items.len;
-
-        const ts_v6_cidr = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        time_cidr_ns += ts_v6_cidr - ts_v6_flattened;
-
-        for (seen_v6) |seen| {
-            if (seen) v6_countries += 1;
-        }
+        v6_stats = v6_result.stats;
+        v6_cidrs = v6_result.cidrs;
+        v6_countries = v6_result.countries;
+        v6_flattened = v6_result.flattened;
+        v6_segments = v6_result.segments;
+        time_io_ns += v6_result.time_io_ns;
+        time_flatten_ns += v6_result.time_flatten_ns;
+        time_cidr_ns += v6_result.time_cidr_ns;
     }
 
     out_file_writer.flush() catch |err| {
