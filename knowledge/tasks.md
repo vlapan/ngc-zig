@@ -1,5 +1,5 @@
 # Project Tasks & Backlog
-Updated: 2026-05-16
+Updated: 2026-06-05
 
 ## Active / Next Up
 Sorted by score descending. Score = Impact(1-10) / Difficulty(1-10).
@@ -16,6 +16,7 @@ Sorted by score descending. Score = Impact(1-10) / Difficulty(1-10).
 - [x] **Add `--help` / `--version` Flags** `[S: 2.0]`: `--help`/`-h` prints usage, `--version`/`-v` prints version. Both exit 0. `config.zig:80-85`, `main.zig:28`. 4 tests. (Completed: 2026-05-16)
 - [ ] **Add Digit Validation to `fastParseInt`** `[S: 2.0]`: Reject non-digit characters. `parser.zig:94-129`. ~10 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
 - [x] **Fail on Unknown CLI Args** `[S: 2.0]`: Returns `error.UnknownArgument` for unrecognized flags. `config.zig:87`, `main.zig:29`. 1 test. (Completed: 2026-05-16)
+- [ ] **Move Filter to Post-Processing** `[S: 1.5]`: Current filter at `parser.zig:191` runs during parsing (before sweep-line). This lets kept countries absorb filtered countries' IP space — wrong for an allowlist. Move filter to segment level in `pipeline.zig` after sweep-line, with adjacent same-country re-merge. Also fix filter-before-group ordering (swap lines 191/195). ~30 lines, D:4, I:6. (Details: `notes/2026-06-05.md`)
 - [ ] **Add Dry-Run Mode** `[S: 1.0]`: Validate input without producing output. ~30 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Benchmark Regression Detection to CI** `[S: 1.0]`: Run `make bench` in CI, fail on regression. ~20 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Improve README** `[S: 1.0]`: Add install instructions, benchmarks, license, Nginx example, CSV format docs. ~100 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
