@@ -1,5 +1,5 @@
 # Knowledge Index
-Updated: 2026-05-16
+Updated: 2026-06-05
 
 
 ## Rules
