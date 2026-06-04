@@ -245,14 +245,22 @@ test "parseArgList: minimal valid args (--output only)" {
 test "parseArgList: all flags" {
     const args = [_][]const u8{
         "ngc",
-        "--ipv4", "ipv4.csv",
-        "--ipv6", "ipv6.csv",
-        "--output", "out.conf",
-        "--static", "static.conf",
-        "--groups-file", "groups.txt",
-        "--group", "EU:FR,DE",
-        "--filters-file", "filters.txt",
-        "--filter", "US,CA",
+        "--ipv4",
+        "ipv4.csv",
+        "--ipv6",
+        "ipv6.csv",
+        "--output",
+        "out.conf",
+        "--static",
+        "static.conf",
+        "--groups-file",
+        "groups.txt",
+        "--group",
+        "EU:FR,DE",
+        "--filters-file",
+        "filters.txt",
+        "--filter",
+        "US,CA",
     };
     var config = try parseArgList(args[0..], testing.allocator);
     defer config.deinit(testing.allocator);
@@ -301,8 +309,8 @@ test "parseArgList: missing value after --group returns MissingValue" {
 
 test "parseArgList: multiple --group flags" {
     const args = [_][]const u8{
-        "ngc", "--ipv4", "ipv4.csv", "--output", "out.conf",
-        "--group", "EU:FR,DE", "--group", "NA:US,CA",
+        "ngc",     "--ipv4",   "ipv4.csv", "--output", "out.conf",
+        "--group", "EU:FR,DE", "--group",  "NA:US,CA",
     };
     var config = try parseArgList(args[0..], testing.allocator);
     defer config.deinit(testing.allocator);
@@ -314,8 +322,8 @@ test "parseArgList: multiple --group flags" {
 
 test "parseArgList: multiple --filter flags" {
     const args = [_][]const u8{
-        "ngc", "--ipv4", "ipv4.csv", "--output", "out.conf",
-        "--filter", "US", "--filter", "CA,JP",
+        "ngc",      "--ipv4", "ipv4.csv", "--output", "out.conf",
+        "--filter", "US",     "--filter", "CA,JP",
     };
     var config = try parseArgList(args[0..], testing.allocator);
     defer config.deinit(testing.allocator);
@@ -334,7 +342,7 @@ test "parseArgList: --static as sole input is valid" {
 }
 
 test "parseArgList: empty args (just program name) returns InvalidArgs" {
-    const args = [_][]const u8{ "ngc" };
+    const args = [_][]const u8{"ngc"};
     try testing.expectError(error.InvalidArgs, parseArgList(args[0..], testing.allocator));
 }
 
