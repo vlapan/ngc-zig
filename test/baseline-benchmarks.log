@@ -1,27 +1,28 @@
 ======================================================================
-Date: 2026-06-05 15:44:12 UTC | Commit: a3e2d64  | Mode: baseline
+Date: 2026-06-05 20:21:09 UTC | Commit: 488eefb  | Mode: baseline
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
 [2/5] File Metrics:
       Binary: 247K | IPv4 CSV: 8.0M | IPv6 CSV: 17M | Output: 23M
 [3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 340753, IPv6: 218819, Static: 5, Skipped: 3, Filtered: 0
+      Inputs (ranges parsed): IPv4: 340753, IPv6: 218819, Static: 5, Skipped: 3
       Phase 1 (Sweep Line): Topological Collisions: IPv4: 5494, IPv6: 1059
       Phase 1 (Sweep Line): Disjoint Segments: IPv4: 340689, IPv6: 218798
+      Phase 1 (Sweep Line): Segments filtered: IPv4: 0, IPv6: 0
       Phase 2 (CIDR Gen): Segments processed: IPv4: 340689, IPv6: 218798
       Phase 2 (CIDR Gen): Static Overrides: IPv4: 5, IPv6: 0
-      Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 250, IPv6: 252
+      Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 251, IPv6: 252
       Outputs (CIDR networks generated): IPv4: 502823, IPv6: 524444, Static: 5, Total: 1027272
       Estimated Nginx RAM footprint: ~95 MB (97B/CIDR, verified via profiling)
-      Pipeline Profiling: I/O & Parsing: 55ms, Phase 1 (Flatten): 18ms, Phase 2 (CIDR Gen): 43ms
+      Pipeline Profiling: I/O & Parsing: 27ms, Phase 1 (Flatten): 23ms, Phase 2 (CIDR Gen): 32ms
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.44s |  0.06s |  0.02s | 55.5 MB |    871,787,845 |    219,982,945 |   65/370 |
-| Hot1 |  0.08s |  0.04s |  0.01s | 55.5 MB |    840,271,699 |    200,498,587 |    42/23 |
-| Hot2 |  0.07s |  0.04s |  0.01s | 55.5 MB |    837,904,197 |    193,941,836 |     38/8 |
-| Hot3 |  0.08s |  0.04s |  0.01s | 55.5 MB |    836,045,032 |    195,585,180 |    42/17 |
+| Cold |  0.41s |  0.07s |  0.01s | 55.5 MB |    805,824,003 |    191,579,966 |     1/43 |
+| Hot1 |  0.05s |  0.04s |  0.01s | 55.5 MB |    802,944,237 |    183,339,554 |     2/11 |
+| Hot2 |  0.05s |  0.04s |  0.01s | 55.5 MB |    802,498,589 |    183,527,561 |     2/16 |
+| Hot3 |  0.05s |  0.04s |  0.01s | 55.5 MB |    803,147,323 |    184,149,351 |      2/7 |
 
 [5/5] Output Verification:
       [OK] No changes in test/output.txt. Output exactly matches baseline.
