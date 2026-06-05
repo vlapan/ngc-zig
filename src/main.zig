@@ -51,6 +51,8 @@ pub fn main(init: std.process.Init) void {
     var v6_flattened: usize = 0;
     var v4_segments: usize = 0;
     var v6_segments: usize = 0;
+    var v4_segments_filtered: usize = 0;
+    var v6_segments_filtered: usize = 0;
 
     var time_io_ns: i128 = 0;
     var time_flatten_ns: i128 = 0;
@@ -106,6 +108,7 @@ pub fn main(init: std.process.Init) void {
         v4_countries = v4_result.countries;
         v4_flattened = v4_result.flattened;
         v4_segments = v4_result.segments;
+        v4_segments_filtered = v4_result.segments_filtered;
         time_io_ns += v4_result.time_io_ns;
         time_flatten_ns += v4_result.time_flatten_ns;
         time_cidr_ns += v4_result.time_cidr_ns;
@@ -135,6 +138,7 @@ pub fn main(init: std.process.Init) void {
         v6_countries = v6_result.countries;
         v6_flattened = v6_result.flattened;
         v6_segments = v6_result.segments;
+        v6_segments_filtered = v6_result.segments_filtered;
         time_io_ns += v6_result.time_io_ns;
         time_flatten_ns += v6_result.time_flatten_ns;
         time_cidr_ns += v6_result.time_cidr_ns;
@@ -148,17 +152,15 @@ pub fn main(init: std.process.Init) void {
     const ts_end = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
     const elapsed_ms = @divTrunc(ts_end - ts_start, 1_000_000);
 
-    const total_filtered = v4_stats.lines_filtered + v6_stats.lines_filtered;
     const total_skipped = static_stats.lines_skipped + v4_stats.lines_skipped + v6_stats.lines_skipped;
     const total_cidrs = static_stats.lines_parsed + v4_cidrs + v6_cidrs;
 
     std.debug.print("Done in {} ms.\n", .{elapsed_ms});
-    std.debug.print("  Inputs (ranges parsed): IPv4: {}, IPv6: {}, Static: {}, Skipped: {}, Filtered: {}\n", .{
+    std.debug.print("  Inputs (ranges parsed): IPv4: {}, IPv6: {}, Static: {}, Skipped: {}\n", .{
         v4_stats.lines_parsed,
         v6_stats.lines_parsed,
         static_stats.lines_parsed,
         total_skipped,
-        total_filtered,
     });
     std.debug.print("  Phase 1 (Sweep Line): Topological Collisions: IPv4: {}, IPv6: {}\n", .{
         v4_stats.collisions,
@@ -167,6 +169,10 @@ pub fn main(init: std.process.Init) void {
     std.debug.print("  Phase 1 (Sweep Line): Disjoint Segments: IPv4: {}, IPv6: {}\n", .{
         v4_flattened,
         v6_flattened,
+    });
+    std.debug.print("  Phase 1 (Sweep Line): Segments filtered: IPv4: {}, IPv6: {}\n", .{
+        v4_segments_filtered,
+        v6_segments_filtered,
     });
     std.debug.print("  Phase 2 (CIDR Gen): Segments processed: IPv4: {}, IPv6: {}\n", .{
         v4_segments,
