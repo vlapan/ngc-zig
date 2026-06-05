@@ -5,10 +5,8 @@ const swar_mod = @import("swar.zig");
 pub const Stats = struct {
     lines_parsed: usize = 0,
     lines_skipped: usize = 0,
-    lines_filtered: usize = 0,
     collisions: usize = 0,
     overrides: usize = 0,
-    countries_seen: usize = 0,
 };
 
 pub fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: std.mem.Allocator, static_v4: *std.ArrayList(ip_mod.IPv4Range), static_v6: *std.ArrayList(ip_mod.IPv6Range)) !Stats {
@@ -43,43 +41,20 @@ pub fn appendStaticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, al
         try writer.writeAll("\n");
         stats.lines_parsed += 1;
 
-        var tokenizer = std.mem.tokenizeAny(u8, final_line, " \t;");
-        if (tokenizer.next()) |token| {
-            if (std.mem.eql(u8, token, "default")) continue;
-
-            var ip_part = token;
-            var prefix_part: ?[]const u8 = null;
-            if (std.mem.indexOfScalar(u8, token, '/')) |slash_idx| {
-                ip_part = token[0..slash_idx];
-                prefix_part = token[slash_idx + 1 ..];
-            }
-
-            if (std.Io.net.IpAddress.parseIp4(ip_part, 0)) |ip4| {
-                const ip_val = std.mem.readInt(u32, &ip4.ip4.bytes, .big);
-                const prefix = if (prefix_part) |p| std.fmt.parseInt(u8, p, 10) catch 32 else 32;
-                if (prefix <= 32) {
-                    const mask: u32 = if (prefix == 0) 0 else ~(@as(u32, 0)) << @intCast(32 - prefix);
-                    try static_v4.append(alloc, .{
-                        .start = ip_val & mask,
-                        .end = (ip_val & mask) | ~mask,
-                        .country = ip_mod.HOLE,
-                        .size = 0,
-                    });
-                }
-            } else |_| {
-                if (std.Io.net.IpAddress.parseIp6(ip_part, 0)) |ip6| {
-                    const ip_val = std.mem.readInt(u128, &ip6.ip6.bytes, .big);
-                    const prefix = if (prefix_part) |p| std.fmt.parseInt(u8, p, 10) catch 128 else 128;
-                    if (prefix <= 128) {
-                        const mask: u128 = if (prefix == 0) 0 else ~(@as(u128, 0)) << @intCast(128 - prefix);
-                        try static_v6.append(alloc, .{
-                            .start = ip_val & mask,
-                            .end = (ip_val & mask) | ~mask,
-                            .country = ip_mod.HOLE,
-                            .size = 0,
-                        });
-                    }
-                } else |_| {}
+        if (parseStaticLine(final_line)) |cidr| {
+            switch (cidr) {
+                .v4 => |v4| try static_v4.append(alloc, .{
+                    .start = v4.start,
+                    .end = v4.end,
+                    .country = ip_mod.HOLE,
+                    .size = 0,
+                }),
+                .v6 => |v6| try static_v6.append(alloc, .{
+                    .start = v6.start,
+                    .end = v6.end,
+                    .country = ip_mod.HOLE,
+                    .size = 0,
+                }),
             }
         }
     }
@@ -129,7 +104,77 @@ pub fn fastParseInt(comptime T: type, str: []const u8) !T {
     return res;
 }
 
-pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, seen_countries: *[65536]bool, country_map: *const [65536]u16, filter_map: *const [65536]bool) !Stats {
+pub fn parseCsvLine(comptime T: type, line: []const u8, country_map: *const [65536]u16) ?ip_mod.IPRange(T) {
+    if (line.len == 0) {
+        @branchHint(.cold);
+        return null;
+    }
+
+    const comma1 = swar_mod.findByte(line, ',') orelse return null;
+    const comma2_rel = swar_mod.findByte(line[comma1 + 1 ..], ',') orelse return null;
+    const comma2 = comma1 + 1 + comma2_rel;
+
+    const start_str = line[0..comma1];
+    const end_str = line[comma1 + 1 .. comma2];
+
+    var country = line[comma2 + 1 ..];
+    if (country.len > 0 and country[country.len - 1] == '\r') {
+        @branchHint(.cold);
+        country = country[0 .. country.len - 1];
+    }
+
+    const start = fastParseInt(T, start_str) catch return null;
+    const end = fastParseInt(T, end_str) catch return null;
+    const size = end -% start +% 1;
+
+    var c_val: u16 = 0;
+    if (country.len >= 2) {
+        @branchHint(.likely);
+        c_val = (@as(u16, country[0]) << 8) | @as(u16, country[1]);
+        c_val = country_map[c_val];
+    }
+
+    return ip_mod.IPRange(T){ .start = start, .end = end, .country = c_val, .size = size };
+}
+
+pub const StaticCidr = union(enum) {
+    v4: struct { start: u32, end: u32 },
+    v6: struct { start: u128, end: u128 },
+};
+
+pub fn parseStaticLine(line: []const u8) ?StaticCidr {
+    const trimmed = std.mem.trimEnd(u8, line, " \t\r");
+    if (trimmed.len == 0) return null;
+
+    var tokenizer = std.mem.tokenizeAny(u8, trimmed, " \t;");
+    const token = tokenizer.next() orelse return null;
+    if (std.mem.eql(u8, token, "default")) return null;
+
+    var ip_part = token;
+    var prefix_part: ?[]const u8 = null;
+    if (std.mem.indexOfScalar(u8, token, '/')) |slash_idx| {
+        ip_part = token[0..slash_idx];
+        prefix_part = token[slash_idx + 1 ..];
+    }
+
+    if (std.Io.net.IpAddress.parseIp4(ip_part, 0)) |ip4| {
+        const ip_val = std.mem.readInt(u32, &ip4.ip4.bytes, .big);
+        const prefix = if (prefix_part) |p| std.fmt.parseInt(u8, p, 10) catch 32 else 32;
+        if (prefix > 32) return null;
+        const mask: u32 = if (prefix == 0) 0 else ~(@as(u32, 0)) << @intCast(32 - prefix);
+        return StaticCidr{ .v4 = .{ .start = ip_val & mask, .end = (ip_val & mask) | ~mask } };
+    } else |_| {
+        if (std.Io.net.IpAddress.parseIp6(ip_part, 0)) |ip6| {
+            const ip_val = std.mem.readInt(u128, &ip6.ip6.bytes, .big);
+            const prefix = if (prefix_part) |p| std.fmt.parseInt(u8, p, 10) catch 128 else 128;
+            if (prefix > 128) return null;
+            const mask: u128 = if (prefix == 0) 0 else ~(@as(u128, 0)) << @intCast(128 - prefix);
+            return StaticCidr{ .v6 = .{ .start = ip_val & mask, .end = (ip_val & mask) | ~mask } };
+        } else |_| return null;
+    }
+}
+
+pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.ArrayList(ip_mod.IPRange(T)), alloc: std.mem.Allocator, country_map: *const [65536]u16) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
 
@@ -148,85 +193,154 @@ pub fn parseFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Ar
     var it = std.mem.splitScalar(u8, mapped, '\n');
 
     while (it.next()) |line| {
-        if (line.len == 0) {
-            @branchHint(.cold);
-            stats.lines_skipped += 1;
-            continue;
-        }
-
-        const comma1 = swar_mod.findByte(line, ',') orelse {
-            @branchHint(.cold);
-            stats.lines_skipped += 1;
-            continue;
-        };
-        const comma2_rel = swar_mod.findByte(line[comma1 + 1 ..], ',') orelse {
-            @branchHint(.cold);
-            stats.lines_skipped += 1;
-            continue;
-        };
-        const comma2 = comma1 + 1 + comma2_rel;
-
-        const start_str = line[0..comma1];
-        const end_str = line[comma1 + 1 .. comma2];
-
-        var country = line[comma2 + 1 ..];
-        if (country.len > 0 and country[country.len - 1] == '\r') {
-            country = country[0 .. country.len - 1];
-        }
-
-        const start = fastParseInt(T, start_str) catch {
-            stats.lines_skipped += 1;
-            continue;
-        };
-        const end = fastParseInt(T, end_str) catch {
-            stats.lines_skipped += 1;
-            continue;
-        };
-        const size = end -% start +% 1;
-
-        var c_val: u16 = 0;
-        if (country.len >= 2) {
-            @branchHint(.likely);
-            c_val = (@as(u16, country[0]) << 8) | @as(u16, country[1]);
-            if (!filter_map[c_val]) {
-                stats.lines_filtered += 1;
-                continue;
-            }
-            c_val = country_map[c_val];
-            if (!seen_countries[c_val]) {
-                seen_countries[c_val] = true;
-                stats.countries_seen += 1;
-            }
+        if (parseCsvLine(T, line, country_map)) |range| {
+            try ranges.append(alloc, range);
+            stats.lines_parsed += 1;
         } else {
-            if (!filter_map[0]) {
-                stats.lines_filtered += 1;
-                continue;
-            }
+            @branchHint(.cold);
+            stats.lines_skipped += 1;
         }
-
-        try ranges.append(alloc, .{
-            .start = start,
-            .end = end,
-            .country = c_val,
-            .size = size,
-        });
-        stats.lines_parsed += 1;
     }
     return stats;
 }
 
 const testing = std.testing;
 
-test "SWAR parsing handles normal and edge cases" {
+test "fastParseInt handles normal and edge cases" {
     try testing.expectEqual(@as(u32, 12345678), try fastParseInt(u32, "12345678"));
     try testing.expectEqual(@as(u32, 123), try fastParseInt(u32, "123"));
     try testing.expectEqual(@as(u32, 0), try fastParseInt(u32, "0"));
-    try testing.expectEqual(@as(u32, 4294967295), try fastParseInt(u32, "4294967295")); // Max u32
+    try testing.expectEqual(@as(u32, 4294967295), try fastParseInt(u32, "4294967295"));
     try testing.expectEqual(@as(u128, 12345678901234567890), try fastParseInt(u128, "12345678901234567890"));
 }
 
-test "Empty and whitespace files are handled by checking stats manually" {
-    // If a file is size 0, parser immediately returns `Stats{}`.
-    // If it has whitespaces, the split loop ignores tokens of len == 0.
-    // This is tested in production via `test/geo-whois-asn-country-ipv4-num.csv` which has trailing newlines.
+test "parseCsvLine: valid line returns correct range" {
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    const range = parseCsvLine(u32, "16777216,16777471,AU", &cmap).?;
+    try testing.expectEqual(@as(u32, 16777216), range.start);
+    try testing.expectEqual(@as(u32, 16777471), range.end);
+    try testing.expectEqual(@as(u16, (@as(u16, 'A') << 8) | @as(u16, 'U')), range.country);
+    try testing.expectEqual(@as(u32, 256), range.size);
+}
+
+test "parseCsvLine: country map remaps code" {
+    const eu_idx: u16 = (@as(u16, 'E') << 8) | @as(u16, 'U');
+    const au_idx: u16 = (@as(u16, 'A') << 8) | @as(u16, 'U');
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+    cmap[au_idx] = eu_idx;
+
+    const range = parseCsvLine(u32, "0,255,AU", &cmap).?;
+    try testing.expectEqual(eu_idx, range.country);
+}
+
+test "parseCsvLine: short country code yields c_val=0" {
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    const range = parseCsvLine(u32, "0,255,A", &cmap).?;
+    try testing.expectEqual(@as(u16, 0), range.country);
+}
+
+test "parseCsvLine: empty line returns null" {
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    try testing.expect(parseCsvLine(u32, "", &cmap) == null);
+}
+
+test "parseCsvLine: line without two commas returns null" {
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    try testing.expect(parseCsvLine(u32, "badline", &cmap) == null);
+    try testing.expect(parseCsvLine(u32, "0,255", &cmap) == null);
+}
+
+test "parseCsvLine: non-numeric input is parsed as-is (fastParseInt trusts format)" {
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+    // fastParseInt doesn't validate — it computes from byte values for all ASCII
+    const range = parseCsvLine(u32, "abc,def,AU", &cmap).?;
+    try testing.expectEqual(@as(u16, (@as(u16, 'A') << 8) | @as(u16, 'U')), range.country);
+}
+
+test "parseCsvLine: carriage return stripped from country" {
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    const range = parseCsvLine(u32, "0,255,AU\r", &cmap).?;
+    try testing.expectEqual(@as(u16, (@as(u16, 'A') << 8) | @as(u16, 'U')), range.country);
+}
+
+test "parseCsvLine: wrapping size handles full address space" {
+    var cmap = [_]u16{0} ** 65536;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    const range = parseCsvLine(u32, "0,4294967295,US", &cmap).?;
+    try testing.expectEqual(@as(u32, 0), range.start);
+    try testing.expectEqual(@as(u32, std.math.maxInt(u32)), range.end);
+    try testing.expectEqual(@as(u32, 0), range.size); // 0 -% 0 +% 1 wraps to 0
+}
+
+// parseStaticLine tests
+
+test "parseStaticLine: valid IPv4 CIDR" {
+    const cidr = parseStaticLine("8.8.8.0/24").?;
+    try testing.expect(cidr == .v4);
+    try testing.expectEqual(@as(u32, 0x08080800), cidr.v4.start);
+    try testing.expectEqual(@as(u32, 0x080808FF), cidr.v4.end);
+}
+
+test "parseStaticLine: valid IPv4 without prefix defaults /32" {
+    const cidr = parseStaticLine("8.8.8.8").?;
+    try testing.expect(cidr == .v4);
+    try testing.expectEqual(@as(u32, 0x08080808), cidr.v4.start);
+    try testing.expectEqual(@as(u32, 0x08080808), cidr.v4.end);
+}
+
+test "parseStaticLine: valid IPv6 CIDR" {
+    const cidr = parseStaticLine("2001:db8::/32").?;
+    try testing.expect(cidr == .v6);
+    try testing.expectEqual(@as(u128, 0x20010DB8000000000000000000000000), cidr.v6.start);
+    try testing.expectEqual(@as(u128, 0x20010DB8FFFFFFFFFFFFFFFFFFFFFFFF), cidr.v6.end);
+}
+
+test "parseStaticLine: semicolon suffix stripped" {
+    const cidr = parseStaticLine("10.0.0.0/8;").?;
+    try testing.expect(cidr == .v4);
+    try testing.expectEqual(@as(u32, 0x0A000000), cidr.v4.start);
+    try testing.expectEqual(@as(u32, 0x0AFFFFFF), cidr.v4.end);
+}
+
+test "parseStaticLine: trailing whitespace and CR stripped" {
+    const cidr1 = parseStaticLine("192.168.0.0/16  ").?;
+    try testing.expect(cidr1 == .v4);
+    const cidr2 = parseStaticLine("192.168.0.0/16\r").?;
+    try testing.expect(cidr2 == .v4);
+}
+
+test "parseStaticLine: empty line returns null" {
+    try testing.expect(parseStaticLine("") == null);
+}
+
+test "parseStaticLine: whitespace-only line returns null" {
+    try testing.expect(parseStaticLine("   ") == null);
+    try testing.expect(parseStaticLine("\t") == null);
+}
+
+test "parseStaticLine: default keyword returns null" {
+    try testing.expect(parseStaticLine("default") == null);
+    try testing.expect(parseStaticLine("default US;") == null);
+}
+
+test "parseStaticLine: non-parseable token returns null" {
+    try testing.expect(parseStaticLine("not-an-ip") == null);
+}
+
+test "parseStaticLine: prefix > bit width returns null" {
+    try testing.expect(parseStaticLine("10.0.0.0/40") == null);
+    try testing.expect(parseStaticLine("::/200") == null);
 }
