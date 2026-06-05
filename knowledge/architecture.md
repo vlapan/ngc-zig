@@ -13,7 +13,7 @@ The system processes data in a strictly pipelined architecture, decoupled into d
 - **SWAR Integer Parsing**: Sequential loops and byte-by-byte parsing are bypassed entirely. A SIMD Within A Register (SWAR) algorithm chunks 8 ASCII digits into a 64-bit integer, calculating base-10 representations via bit-shifting, destroying millions of logic instructions.
 - **Country Code Tokenization**: 2-byte country strings (e.g., "US", "FR") are converted to `u16` via `(char0 << 8) | char1` for O(1) LUT lookup.
 - **Group Remap**: `c_val = country_map[c_val]` remaps country codes (e.g., FR → EU) during parsing. Safe — sweep-line handles same-country mergers regardless of when remapping happens.
-- **Allowlist Filter**: `if (!filter_map[c_val]) continue;` — an INCLUSION filter. Skip ranges whose country is NOT in the allowlist. This happens during parsing (before sweep-line), which is correct: filtered ranges don't consume sweep-line resources, and the topology collapses naturally (remaining ranges fill the space, which is the desired allowlist behavior).
+- **Allowlist Filter (moved to segment level)**: The inclusion filter was moved from parse-time to post-sweep-line. All ranges go through sweep-line, then non-allowlisted segments are dropped, leaving accurate gaps. Prevents allowlisted countries from absorbing filtered countries' IP space.
 
 ### Phase 1: Conflict Resolution (`src/flatten.zig`)
 Upstream datasets are "dirty" and contain heavily overlapping, nested, and conflicting subnets.
@@ -32,6 +32,12 @@ Nginx does not accept arbitrary `start-end` IP ranges; it strictly requires powe
 The `processStream(comptime T: type, ...)` generic function orchestrates Phases 0-2 for a single IP version (IPv4 or IPv6):
 - **Input**: CSV path, static ranges, country/filter maps, allocator, writer
 - **Flow**: parse (group remap only) → append static → flatten → **filter + re-merge segments** → CIDR gen → count countries
+
+### Country Counting: Post-Filter, Post-Overlay
+`seen_countries` tracking was moved from `parser.zig` to `pipeline.zig`. Countries are now counted from the FINAL segment list (after filter and static overlay), not from raw parsed ranges. This means:
+- Countries that only exist as HOLE segments (static overrides) are now counted (+1 for IPv4)
+- Post-filter country count accurately reflects what appears in the output
+- Country `0` (empty CSV country codes) is never a segment (skipped during parsing), so it never appears in count
 
 ## Filter/Group Design Rules
 
@@ -59,8 +65,12 @@ c_val = country_map[c_val];         // group remap (too late)
 ```
 `--filter "EU" --group "EU:FR,DE"`: FR checked against original code (0x4652) before remap → not in filter → dropped. Fix: swap the two lines so group remap runs before filter check.
 
-### Static Overrides Always Survive
-Static HOLE ranges are appended in `pipeline.zig:37-39` after `parseFile` returns, bypassing `parseFile` entirely. HOLE (0xFFFF) segments survive sweep-line as normal. CIDR gen skips them (cidr.zig:17,37). They're unaffected by country filter — intentional: user's static "remove this IP" should work regardless.
+### Static Overrides and the Segment Filter
+Static HOLE ranges are appended in `pipeline.zig:37-39` after `parseFile` returns. During flattening they create HOLE (0xFFFF) segments that shadow underlying ranges. CIDR gen skips them (cidr.zig:17,37).
+
+With segment-level filter: HOLE segments are dropped if HOLE is not in the allowlist (which it never is for filter mode). This means the static overlay does NOT shadow filtered ranges. For private IPv4 ranges this is safe (cidr.zig:39 `isPrivateIPv4` check catches them). For non-private static entries in filter mode, the underlying allowlisted range would bleed through — design limitation: filter mode always drops non-allowlisted countries, and HOLE is not an allowlisted country.
+
+Static file OUTPUT entries (written by `appendStaticFile` to the beginnning of the output file) always appear regardless of filter, because they're written before the pipeline runs.
 
 ## Nginx Memory Footprint
 The `src/nginx.zig` module provides `estimateRamBytes()` and `estimateRamMB()` for telemetry output.

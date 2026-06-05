@@ -1,5 +1,5 @@
 # Commit Conventions
-Updated: 2026-05-16
+Updated: 2026-06-05
 
 All commits must follow Conventional Commits format: `type(scope): description`
 
@@ -38,6 +38,10 @@ Optional but recommended. Use the module or area affected:
 - `test/baseline-benchmarks.log` must be updated and committed with every change that affects performance
 - Run `make bench` after each code change to append a new entry
 - Do NOT restore to HEAD — the file is a historical performance log
-- Each commit should reflect the actual benchmark state at that point
+- Each commit should reflect the actual benchmark state at that point. Never commit benchmark logs or output files generated from dirty/uncommitted code ahead of the code changes themselves — see "Coupling Rule" below.
 - If a change has no performance impact, still commit the updated log to maintain continuity
 - Use `chore(benchmarks): update baseline after <change>` as commit message
+- **Output File Integrity Check**: After any benchmark run, verify `wc -l test/output*.txt` matches the reported `Total:` CIDR count. A mismatch indicates a truncated/corrupted output file.
+
+## Coupling Rule: Code + Outputs + Benchmarks
+Code changes, their resulting benchmark logs, and their resulting output files must be committed TOGETHER in a single commit. Never commit one without the others. If review requires seeing outputs separately, stage them together but defer the commit. Rationale: a future checkout of the commit must reproduce the same results.

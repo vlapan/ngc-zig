@@ -28,8 +28,10 @@ Updated: 2026-06-05
   2. `make test` passes (all tests green)
   3. No host absolute paths in source code (`rg '/Users/[a-z]+/|/home/[a-z]+/' src/`)
   4. Commit message follows Conventional Commits format (see `knowledge/commit-conventions.md`)
-  5. If performance change: run `make bench` and report all metrics including regressions
-  6. If output changed: verify `git diff test/output.txt` contains only expected changes
+   5. If performance change: run `make bench` and report all metrics including regressions
+   6. If output changed: verify `git diff test/output.txt` contains only expected changes
+   7. **Output File Integrity Check**: After any benchmark run, verify `wc -l test/output*.txt` matches the reported `Total:` CIDR count from the stats. A mismatch means the output file was truncated/corrupted. (Previous bug: committed filter output had 354,441 lines but stats reported 355,215 — 774 CIDRs silently missing.)
+
 
 
 

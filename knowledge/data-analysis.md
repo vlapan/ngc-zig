@@ -1,11 +1,12 @@
 # Dataset Analysis & Verification Protocol
-Updated: 2026-05-17
+Updated: 2026-06-05
 
 This document defines the standard operating procedure for analyzing the impact of new upstream CSV data on the `ngc` tree structure and Nginx output. This should be run whenever new data is fetched with `./test/fetch-data.sh`.
 
 ## Data History
 | Date | IPv4 Ranges | IPv4 Countries | IPv6 Ranges | IPv6 Countries | Total CIDRs | Notes |
 |------|-------------|----------------|-------------|----------------|-------------|-------|
+| 2026-06-05 | 340,753 | 251 | 218,819 | 252 | 1,027,272 | +2.1% vs initial. HOLE (static overlay) now counted in unique countries |
 | 2026-05-17 | 340,753 | 250 | 218,819 | 252 | 1,027,272 | +2.1% vs previous. SU, AN deprecated codes present |
 | 2026-05-16 | 340,753 | 250 | 218,819 | 251 | 1,006,593 | Baseline |
 | 2026-05-14 | 340,753 | 250 | 218,819 | 251 | 1,006,593 | Initial profiling |
@@ -24,7 +25,7 @@ make release
 Compare the output to the baseline (or previous run notes). Look specifically for:
 *   **Inputs**: Did the database grow?
 *   **Data Collisions**: A spike here means the upstream provider introduced new overlapping subnets.
-*   **Routing Overrides**: Tells us how hard the Trie had to work to resolve those overlaps.
+*   **Routing Overrides**: Tells us how hard the sweep-line algorithm had to work to resolve those overlaps.
 *   **Outputs (networks generated)**: Determines the final memory/file size impact for the Nginx module.
 
 ## 2. Output Churn Profiling
