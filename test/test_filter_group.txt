@@ -1,0 +1,2 @@
+# Filter allowlist referencing group codes (post-remap)
+EU, NA
