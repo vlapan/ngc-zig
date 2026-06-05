@@ -17,8 +17,7 @@ pub fn isPrivateIPv4(ip: u32) bool {
         (ip & 0xFFFF0000) == 0xC0A80000; // 192.168.0.0/16
 }
 
-pub fn formatIPv4(writer: anytype, ip: u32, prefix: u8, country: u16) !void {
-    var buf: [64]u8 = undefined;
+pub fn formatIPv4Line(ip: u32, prefix: u8, country: u16, buf: *[64]u8) []u8 {
     var idx: usize = 0;
 
     const b1: u8 = @intCast((ip >> 24) & 0xFF);
@@ -26,27 +25,35 @@ pub fn formatIPv4(writer: anytype, ip: u32, prefix: u8, country: u16) !void {
     const b3: u8 = @intCast((ip >> 8) & 0xFF);
     const b4: u8 = @intCast(ip & 0xFF);
 
-    idx += formatU8Int(buf[idx..], b1);
-    buf[idx] = '.';
+    idx += formatU8Int(buf.*[idx..], b1);
+    buf.*[idx] = '.';
     idx += 1;
-    idx += formatU8Int(buf[idx..], b2);
-    buf[idx] = '.';
+    idx += formatU8Int(buf.*[idx..], b2);
+    buf.*[idx] = '.';
     idx += 1;
-    idx += formatU8Int(buf[idx..], b3);
-    buf[idx] = '.';
+    idx += formatU8Int(buf.*[idx..], b3);
+    buf.*[idx] = '.';
     idx += 1;
-    idx += formatU8Int(buf[idx..], b4);
-    buf[idx] = '/';
+    idx += formatU8Int(buf.*[idx..], b4);
+    buf.*[idx] = '/';
     idx += 1;
-    idx += formatU8Int(buf[idx..], prefix);
-    buf[idx] = ' ';
+    idx += formatU8Int(buf.*[idx..], prefix);
+    buf.*[idx] = ' ';
     idx += 1;
 
-    buf[idx] = @truncate(country >> 8);
-    buf[idx + 1] = @truncate(country);
+    buf.*[idx] = @truncate(country >> 8);
+    buf.*[idx + 1] = @truncate(country);
     idx += 2;
-    try writer.writeAll(buf[0..idx]);
-    try writer.writeAll(";\n");
+
+    buf.*[idx] = ';';
+    buf.*[idx + 1] = '\n';
+    idx += 2;
+    return buf.*[0..idx];
+}
+
+pub fn formatIPv4(writer: anytype, ip: u32, prefix: u8, country: u16) !void {
+    var buf: [64]u8 = undefined;
+    try writer.writeAll(formatIPv4Line(ip, prefix, country, &buf));
 }
 
 const OctetStr = struct {
@@ -94,8 +101,7 @@ fn formatU8Int(buf: []u8, val: u8) usize {
 
 const HEX_CHARS = "0123456789abcdef";
 
-pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
-    var buf: [48]u8 = undefined;
+pub fn formatIPv6Line(ip: u128, prefix: u8, country: u16, buf: *[64]u8) []u8 {
     var idx: usize = 0;
 
     var chunks: [8]u16 = undefined;
@@ -135,9 +141,9 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
     var last_was_colon = false;
     while (i < 8) {
         if (longest_len > 0 and i == longest_start) {
-            buf[idx] = ':';
+            buf.*[idx] = ':';
             idx += 1;
-            buf[idx] = ':';
+            buf.*[idx] = ':';
             idx += 1;
             i += longest_len;
             last_was_colon = true;
@@ -145,36 +151,36 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
         }
 
         if (i > 0 and !last_was_colon) {
-            buf[idx] = ':';
+            buf.*[idx] = ':';
             idx += 1;
         }
         last_was_colon = false;
 
         const chunk = chunks[i];
         if (chunk == 0) {
-            buf[idx] = '0';
+            buf.*[idx] = '0';
             idx += 1;
         } else {
             const clz: u5 = @clz(chunk);
             const chars: u3 = @intCast(4 - (clz / 4));
             switch (chars) {
                 4 => {
-                    buf[idx] = HEX_CHARS[@as(usize, (chunk >> 12) & 0xF)];
-                    buf[idx + 1] = HEX_CHARS[@as(usize, (chunk >> 8) & 0xF)];
-                    buf[idx + 2] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
-                    buf[idx + 3] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                    buf.*[idx] = HEX_CHARS[@as(usize, (chunk >> 12) & 0xF)];
+                    buf.*[idx + 1] = HEX_CHARS[@as(usize, (chunk >> 8) & 0xF)];
+                    buf.*[idx + 2] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
+                    buf.*[idx + 3] = HEX_CHARS[@as(usize, chunk & 0xF)];
                 },
                 3 => {
-                    buf[idx] = HEX_CHARS[@as(usize, (chunk >> 8) & 0xF)];
-                    buf[idx + 1] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
-                    buf[idx + 2] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                    buf.*[idx] = HEX_CHARS[@as(usize, (chunk >> 8) & 0xF)];
+                    buf.*[idx + 1] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
+                    buf.*[idx + 2] = HEX_CHARS[@as(usize, chunk & 0xF)];
                 },
                 2 => {
-                    buf[idx] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
-                    buf[idx + 1] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                    buf.*[idx] = HEX_CHARS[@as(usize, (chunk >> 4) & 0xF)];
+                    buf.*[idx + 1] = HEX_CHARS[@as(usize, chunk & 0xF)];
                 },
                 1 => {
-                    buf[idx] = HEX_CHARS[@as(usize, chunk & 0xF)];
+                    buf.*[idx] = HEX_CHARS[@as(usize, chunk & 0xF)];
                 },
                 else => unreachable,
             }
@@ -183,20 +189,73 @@ pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
         i += 1;
     }
 
-    buf[idx] = '/';
+    buf.*[idx] = '/';
     idx += 1;
-    idx += formatU8Int(buf[idx..], prefix);
-    buf[idx] = ' ';
+    idx += formatU8Int(buf.*[idx..], prefix);
+    buf.*[idx] = ' ';
     idx += 1;
 
-    buf[idx] = @truncate(country >> 8);
-    buf[idx + 1] = @truncate(country);
+    buf.*[idx] = @truncate(country >> 8);
+    buf.*[idx + 1] = @truncate(country);
     idx += 2;
-    try writer.writeAll(buf[0..idx]);
-    try writer.writeAll(";\n");
+
+    buf.*[idx] = ';';
+    buf.*[idx + 1] = '\n';
+    idx += 2;
+    return buf.*[0..idx];
+}
+
+pub fn formatIPv6(writer: anytype, ip: u128, prefix: u8, country: u16) !void {
+    var buf: [64]u8 = undefined;
+    try writer.writeAll(formatIPv6Line(ip, prefix, country, &buf));
 }
 
 const testing = std.testing;
+
+test "formatIPv4Line produces correct string" {
+    const us_idx: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
+    var buf: [64]u8 = undefined;
+
+    const line1 = formatIPv4Line(0x08080808, 32, us_idx, &buf);
+    try testing.expectEqualStrings("8.8.8.8/32 US;\n", line1);
+
+    const line2 = formatIPv4Line(0, 0, us_idx, &buf);
+    try testing.expectEqualStrings("0.0.0.0/0 US;\n", line2);
+
+    const line3 = formatIPv4Line(0xFFFFFFFF, 32, us_idx, &buf);
+    try testing.expectEqualStrings("255.255.255.255/32 US;\n", line3);
+}
+
+test "formatIPv4Line: different countries" {
+    var buf: [64]u8 = undefined;
+    const line = formatIPv4Line(0x01010100, 24, (@as(u16, 'D') << 8) | @as(u16, 'E'), &buf);
+    try testing.expectEqualStrings("1.1.1.0/24 DE;\n", line);
+}
+
+test "formatIPv6Line produces correct string" {
+    const us_idx: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
+    var buf: [64]u8 = undefined;
+
+    const ip: u128 = 0x20010DB8000000000000000000000001;
+    const line = formatIPv6Line(ip, 128, us_idx, &buf);
+    try testing.expectEqualStrings("2001:db8::1/128 US;\n", line);
+}
+
+test "formatIPv6Line: full space" {
+    const us_idx: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
+    var buf: [64]u8 = undefined;
+
+    const line = formatIPv6Line(0, 0, us_idx, &buf);
+    try testing.expectEqualStrings("::/0 US;\n", line);
+}
+
+test "formatIPv6Line: all zeros" {
+    const us_idx: u16 = (@as(u16, 'U') << 8) | @as(u16, 'S');
+    var buf: [64]u8 = undefined;
+
+    const line = formatIPv6Line(0, 128, us_idx, &buf);
+    try testing.expectEqualStrings("::/128 US;\n", line);
+}
 
 test "IPv6 RFC 5952 Zero Compression Edge Cases" {
     var aw: std.Io.Writer.Allocating = .init(testing.allocator);
