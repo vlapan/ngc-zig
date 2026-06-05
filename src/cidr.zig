@@ -7,13 +7,28 @@ pub const CidrStats = struct {
     cidrs: usize = 0,
 };
 
+pub fn CidrBlock(comptime T: type) type {
+    return struct { addr: T, prefix: u8, step: T };
+}
+
+pub fn computeCidrBlock(comptime T: type, addr: T, end: T) CidrBlock(T) {
+    const max_bits: u8 = @intCast(@bitSizeOf(T));
+    const remaining = end - addr + 1;
+    const align_bits: u8 = if (addr == 0) max_bits else @ctz(addr);
+    const range_bits: u8 = max_bits - 1 - @clz(remaining);
+    const bits: u8 = if (align_bits < range_bits) align_bits else range_bits;
+    const block: T = @as(T, 1) << @intCast(bits);
+    const prefix: u8 = max_bits - bits;
+    return .{ .addr = addr, .prefix = prefix, .step = block };
+}
+
 pub fn rangeToCidrs(comptime T: type, writer: *std.Io.Writer, start: T, end: T, country: u16) !CidrStats {
     var stats = CidrStats{};
     var current = start;
-    const max_bits: u8 = @intCast(@bitSizeOf(T));
 
     while (current <= end) {
         if (current == 0 and end == std.math.maxInt(T)) {
+            @branchHint(.cold);
             if (country != HOLE) {
                 if (T == u32) {
                     try ip_mod.formatIPv4(writer, 0, 0, country);
@@ -26,27 +41,22 @@ pub fn rangeToCidrs(comptime T: type, writer: *std.Io.Writer, start: T, end: T, 
             break;
         }
 
-        const remaining = end - current + 1;
-        const align_bits: u8 = if (current == 0) max_bits else @ctz(current);
-        const range_bits: u8 = max_bits - 1 - @clz(remaining);
-
-        const bits: u8 = if (align_bits < range_bits) align_bits else range_bits;
-        const block: T = @as(T, 1) << @intCast(bits);
-        const prefix: u8 = max_bits - bits;
+        const block = computeCidrBlock(T, current, end);
 
         if (country != HOLE) {
             if (T == u32) {
                 if (!ip_mod.isPrivateIPv4(@intCast(current))) {
-                    try ip_mod.formatIPv4(writer, @intCast(current), prefix, country);
+                    @branchHint(.likely);
+                    try ip_mod.formatIPv4(writer, @intCast(current), block.prefix, country);
                     stats.cidrs += 1;
                 }
             } else {
-                try ip_mod.formatIPv6(writer, @intCast(current), prefix, country);
+                try ip_mod.formatIPv6(writer, @intCast(current), block.prefix, country);
                 stats.cidrs += 1;
             }
         }
 
-        current += block;
+        current += block.step;
     }
 
     return stats;
@@ -180,4 +190,41 @@ test "cidr: IPv6 non-aligned range" {
     try testing.expectEqual(@as(usize, 2), stats.cidrs);
     const expected = "2001:db8::1/128 US;\n2001:db8::2/127 US;\n";
     try testing.expectEqualStrings(expected, aw.writer.buffered());
+}
+
+// computeCidrBlock (pure core of rangeToCidrs)
+
+test "computeCidrBlock: single IP (remaining=1)" {
+    const block = computeCidrBlock(u32, 10, 10);
+    try testing.expectEqual(@as(u32, 10), block.addr);
+    try testing.expectEqual(@as(u8, 32), block.prefix);
+    try testing.expectEqual(@as(u32, 1), block.step);
+}
+
+test "computeCidrBlock: aligned /24 boundary" {
+    const block = computeCidrBlock(u32, 0x01020300, 0x010203FF);
+    try testing.expectEqual(@as(u32, 0x01020300), block.addr);
+    try testing.expectEqual(@as(u8, 24), block.prefix);
+    try testing.expectEqual(@as(u32, 256), block.step);
+}
+
+test "computeCidrBlock: non-aligned range [10, 20]" {
+    const block = computeCidrBlock(u32, 10, 20);
+    try testing.expectEqual(@as(u32, 10), block.addr);
+    try testing.expectEqual(@as(u8, 31), block.prefix);
+    try testing.expectEqual(@as(u32, 2), block.step);
+}
+
+test "computeCidrBlock: address at zero boundary" {
+    const block = computeCidrBlock(u32, 0, 255);
+    try testing.expectEqual(@as(u32, 0), block.addr);
+    try testing.expectEqual(@as(u8, 24), block.prefix);
+    try testing.expectEqual(@as(u32, 256), block.step);
+}
+
+test "computeCidrBlock: IPv6 single address" {
+    const block = computeCidrBlock(u128, 1, 1);
+    try testing.expectEqual(@as(u128, 1), block.addr);
+    try testing.expectEqual(@as(u8, 128), block.prefix);
+    try testing.expectEqual(@as(u128, 1), block.step);
 }
