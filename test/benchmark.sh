@@ -12,6 +12,9 @@ elif [ "$MODE" = "filter" ]; then
 elif [ "$MODE" = "group" ]; then
     EXTRA_ARGS="--groups-file test/test_groups.txt"
     OUTPUT_FILE="test/output-group.txt"
+elif [ "$MODE" = "group-filter" ]; then
+    EXTRA_ARGS="--filters-file test/test_filter_group.txt --groups-file test/test_groups.txt"
+    OUTPUT_FILE="test/output-group-filter.txt"
 else
     echo "Unknown mode: $MODE"
     exit 1
@@ -39,7 +42,7 @@ echo -e "${BOLD}Date:${RESET} $DATE | ${BOLD}Commit:${RESET} $COMMIT $DIRTY | ${
 echo "----------------------------------------------------------------------"
 
 echo -e "${BOLD}[1/5] Compiling Release Binary...${RESET}"
-make clean > /dev/null
+rm -rf zig-out 2>&1
 make release > /dev/null 2>&1
 if [ ! -f "zig-out/bin/ngc" ]; then
     echo -e "${RED}Compilation failed!${RESET}"
@@ -51,7 +54,11 @@ echo -e "${BOLD}[2/5] File Metrics:${RESET}"
 BIN_SIZE=$(ls -lh zig-out/bin/ngc | awk '{print $5}')
 V4_SIZE=$(ls -lh test/geo-whois-asn-country-ipv4-num.csv | awk '{print $5}')
 V6_SIZE=$(ls -lh test/geo-whois-asn-country-ipv6-num.csv | awk '{print $5}')
-OUT_SIZE=$(ls -lh $OUTPUT_FILE | awk '{print $5}')
+if [ -f "$OUTPUT_FILE" ]; then
+    OUT_SIZE=$(ls -lh $OUTPUT_FILE | awk '{print $5}')
+else
+    OUT_SIZE="(new)"
+fi
 echo "      Binary: $BIN_SIZE | IPv4 CSV: $V4_SIZE | IPv6 CSV: $V6_SIZE | Output: $OUT_SIZE"
 
 echo -e "${BOLD}[3/5] Application Stats (Cold Run):${RESET}"
@@ -113,11 +120,16 @@ parse_time /tmp/ngc_time_hot3.txt "Hot3"
 echo ""
 
 echo -e "${BOLD}[5/5] Output Verification:${RESET}"
-if git diff --quiet $OUTPUT_FILE; then
-    echo -e "      ${GREEN}[OK] No changes in $OUTPUT_FILE. Output exactly matches baseline.${RESET}"
+if git ls-files --error-unmatch $OUTPUT_FILE > /dev/null 2>&1; then
+    if git diff --quiet $OUTPUT_FILE; then
+        echo -e "      ${GREEN}[OK] No changes in $OUTPUT_FILE. Output exactly matches baseline.${RESET}"
+    else
+        echo -e "      ${YELLOW}[NOTICE] $OUTPUT_FILE has changed!${RESET}"
+        echo -e "      If this is an intentional formatting or feature change, review the diff:"
+        git diff --stat $OUTPUT_FILE | sed 's/^/      /'
+    fi
 else
-    echo -e "      ${YELLOW}[NOTICE] $OUTPUT_FILE has changed!${RESET}"
-    echo -e "      If this is an intentional formatting or feature change, review the diff:"
-    git diff --stat $OUTPUT_FILE | sed 's/^/      /'
+    echo -e "      ${YELLOW}[NOTICE] $OUTPUT_FILE is new (not yet tracked).${RESET}"
+    echo -e "           Review content and add to git when ready."
 fi
 echo "======================================================================"

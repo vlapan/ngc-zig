@@ -1,5 +1,5 @@
 # Define phony targets so Make doesn't look for files named 'all' or 'clean'
-.PHONY: all build release clean run test fetch-data bench bench-filter bench-group check
+.PHONY: all build release clean run test fetch-data bench bench-filter bench-group bench-group-filter bench-compare check
 
 SHELL := /opt/homebrew/bin/zsh
 .SHELLFLAGS := -e -o pipefail -c
@@ -72,6 +72,29 @@ bench-filter:
 
 bench-group:
 	@bash test/benchmark.sh group | tee test/group-benchmarks.log
+
+bench-group-filter:
+	@bash test/benchmark.sh group-filter | tee test/group-filter-benchmarks.log
+
+bench-compare:
+	@echo "======================================================================"
+	@echo "Comparing all modes against committed benchmarks..."
+	@echo "======================================================================"
+	@$(MAKE) bench
+	@$(MAKE) bench-filter
+	@$(MAKE) bench-group
+	@$(MAKE) bench-group-filter
+	@echo "======================================================================"
+	@echo "Done. Compare against committed:"
+	@echo "  git diff test/baseline-benchmarks.log"
+	@echo "  git diff test/filter-benchmarks.log"
+	@echo "  git diff test/group-benchmarks.log"
+	@echo "  git diff test/group-filter-benchmarks.log"
+	@echo "  git diff test/output.txt"
+	@echo "  git diff test/output-filter.txt"
+	@echo "  git diff test/output-group.txt"
+	@echo "  git diff test/output-group-filter.txt"
+	@echo "======================================================================"
 
 tag:
 	@bash test/tag-release.sh
