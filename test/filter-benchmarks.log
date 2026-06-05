@@ -1,5 +1,5 @@
 ======================================================================
-Date: 2026-06-05 19:34:45 UTC | Commit: 488eefb - DIRTY | Mode: filter
+Date: 2026-06-05 20:28:38 UTC | Commit: 21a1a8d  | Mode: filter
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
@@ -15,14 +15,14 @@ Date: 2026-06-05 19:34:45 UTC | Commit: 488eefb - DIRTY | Mode: filter
       Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 5, IPv6: 5
       Outputs (CIDR networks generated): IPv4: 183301, IPv6: 171909, Static: 5, Total: 355215
       Estimated Nginx RAM footprint: ~32 MB (97B/CIDR, verified via profiling)
-      Pipeline Profiling: I/O & Parsing: 35ms, Phase 1 (Flatten): 25ms, Phase 2 (CIDR Gen): 13ms
+      Pipeline Profiling: I/O & Parsing: 30ms, Phase 1 (Flatten): 24ms, Phase 2 (CIDR Gen): 13ms
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.39s |  0.06s |  0.01s | 55.5 MB |    577,364,339 |    155,112,639 |     5/49 |
-| Hot1 |  0.04s |  0.03s |  0.00s | 55.5 MB |    574,719,295 |    139,504,277 |      0/7 |
-| Hot2 |  0.04s |  0.03s |  0.00s | 55.5 MB |    575,288,032 |    139,050,429 |     0/12 |
-| Hot3 |  0.04s |  0.03s |  0.01s | 55.5 MB |    575,557,684 |    142,497,438 |     0/10 |
+| Cold |  0.39s |  0.06s |  0.01s | 55.5 MB |    577,954,556 |    153,375,151 |    38/58 |
+| Hot1 |  0.05s |  0.03s |  0.01s | 55.5 MB |    575,537,559 |    142,399,693 |    25/20 |
+| Hot2 |  0.05s |  0.03s |  0.01s | 55.5 MB |    574,970,496 |    142,391,000 |    24/18 |
+| Hot3 |  0.05s |  0.03s |  0.01s | 55.5 MB |    575,310,184 |    142,443,903 |    21/18 |
 
 [5/5] Output Verification:
       [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
