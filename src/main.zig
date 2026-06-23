@@ -9,36 +9,33 @@ pub const std_options: std.Options = .{
 };
 
 pub fn main(init: std.process.Init) void {
-    const ts_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-
-    std.debug.print("NGC v{s}-{s} (Zig) ({s})\n", .{
-        build_options.version,
-        build_options.git_hash,
-        build_options.build_iso_date,
-    });
-
     const alloc = init.arena.allocator();
 
-    const config = config_mod.parseArgs(init, alloc) catch |err| {
+    const config = lib.config.parseArgs(init, alloc) catch |err| {
         switch (err) {
             error.HelpRequested, error.VersionRequested => std.process.exit(0),
             error.InvalidArgs, error.MissingValue, error.UnknownArgument, error.OutOfMemory => std.process.exit(1),
         }
     };
 
-    const out_file = std.Io.Dir.cwd().createFile(init.io, config.output, .{}) catch |err| {
-        std.log.err("Failed to create output file '{s}': {}", .{ config.output, err });
+    run(init.io, alloc, config) catch {
         std.process.exit(1);
     };
-    defer out_file.close(init.io);
+}
+
+pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !void {
+    const ts_start = std.Io.Timestamp.now(io, .awake).nanoseconds;
+
+    const out_file = try std.Io.Dir.cwd().createFile(io, config.output, .{});
+    defer out_file.close(io);
 
     var out_buf: [65536]u8 = undefined;
-    var out_file_writer = out_file.writer(init.io, &out_buf);
+    var out_file_writer = out_file.writer(io, &out_buf);
     const writer = &out_file_writer.interface;
 
-    var static_stats = parser_mod.Stats{};
-    var v4_stats = parser_mod.Stats{};
-    var v6_stats = parser_mod.Stats{};
+    var static_stats = lib.parse.Stats{};
+    var v4_stats = lib.parse.Stats{};
+    var v6_stats = lib.parse.Stats{};
     var v4_cidrs: usize = 0;
     var v6_cidrs: usize = 0;
     var v4_countries: usize = 0;
@@ -56,34 +53,26 @@ pub fn main(init: std.process.Init) void {
 
     var seen_v4 = [_]bool{false} ** 65536;
     var seen_v6 = [_]bool{false} ** 65536;
-    var static_v4_ranges = std.ArrayList(ip_mod.IPv4Range).empty;
-    var static_v6_ranges = std.ArrayList(ip_mod.IPv6Range).empty;
+    var static_v4_ranges = std.ArrayList(lib.ip.IPv4Range).empty;
+    defer static_v4_ranges.deinit(alloc);
+    var static_v6_ranges = std.ArrayList(lib.ip.IPv6Range).empty;
+    defer static_v6_ranges.deinit(alloc);
 
     var country_map: [65536]u16 = undefined;
     var filter_map: [65536]bool = undefined;
 
-    config_mod.setupMaps(init.io, config, &country_map, &filter_map) catch |err| {
-        std.log.err("Failed to setup mappings: {}", .{err});
-        std.process.exit(1);
-    };
+    try lib.config.setupMaps(io, config, &country_map, &filter_map);
 
     if (config.static_file) |static_path| {
-        const ts_static_start = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
-        static_stats = parser_mod.appendStaticFile(init.io, static_path, writer, alloc, &static_v4_ranges, &static_v6_ranges) catch |err| {
-            if (err == error.FileNotFound) {
-                std.log.err("Static file not found: '{s}'", .{static_path});
-            } else {
-                std.log.err("Failed to process static file '{s}': {}", .{ static_path, err });
-            }
-            std.process.exit(1);
-        };
-        time_io_ns += std.Io.Timestamp.now(init.io, .awake).nanoseconds - ts_static_start;
+        const ts_static_start = std.Io.Timestamp.now(io, .awake).nanoseconds;
+        static_stats = try lib.parse.staticFile(io, static_path, writer, alloc, &static_v4_ranges, &static_v6_ranges);
+        time_io_ns += std.Io.Timestamp.now(io, .awake).nanoseconds - ts_static_start;
     }
 
     if (config.ipv4_csv) |v4_path| {
-        const v4_result = pipeline_mod.processStream(
+        const v4_result = try lib.pipeline.processStream(
             u32,
-            init.io,
+            io,
             v4_path,
             static_v4_ranges.items,
             &seen_v4,
@@ -91,14 +80,7 @@ pub fn main(init: std.process.Init) void {
             alloc,
             &country_map,
             &filter_map,
-        ) catch |err| {
-            if (err == error.FileNotFound) {
-                std.log.err("IPv4 CSV file not found: '{s}'", .{v4_path});
-            } else {
-                std.log.err("Failed to process IPv4 CSV file '{s}': {}", .{ v4_path, err });
-            }
-            std.process.exit(1);
-        };
+        );
         v4_stats = v4_result.stats;
         v4_cidrs = v4_result.cidrs;
         v4_countries = v4_result.countries;
@@ -111,9 +93,9 @@ pub fn main(init: std.process.Init) void {
     }
 
     if (config.ipv6_csv) |v6_path| {
-        const v6_result = pipeline_mod.processStream(
+        const v6_result = try lib.pipeline.processStream(
             u128,
-            init.io,
+            io,
             v6_path,
             static_v6_ranges.items,
             &seen_v6,
@@ -121,14 +103,7 @@ pub fn main(init: std.process.Init) void {
             alloc,
             &country_map,
             &filter_map,
-        ) catch |err| {
-            if (err == error.FileNotFound) {
-                std.log.err("IPv6 CSV file not found: '{s}'", .{v6_path});
-            } else {
-                std.log.err("Failed to process IPv6 CSV file '{s}': {}", .{ v6_path, err });
-            }
-            std.process.exit(1);
-        };
+        );
         v6_stats = v6_result.stats;
         v6_cidrs = v6_result.cidrs;
         v6_countries = v6_result.countries;
@@ -140,16 +115,13 @@ pub fn main(init: std.process.Init) void {
         time_cidr_ns += v6_result.time_cidr_ns;
     }
 
-    out_file_writer.flush() catch |err| {
-        std.log.err("Failed to flush output file: {}", .{err});
-        std.process.exit(1);
-    };
+    try out_file_writer.flush();
 
-    const ts_end = std.Io.Timestamp.now(init.io, .awake).nanoseconds;
+    const ts_end = std.Io.Timestamp.now(io, .awake).nanoseconds;
     const elapsed_ms = @divTrunc(ts_end - ts_start, 1_000_000);
 
     const total_skipped = static_stats.lines_skipped + v4_stats.lines_skipped + v6_stats.lines_skipped;
-    const total_cidrs = static_stats.lines_parsed + v4_cidrs + v6_cidrs;
+    const total_cidrs = v4_cidrs + v6_cidrs;
 
     std.debug.print("Done in {} ms.\n", .{elapsed_ms});
     std.debug.print("  Inputs (ranges parsed): IPv4: {}, IPv6: {}, Static: {}, Skipped: {}\n", .{
@@ -182,14 +154,16 @@ pub fn main(init: std.process.Init) void {
         v4_countries,
         v6_countries,
     });
-    std.debug.print("  Outputs (CIDR networks generated): IPv4: {}, IPv6: {}, Static: {}, Total: {}\n", .{
+    std.debug.print("  Outputs (CIDR networks generated): IPv4: {}, IPv6: {}, Total: {}\n", .{
         v4_cidrs,
         v6_cidrs,
-        static_stats.lines_parsed,
         total_cidrs,
     });
+    if (static_stats.lines_parsed > 0) {
+        std.debug.print("  Outputs (static lines echoed, not CIDRs): {}\n", .{static_stats.lines_parsed});
+    }
 
-    const est_ram_mb = nginx_mod.estimateRamMB(v4_cidrs, v6_cidrs);
+    const est_ram_mb = lib.nginx.estimateRamMB(v4_cidrs, v6_cidrs);
     std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (97B/CIDR, verified via profiling)\n", .{est_ram_mb});
 
     std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (CIDR Gen): {}ms\n", .{
@@ -197,8 +171,4 @@ pub fn main(init: std.process.Init) void {
         @divTrunc(time_flatten_ns, 1_000_000),
         @divTrunc(time_cidr_ns, 1_000_000),
     });
-}
-
-test {
-    std.testing.refAllDecls(@This());
 }
