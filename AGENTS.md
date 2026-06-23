@@ -53,3 +53,12 @@ Two kinds of memory, kept separate:
 - No sycophantic openers or closing fluff.
 - No emojis or em-dashes.
 - Do not guess APIs, versions, flags, commit SHAs, or package names. Verify by reading code or docs before asserting.
+
+## Testing Workflow
+- Run `make check` before and after any change.
+- Check `test/regressions.zig` for context on previously fixed bugs before modifying related functions.
+- Add Tier 2 edge cases as rows to `test/data/<module>.zig` IAE tables; the `test/*_spec.zig` runner loops automatically.
+- Add Tier 1 spec tests (AAA) to `test/spec/<module>.zig`.
+- Add Tier 3 scenarios in `test/scenario/*.zig` and register in `tests.zig`.
+- Add Tier 4 properties in `test/properties.zig`.
+- When fixing a bug: add IAE row first, confirm failure, fix, confirm pass, then register in `test/regressions.zig`.

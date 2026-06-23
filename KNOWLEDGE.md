@@ -42,7 +42,8 @@ Updated: 2026-06-05
 - `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
 - `knowledge/architecture.md` - Core system design and CIDR generation pipeline
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps, including Nginx RAM footprint verification
-- `knowledge/testing-architecture.md` - Five-tier testing architecture: Spec (SDD), IAE (TDD/KDT), Scenario (STDD), Property (PDD/MDD), Regression
+- `knowledge/testing-framework.md` - Abstract five-tier testing framework: Spec (SDD), IAE (TDD/KDT), Scenario (STDD), Property (PDD/MDD), Regression (reusable, project-agnostic)
+- `knowledge/testing-architecture.md` - Project-specific testing implementation (file layout, counts, migration order, build config)
 - `notes/` - Daily session logs with progress. These are strictly append-only historical narratives showing *what was done*. Do NOT trap open tasks or future backlogs in daily notes. Conversely, do NOT put detailed task specifications in `tasks.md`. `knowledge/tasks.md` must be strictly limited to a concise 1-line checklist. ALL rationale, examples, and detailed specifications MUST go into the daily `notes/YYYY-MM-DD.md` file, which is then linked at the end of the 1-line task (e.g., `(Details: notes/2026-05-14.md)`).
 - **Benchmarking & Profiling Rules**:
   - `test/baseline-benchmarks.log` is **not a log file** — it holds the current pre-commit performance snapshot for the baseline configuration. Each `make bench` overwrites it with fresh data.
