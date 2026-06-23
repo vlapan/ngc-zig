@@ -16,3 +16,6 @@ test/nginx-profile/*.pid
 
 # Locally compiled binaries
 ngc-static
+.DS_Store
+calc_output
+test/output_diff.txt
