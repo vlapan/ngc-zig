@@ -1,0 +1,17 @@
+# ngc-perf snapshot — last recorded measurements (min)
+# Format: id | label | min_ns | iterations
+SW-PRF-001 | findByte: CSV-like line at comma | 1026000 | 679347
+SW-PRF-002 | findByte: no match in short string | 1018000 | 573394
+CIDR-PRF-001 | computeCidrBlock: /24 aligned | 800000 | 1291989
+CIDR-PRF-002 | computeCidrBlock: unaligned range [10,20] | 800000 | 1291989
+CIDR-PRF-003 | computeCidrBlock: /0 full space | 800000 | 1291155
+PAR-PRF-001 | fastParseInt: 8-digit (IPv4 octet) | 960000 | 775193
+PAR-PRF-002 | fastParseInt: 3-digit short | 2289000 | 1231527
+PAR-PRF-003 | fastParseInt: 1-digit (zero) | 2498000 | 3225806
+PAR-PRF-004 | fastParseInt: 10-digit max u32 | 993000 | 491159
+IPF-PRF-001 | formatIPv4Line: /24 | 1000000 | 250941
+IPF-PRF-002 | formatIPv4Line: /32 | 982000 | 246305
+IPF-PRF-003 | formatIPv4Line: /0 | 1000000 | 256147
+IPF-PRF-004 | formatIPv6Line: /64 | 999000 | 74326
+IPF-PRF-005 | formatIPv6Line: /128 | 997000 | 73539
+IPF-PRF-006 | formatIPv6Line: /0 | 1000000 | 98813

@@ -1,7 +1,7 @@
 # Define phony targets so Make doesn't look for files named 'all' or 'clean'
-.PHONY: all build release clean run test fetch-data bench bench-filter bench-group bench-group-filter bench-compare check
+.PHONY: all build release clean run test perf perf-record fetch-data bench bench-filter bench-group bench-group-filter bench-record bench-check bench-compare check
 
-SHELL := /opt/homebrew/bin/zsh
+SHELL := /bin/zsh
 .SHELLFLAGS := -e -o pipefail -c
 
 # The first target is the default one run by 'make'
@@ -10,8 +10,8 @@ all: build run
 
 BINARY := zig-out/bin/ngc
 SOURCES := $(shell find . -name "*.zig")
-TEST_V4 := test/geo-whois-asn-country-ipv4-num.csv
-TEST_V6 := test/geo-whois-asn-country-ipv6-num.csv
+TEST_V4 := test/server-country-ipv4-num.csv
+TEST_V6 := test/server-country-ipv6-num.csv
 
 $(BINARY): $(SOURCES)
 
@@ -55,14 +55,24 @@ clean:
 
 fmt:
 	@echo "MAKE:INFO: Formatting Zig source files..."
-	zig fmt src/*.zig build.zig
+	zig fmt src/*.zig spec/ build.zig
 	@echo "MAKE:INFO: Formatting done!"
 
 test:
 	@echo "MAKE:INFO: Building and running unit tests..."
 	@zig build test
-	@./zig-out/bin/ngc-test
 	@echo "MAKE:INFO: Tests passed!"
+
+perf:
+	@echo "MAKE:INFO: Checking perf benchmarks against stored baselines..."
+	@zig build perf -Dtarget=native 2>&1
+	@echo "MAKE:INFO: Perf benchmarks OK."
+
+perf-record:
+	@echo "MAKE:INFO: Recording perf baseline snapshots..."
+	@zig build perf-record -Dtarget=native 2>&1
+	@echo "MAKE:INFO: Perf baselines written to spec/snapshots/perf-baselines.snap."
+	@echo "MAKE:INFO: Review and commit: git add spec/snapshots/perf-baselines.snap && git commit -m \"chore: update perf baselines\""
 
 bench:
 	@bash test/benchmark.sh baseline | tee test/baseline-benchmarks.log
@@ -75,6 +85,24 @@ bench-group:
 
 bench-group-filter:
 	@bash test/benchmark.sh group-filter | tee test/group-filter-benchmarks.log
+
+bench-record:
+	@echo "MAKE:INFO: Recording end-to-end benchmark baselines..."
+	@bash test/benchmark.sh baseline | tee test/baseline-benchmarks.log
+	@bash test/benchmark.sh filter | tee test/filter-benchmarks.log
+	@bash test/benchmark.sh group | tee test/group-benchmarks.log
+	@bash test/benchmark.sh group-filter | tee test/group-filter-benchmarks.log
+	@echo "MAKE:INFO: All baselines recorded. Review and commit."
+	@echo "  git add test/*-benchmarks.log && git commit -m \"chore: update end-to-end bench baselines\""
+
+bench-check:
+	@echo "MAKE:INFO: Checking end-to-end benchmarks against baselines..."
+	@$(MAKE) bench 2>&1 | tail -3 | head -2
+	@$(MAKE) bench-filter 2>&1 | tail -3 | head -2
+	@$(MAKE) bench-group 2>&1 | tail -3 | head -2
+	@$(MAKE) bench-group-filter 2>&1 | tail -3 | head -2
+	@echo "MAKE:INFO: Diffs available — review before commit:"
+	@echo "  git diff test/baseline-benchmarks.log"
 
 bench-compare:
 	@echo "======================================================================"
@@ -106,7 +134,7 @@ check:
 	@echo "  [2/3] Tests..."
 	@make test
 	@echo "  [3/3] Absolute paths..."
-	@rg '/Users/[a-z]+/|/home/[a-z]+/' src/ --files-with-matches && echo "  FAIL: Host absolute paths found in source!" && exit 1 || echo "  OK: No host absolute paths in source"
+	@rg '/Users/[a-z]+/|/home/[a-z]+/' --glob '*.zig' --files-with-matches && echo "  FAIL: Host absolute paths found in source!" && exit 1 || echo "  OK: No host absolute paths in source"
 	@echo "MAKE:INFO: All checks passed!"
 
 fetch-data:
