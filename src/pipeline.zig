@@ -1,11 +1,11 @@
 const std = @import("std");
 const ip_mod = @import("ip.zig");
 const flatten_mod = @import("flatten.zig");
-const parser_mod = @import("parser.zig");
+const parse = @import("parse.zig");
 const cidr_mod = @import("cidr.zig");
 
 pub const StreamResult = struct {
-    stats: parser_mod.Stats,
+    stats: parse.Stats,
     cidrs: usize,
     countries: usize,
     flattened: usize,
@@ -31,7 +31,7 @@ pub fn processStream(
 
     var ranges = std.ArrayList(ip_mod.IPRange(T)).empty;
     defer ranges.deinit(alloc);
-    var stats = try parser_mod.parseFile(T, io, path, &ranges, alloc, country_map);
+    var stats = try parse.csvFile(T, io, path, &ranges, alloc, country_map);
     const ts_parsed = std.Io.Timestamp.now(io, .awake).nanoseconds;
     const time_io_ns = ts_parsed - ts_start;
 

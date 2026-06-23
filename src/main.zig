@@ -1,9 +1,5 @@
 const std = @import("std");
-const config_mod = @import("config.zig");
-const ip_mod = @import("ip.zig");
-const parser_mod = @import("parser.zig");
-const pipeline_mod = @import("pipeline.zig");
-const nginx_mod = @import("nginx.zig");
+const lib = @import("lib");
 const build_options = @import("build_options.zig");
 
 pub const std_options: std.Options = .{
