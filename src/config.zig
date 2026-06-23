@@ -188,17 +188,15 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
     }
 }
 
-fn setupMapsInline(config: Config, country_map: *[65536]u16, filter_map: *[65536]bool) !void {
+pub fn setupMapsInline(config: Config, country_map: *[65536]u16, filter_map: *[65536]bool) !void {
     for (0..65536) |i| {
         country_map[i] = @intCast(i);
     }
     for (config.groups) |g| {
         try parseGroupLine(g, country_map);
     }
-
     const has_filters = config.filters.len > 0 or config.filters_file != null;
     @memset(filter_map, !has_filters);
-
     if (has_filters) {
         for (config.filters) |f| {
             try parseFilterLine(f, filter_map);
