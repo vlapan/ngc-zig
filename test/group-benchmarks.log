@@ -1,5 +1,5 @@
 ======================================================================
-Date: 2026-06-23 07:08:49 UTC | Commit: 9a7049c  | Mode: group
+Date: 2026-06-23 07:17:33 UTC | Commit: 88ec880  | Mode: group
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
@@ -19,14 +19,11 @@ Date: 2026-06-23 07:08:49 UTC | Commit: 9a7049c  | Mode: group
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |      s |      s |      s |  0.0 MB |              0 |              0 |        / |
-| Hot1 |  0.05s |  0.04s |  0.01s | 54.6 MB |    729,487,202 |    175,050,576 |     4/22 |
-| Hot2 |  0.06s |  0.04s |  0.01s | 54.6 MB |    732,180,542 |    178,771,105 |     2/48 |
-| Hot3 |  0.06s |  0.04s |  0.01s | 54.6 MB |    733,935,091 |    183,586,360 |     3/60 |
+| Cold |  0.26s |  0.04s |  0.01s | 54.6 MB |    731,507,145 |    180,206,162 |    24/53 |
+| Hot1 |  0.06s |  0.04s |  0.01s | 54.6 MB |    728,568,526 |    177,150,844 |     6/43 |
+| Hot2 |  0.06s |  0.04s |  0.01s | 54.6 MB |    728,592,781 |    180,801,765 |    18/39 |
+| Hot3 |  0.06s |  0.04s |  0.01s | 54.6 MB |    729,448,576 |    179,128,214 |    11/53 |
 
 [5/5] Output Verification:
-      [NOTICE] test/output-group.txt has changed!
-      If this is an intentional formatting or feature change, review the diff:
-       test/output-group.txt | 588366 ++++++++++++++++++++++-------------------------
-       1 file changed, 281197 insertions(+), 307169 deletions(-)
+      [OK] No changes in test/output-group.txt. Output exactly matches baseline.
 ======================================================================
