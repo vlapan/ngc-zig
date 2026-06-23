@@ -1,32 +1,32 @@
 ======================================================================
-Date: 2026-06-05 21:21:58 UTC | Commit: ca7a167  | Mode: baseline
+Date: 2026-06-23 06:48:03 UTC | Commit: 1603297 - DIRTY | Mode: baseline
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
 [2/5] File Metrics:
-      Binary: 247K | IPv4 CSV: 7.8M | IPv6 CSV: 17M | Output: 23M
+      Binary: 231K | IPv4 CSV: 6.5M | IPv6 CSV: 19M | Output: 21M
 [3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 332832, IPv6: 215368, Static: 5, Skipped: 3
-      Phase 1 (Sweep Line): Topological Collisions: IPv4: 5456, IPv6: 495
-      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 332766, IPv6: 215361
+      Inputs (ranges parsed): IPv4: 274284, IPv6: 251480, Static: 5, Skipped: 3
+      Phase 1 (Sweep Line): Topological Collisions: IPv4: 0, IPv6: 0
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 274285, IPv6: 251480
       Phase 1 (Sweep Line): Segments filtered: IPv4: 0, IPv6: 0
-      Phase 2 (CIDR Gen): Segments processed: IPv4: 332766, IPv6: 215361
+      Phase 2 (CIDR Gen): Segments processed: IPv4: 274285, IPv6: 251480
       Phase 2 (CIDR Gen): Static Overrides: IPv4: 5, IPv6: 0
       Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 251, IPv6: 251
-      Outputs (CIDR networks generated): IPv4: 492054, IPv6: 514407, Static: 5, Total: 1006466
-      Estimated Nginx RAM footprint: ~93 MB (97B/CIDR, verified via profiling)
-      Pipeline Profiling: I/O & Parsing: 58ms, Phase 1 (Flatten): 22ms, Phase 2 (CIDR Gen): 25ms
+      Outputs (CIDR networks generated): IPv4: 385276, IPv6: 541784, Total: 927060
+      Estimated Nginx RAM footprint: ~85 MB (97B/CIDR, verified via profiling)
+      Pipeline Profiling: I/O & Parsing: 63ms, Phase 1 (Flatten): 18ms, Phase 2 (CIDR Gen): 42ms
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.58s |  0.06s |  0.02s | 54.6 MB |    821,877,568 |    209,652,354 |    1/334 |
-| Hot1 |  0.05s |  0.04s |  0.01s | 54.6 MB |    791,714,833 |    185,048,262 |     3/16 |
-| Hot2 |  0.06s |  0.04s |  0.01s | 54.6 MB |    794,871,894 |    182,473,841 |     11/8 |
-| Hot3 |  0.07s |  0.04s |  0.01s | 54.6 MB |    798,165,838 |    182,800,545 |     57/5 |
+| Cold |  0.74s |  0.06s |  0.02s | 57.7 MB |    850,497,054 |    224,722,569 |   78/409 |
+| Hot1 |  0.08s |  0.04s |  0.01s | 57.7 MB |    823,197,222 |    191,387,975 |    66/11 |
+| Hot2 |  0.08s |  0.04s |  0.01s | 57.7 MB |    820,827,962 |    186,763,997 |     50/7 |
+| Hot3 |  0.08s |  0.04s |  0.01s | 57.7 MB |    821,123,306 |    187,992,888 |    56/25 |
 
 [5/5] Output Verification:
       [NOTICE] test/output.txt has changed!
       If this is an intentional formatting or feature change, review the diff:
-       test/output.txt | 85980 +++++++++++++++++++++---------------------------------
-       1 file changed, 32587 insertions(+), 53393 deletions(-)
+       test/output.txt | 734565 ++++++++++++++++++++++++-----------------------------
+       1 file changed, 327582 insertions(+), 406983 deletions(-)
 ======================================================================

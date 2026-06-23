@@ -52,8 +52,8 @@ echo "      OK"
 
 echo -e "${BOLD}[2/5] File Metrics:${RESET}"
 BIN_SIZE=$(ls -lh zig-out/bin/ngc | awk '{print $5}')
-V4_SIZE=$(ls -lh test/geo-whois-asn-country-ipv4-num.csv | awk '{print $5}')
-V6_SIZE=$(ls -lh test/geo-whois-asn-country-ipv6-num.csv | awk '{print $5}')
+V4_SIZE=$(ls -lh test/server-country-ipv4-num.csv | awk '{print $5}')
+V6_SIZE=$(ls -lh test/server-country-ipv6-num.csv | awk '{print $5}')
 if [ -f "$OUTPUT_FILE" ]; then
     OUT_SIZE=$(ls -lh $OUTPUT_FILE | awk '{print $5}')
 else
@@ -62,7 +62,7 @@ fi
 echo "      Binary: $BIN_SIZE | IPv4 CSV: $V4_SIZE | IPv6 CSV: $V6_SIZE | Output: $OUT_SIZE"
 
 echo -e "${BOLD}[3/5] Application Stats (Cold Run):${RESET}"
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_cold.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/server-country-ipv4-num.csv --ipv6 test/server-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_cold.txt
 
 grep "Inputs (ranges parsed)" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 grep -E "^  Phase 1" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
@@ -74,9 +74,9 @@ grep "Pipeline Profiling" /tmp/ngc_time_cold.txt | sed 's/^  /      /' || true
 echo -e "${BOLD}[4/5] Performance Metrics:${RESET}"
 
 # Hot runs
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot1.txt
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot2.txt
-/usr/bin/time -al zig-out/bin/ngc --ipv4 test/geo-whois-asn-country-ipv4-num.csv --ipv6 test/geo-whois-asn-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot3.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/server-country-ipv4-num.csv --ipv6 test/server-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot1.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/server-country-ipv4-num.csv --ipv6 test/server-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot2.txt
+/usr/bin/time -al zig-out/bin/ngc --ipv4 test/server-country-ipv4-num.csv --ipv6 test/server-country-ipv6-num.csv --output $OUTPUT_FILE --static test/private.txt $EXTRA_ARGS > /dev/null 2> /tmp/ngc_time_hot3.txt
 
 # Parse function
 parse_time() {
