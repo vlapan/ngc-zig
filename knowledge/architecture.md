@@ -1,5 +1,5 @@
 # Architecture
-Updated: 2026-06-05
+Updated: 2026-06-12
 
 ## Overview
 The `NGC` CLI processes raw GeoIP CSV files, normalizes overlapping blocks, and outputs a mathematically flat and perfectly aggregated format for the Nginx Geo module.
@@ -7,9 +7,9 @@ The `NGC` CLI processes raw GeoIP CSV files, normalizes overlapping blocks, and 
 ## Core Mechanisms
 The system processes data in a strictly pipelined architecture, decoupled into distinct single-responsibility modules:
 
-### Phase 0: High-Speed Parsing (`src/parser.zig` & `src/config.zig` & `src/swar.zig`)
+### Phase 0: High-Speed Parsing (`src/parse.zig` & `src/config.zig` & `src/scan.zig`)
 - **Memory-Mapped I/O**: Upstream CSVs are loaded via zero-copy `std.posix.mmap` with aggressive OS prefetching (`MADV.SEQUENTIAL`) to eliminate SSD I/O stalls.
-- **SWAR CSV Tokenization**: Comma delimiters are found 8 bytes at a time using SIMD Within A Register bit manipulation (`src/swar.zig`). Replaces linear `std.mem.indexOfScalar` scans. -2.7% total instructions.
+- **SWAR CSV Tokenization**: Comma delimiters are found 8 bytes at a time using SIMD Within A Register bit manipulation (`src/scan.zig`). Replaces linear `std.mem.indexOfScalar` scans. -2.7% total instructions.
 - **SWAR Integer Parsing**: Sequential loops and byte-by-byte parsing are bypassed entirely. A SIMD Within A Register (SWAR) algorithm chunks 8 ASCII digits into a 64-bit integer, calculating base-10 representations via bit-shifting, destroying millions of logic instructions.
 - **Country Code Tokenization**: 2-byte country strings (e.g., "US", "FR") are converted to `u16` via `(char0 << 8) | char1` for O(1) LUT lookup.
 - **Group Remap**: `c_val = country_map[c_val]` remaps country codes (e.g., FR → EU) during parsing. Safe — sweep-line handles same-country mergers regardless of when remapping happens.
@@ -34,7 +34,7 @@ The `processStream(comptime T: type, ...)` generic function orchestrates Phases 
 - **Flow**: parse (group remap only) → append static → flatten → **filter + re-merge segments** → CIDR gen → count countries
 
 ### Country Counting: Post-Filter, Post-Overlay
-`seen_countries` tracking was moved from `parser.zig` to `pipeline.zig`. Countries are now counted from the FINAL segment list (after filter and static overlay), not from raw parsed ranges. This means:
+`seen_countries` tracking was moved from `parse.zig` to `pipeline.zig`. Countries are now counted from the FINAL segment list (after filter and static overlay), not from raw parsed ranges. This means:
 - Countries that only exist as HOLE segments (static overrides) are now counted (+1 for IPv4)
 - Post-filter country count accurately reflects what appears in the output
 - Country `0` (empty CSV country codes) is never a segment (skipped during parsing), so it never appears in count
@@ -58,7 +58,7 @@ Group remap (`country_map[c_val]`) runs during parsing. Filter runs AFTER sweep-
 After sweep-line, iterate segments: skip if not in allowlist; if adjacent to previous kept segment with same country, merge into it (extend end). This collapses adjacent same-country segments split by now-filtered foreign segments.
 
 ### Filter-Before-Group Order Bug
-`parser.zig:191-195` has an additional bug: filter runs BEFORE group remap:
+`parse.zig:191-195` has an additional bug: filter runs BEFORE group remap:
 ```
 if (!filter_map[c_val]) continue;   // filter on ORIGINAL code
 c_val = country_map[c_val];         // group remap (too late)
@@ -70,7 +70,7 @@ Static HOLE ranges are appended in `pipeline.zig:37-39` after `parseFile` return
 
 With segment-level filter: HOLE segments are dropped if HOLE is not in the allowlist (which it never is for filter mode). This means the static overlay does NOT shadow filtered ranges. For private IPv4 ranges this is safe (cidr.zig:39 `isPrivateIPv4` check catches them). For non-private static entries in filter mode, the underlying allowlisted range would bleed through — design limitation: filter mode always drops non-allowlisted countries, and HOLE is not an allowlisted country.
 
-Static file OUTPUT entries (written by `appendStaticFile` to the beginnning of the output file) always appear regardless of filter, because they're written before the pipeline runs.
+Static file OUTPUT entries (written by `staticFile` to the beginnning of the output file) always appear regardless of filter, because they're written before the pipeline runs.
 
 ## Nginx Memory Footprint
 The `src/nginx.zig` module provides `estimateRamBytes()` and `estimateRamMB()` for telemetry output.

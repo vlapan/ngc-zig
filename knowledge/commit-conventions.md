@@ -1,5 +1,5 @@
 # Commit Conventions
-Updated: 2026-06-05
+Updated: 2026-06-12
 
 All commits must follow Conventional Commits format: `type(scope): description`
 
@@ -15,16 +15,16 @@ All commits must follow Conventional Commits format: `type(scope): description`
 
 ## Scope
 Optional but recommended. Use the module or area affected:
-- `parser`, `config`, `cidr`, `flatten`, `ip`, `swar`, `nginx`, `main`
+- `parse`, `config`, `cidr`, `flatten`, `ip`, `scan`, `nginx`, `main`
 - `ci`, `makefile`, `benchmarks`, `tests`
 - `docs`, `knowledge`, `notes`
 
 ## Examples
 - `feat(cidr): add iterative rangeToCidrs for IPv6`
-- `fix(parser): reject non-digit characters in fastParseInt`
+- `fix(parse): reject non-digit characters in parseInt`
 - `docs: update RAM heuristic to 97B/CIDR`
 - `chore: remove dead code from ip.zig`
-- `perf(swarm): replace indexOfScalar with findByte`
+- `perf(scan): replace indexOfScalar with findByte`
 - `test(flatten): add sweep-line merge edge cases`
 
 ## Rules

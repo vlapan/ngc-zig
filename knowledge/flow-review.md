@@ -1,6 +1,6 @@
 # Flow Review: TDD, Testability & Separation of Concerns
 
-Updated: 2026-06-05
+Updated: 2026-06-12
 
 ## Principle
 
@@ -15,7 +15,7 @@ Every public function falls into one of three categories:
 No I/O, no writer, no allocator (or allocator only for test-predictable operations).
 Already unit-testable with zero infrastructure. Goal: keep it that way.
 
-Examples: `isPrivateIPv4`, `fastParseInt`, `parseCsvLine`, `filterSegments`, `swar.findByte`
+Examples: `isPrivateIPv4`, `parseInt`, `csvLine`, `filterSegments`, `scan.findByte`
 
 ### 2. I/O function with extractable pure core
 File ops, writer calls, mmap — but contains a block of transform logic that is
@@ -59,8 +59,8 @@ After the initial extraction pass, all Category-2b functions have been addressed
 
 | File | Function | Extracted pure core | Tests |
 |------|----------|-------------------|-------|
-| `parser.zig` | `parseFile` | `parseCsvLine` | 8 |
-| `parser.zig` | `appendStaticFile` | `parseStaticLine` | 5 |
+| `parse.zig` | `csvFile` | `csvLine` | 8 |
+| `parse.zig` | `staticFile` | `staticLine` | 5 |
 | `pipeline.zig` | `processStream` | `filterSegments` | 4 |
 | `ip.zig` | `formatIPv4`/`formatIPv6` | `formatIPv4Line`/`formatIPv6Line` | 5 |
 | `cidr.zig` | `rangeToCidrs` | `computeCidrBlock` | 5 |

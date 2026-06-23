@@ -1,5 +1,19 @@
 # Project Tasks & Backlog
-Updated: 2026-06-05
+Updated: 2026-06-12
+
+## From Code Review (2026-06-12)
+
+- [ ] **Fix parseInt error-union facade** `[S: 1.5]`: `fn parseInt(comptime T: type, str: []const u8) !T` never returns an error. Remove error union or add digit validation. Non-digit input produces garbage via SWAR XOR. ~5 lines, D:1, I:3. (Details: review Point 1)
+- [ ] **Add line context to parseGroupLine/parseFilterLine errors** `[S: 2.0]`: Malformed lines produce FormatError with no file/line context. For files with thousands of lines, debugging is painful. ~30 lines, D:2, I:4. (Details: review Point 2)
+- [ ] **Document flatten maxInt full-space hole** `[S: 0.3]`: Range with `end == maxInt(T)` doesn't generate an end event. Document why this is correct and the filterSegments guard against wrap. ~1 line, D:1, I:1. (Details: review Point 3)
+- [ ] **Add IPv6 private range filtering** `[S: 2.0]`: `rangeToCidrs` skips private IPv4 but not fc00::/7, fe80::/10. ~10 lines, D:2, I:2. (Details: review Point 5)
+- [ ] **Document active_ids linear scan invariant** `[S: 0.3]`: BGP data has depth 1-3, making linear scan optimal. Document as design invariant. ~1 line, D:1, I:1. (Details: review Point 7)
+- [ ] **Fix IPv6 pre-allocation heuristic** `[S: 0.5]`: `const estimated_lines = stat.size / 30;` is correct for IPv4 (20-30 bytes/line) but IPv6 lines are 50-60 bytes. Use `if (T == u128) size/60 else size/30`. ~5 lines, D:1, I:1. (Details: review Point 8)
+- [ ] **Add debug logging for skipped CSV lines** `[S: 1.0]`: `csvLine` silently returns null on parse failure. `lines_skipped` counts but with no way to identify which lines. ~10 lines, D:1, I:2. (Details: review Point 13)
+- [ ] **Add debug logging for skipped static lines** `[S: 1.0]`: Same silent-skip issue as csvLine, for static file parsing. ~10 lines, D:1, I:2. (Details: review Point 14)
+- [ ] **Remove unused std import from lib.zig** `[S: 0.1]`: `const std = @import("std");` is unused. Clean it up. ~1 line, D:1, I:1. (Details: review Point 17)
+- [ ] **Add scenario content tests for IPv6** `[S: 0.3]`: SCENARIO-002 lacks exact output assertions. ~10 lines, D:2, I:1. (Details: review Point 9 follow-up)
+- [ ] **Grow regression registry** `[S: 0.3]`: Currently 2 entries. Projects with multiple refactors likely have more fixed bugs. Filter through git log for past fixes. ~5 lines, D:1, I:1. (Details: review Point 11)
 
 ## Active / Next Up
 Sorted by score descending. Score = Impact(1-10) / Difficulty(1-10).
@@ -11,16 +25,25 @@ Sorted by score descending. Score = Impact(1-10) / Difficulty(1-10).
 - [ ] **Fix CI: Build Binary Step** `[S: 3.0]`: Add `zig build` to CI workflow to verify compilation. ~10 lines, D:1, I:3. (Details: `notes/2026-05-16.md`)
 - [ ] **Fix CI: Run Tests Before Release** `[S: 3.0]`: Add test step to release workflow. ~10 lines, D:1, I:3. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Input Validation** `[S: 1.5]`: Check `start <= end`, country code format, file size limits. ~40 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
-- [ ] **Fix Silent Error Swallowing** `[S: 1.5]`: Fail or warn on invalid static file data (bad prefix parse, unparseable IPs). `parser.zig:59,72,82`. ~30 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix Silent Error Swallowing** `[S: 1.5]`: Fail or warn on invalid static file data (bad prefix parse, unparseable IPs). `parse.zig:59,72,82`. ~30 lines, D:2, I:3. (Details: `notes/2026-05-16.md`)
 - [x] **Remove Redundant Pre-flight File Checks** `[S: 2.0]`: Deleted 25 lines of double I/O in `main.zig:33-56`. Files are opened once during processing with proper error handling. No functional change. (Completed: 2026-05-16)
 - [x] **Add `--help` / `--version` Flags** `[S: 2.0]`: `--help`/`-h` prints usage, `--version`/`-v` prints version. Both exit 0. `config.zig:80-85`, `main.zig:28`. 4 tests. (Completed: 2026-05-16)
-- [ ] **Add Digit Validation to `fastParseInt`** `[S: 2.0]`: Reject non-digit characters. `parser.zig:94-129`. ~10 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
+- [ ] **Refactor staticFile dual concern** `[S: 1.5]`: `parse.zig:staticFile` both echoes static lines to output AND builds HOLE ranges. Accidental correctness — fragile if call order changes. Separate into two functions (one for output echoing, one for HOLE range building). ~30 lines, D:2, I:3. (Details: code review P1.3)
+- [ ] **Rename StreamResult.countries → country_count** `[S: 1.0]`: Current name is ambiguous (count vs array) and clashes conceptually with `seen_countries`. `pipeline.zig:10` and all callers. ~10 lines, D:1, I:1. (Details: code review P3.9)
+- [ ] **Strengthen scenario tests with content verification** `[S: 0.5]`: All scenario tests only check `> 0` counts and output format — none verify actual output correctness. Needs CSV data with known expected output for meaningful assertions. ~40 lines, D:3, I:1. (Details: code review P2.4)
+- [ ] **Consolidate overlapping pipeline spec tests** `[S: 0.5]`: `"all countries filtered out"` and `"filter excludes countries"` test similar paths; consider merging. `spec/default/run.zig`. ~5 lines, D:1, I:0.5. (Details: code review P6.16)
+- [ ] **Add Digit Validation to `parseInt`** `[S: 2.0]`: Reject non-digit characters. `parse.zig:94-129`. ~10 lines, D:1, I:2. (Details: `notes/2026-05-16.md`)
 - [x] **Fail on Unknown CLI Args** `[S: 2.0]`: Returns `error.UnknownArgument` for unrecognized flags. `config.zig:87`, `main.zig:29`. 1 test. (Completed: 2026-05-16)
-- [x] **Move Filter to Post-Processing** `[S: 1.5]`: Current filter at `parser.zig:191` runs during parsing (before sweep-line). This lets kept countries absorb filtered countries' IP space — wrong for an allowlist. Move filter to segment level in `pipeline.zig` after sweep-line, with adjacent same-country re-merge. Also fix filter-before-group ordering (swap lines 191/195). ~30 lines, D:4, I:6. (Details: `notes/2026-06-05.md`)
+- [x] **Move Filter to Post-Processing** `[S: 1.5]`: Current filter at `parse.zig:191` runs during parsing (before sweep-line). This lets kept countries absorb filtered countries' IP space — wrong for an allowlist. Move filter to segment level in `pipeline.zig` after sweep-line, with adjacent same-country re-merge. Also fix filter-before-group ordering (swap lines 191/195). ~30 lines, D:4, I:6. (Details: `notes/2026-06-05.md`)
 - [ ] **Add Dry-Run Mode** `[S: 1.0]`: Validate input without producing output. ~30 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Benchmark Regression Detection to CI** `[S: 1.0]`: Run `make bench` in CI, fail on regression. ~20 lines, D:2, I:2. (Details: `notes/2026-05-16.md`)
 - [ ] **Improve README** `[S: 1.0]`: Add install instructions, benchmarks, license, Nginx example, CSV format docs. ~100 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
 - [ ] **Add `--quiet` / `--verbose` Flags** `[S: 1.0]`: Suppress output for CI, debug mode for troubleshooting. ~30 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
+- [ ] **Fix staticLine redundant CR stripping** `[S: 0.3]`: `staticFile` strips `\r` before calling `staticLine`, which then does `trimEnd(" \t\r")` — redundant trim on every static line. Remove `\r` from `trimEnd` charset in `staticLine` or remove the pre-strip in `staticFile`. ~2 lines, D:1, I:0.3. (Details: code review P3)
+- [ ] **Formalize performance benchmarking requirement** `[S: 1.0]`: Any change to hot-path code (SWAR, parsing loops, CIDR gen) must be benchmarked via `make bench` before and after, with results noted in commit message. Consider adding instruction-count regression guards to CI. ~10 lines doc + CI config, D:2, I:2. (Details: code review Point 6)
+- [ ] **Fix Makefile test target double-run** `[S: 2.0]`: `zig build test` already runs the test binary. Remove redundant `./zig-out/bin/ngc-test` line. ~3 lines, D:1, I:2. (Details: `notes/2026-06-09.md` via code review Point 7)
+- [ ] **Investigate nginx bytes_per_ipv4 == bytes_per_ipv6** `[S: 2.0]`: Both are 97 but IPv6 entries should differ (128-bit vs 32-bit keys). Either document why or fix. ~5 lines, D:1, I:2. (Details: `notes/2026-06-09.md` via code review Point 6)
+- [ ] **Fix Makefile fmt target to include spec files** `[S: 1.0]`: Currently skips `spec/*.zig` and `spec/**/*.zig`. Change to `zig fmt src/*.zig build.zig spec/`. ~1 line, D:1, I:1. (Details: `notes/2026-06-09.md` via code review Point 8)
 - [ ] **Fix Makefile Hardcoded SHELL** `[S: 1.0]`: Replace `/opt/homebrew/bin/zsh` with portable path. ~2 lines, D:1, I:1. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Linux Profiling Scripts** `[S: 0.5]`: Replace macOS-only `samply` with portable alternative. ~50 lines, D:2, I:1. (Details: `notes/2026-05-16.md`)
 - [ ] **Add Progress Indication** `[S: 0.5]`: Show progress for large files (1M+ ranges). ~20 lines, D:2, I:1. (Details: `notes/2026-05-16.md`)
