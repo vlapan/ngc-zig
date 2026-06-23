@@ -1,7 +1,7 @@
 const std = @import("std");
 const ip_mod = @import("ip.zig");
 
-pub const HOLE: u16 = 0xFFFF;
+pub const HOLE = ip_mod.HOLE;
 
 pub const CidrStats = struct {
     cidrs: usize = 0,

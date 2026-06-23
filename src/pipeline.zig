@@ -100,7 +100,15 @@ pub fn filterSegments(
             segments.items[write_idx - 1].end + 1 == seg.start and
             segments.items[write_idx - 1].country == seg.country)
         {
-            segments.items[write_idx - 1].end = seg.end;
+            // Guard: merging a segment ending at maxInt would wrap on +1.
+            // Not reachable in practice (flatten produces sorted disjoint
+            // segments) but prevents a latent wrap-around merge.
+            if (segments.items[write_idx - 1].end != std.math.maxInt(@TypeOf(seg.start))) {
+                segments.items[write_idx - 1].end = seg.end;
+            } else {
+                segments.items[write_idx] = seg;
+                write_idx += 1;
+            }
         } else {
             segments.items[write_idx] = seg;
             write_idx += 1;
