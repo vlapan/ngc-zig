@@ -1,5 +1,5 @@
 ======================================================================
-Date: 2026-06-23 06:48:03 UTC | Commit: 1603297 - DIRTY | Mode: baseline
+Date: 2026-06-23 07:08:35 UTC | Commit: 9a7049c  | Mode: baseline
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
@@ -15,18 +15,15 @@ Date: 2026-06-23 06:48:03 UTC | Commit: 1603297 - DIRTY | Mode: baseline
       Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 251, IPv6: 251
       Outputs (CIDR networks generated): IPv4: 385276, IPv6: 541784, Total: 927060
       Estimated Nginx RAM footprint: ~85 MB (97B/CIDR, verified via profiling)
-      Pipeline Profiling: I/O & Parsing: 63ms, Phase 1 (Flatten): 18ms, Phase 2 (CIDR Gen): 42ms
+      Pipeline Profiling: I/O & Parsing: 51ms, Phase 1 (Flatten): 16ms, Phase 2 (CIDR Gen): 26ms
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.74s |  0.06s |  0.02s | 57.7 MB |    850,497,054 |    224,722,569 |   78/409 |
-| Hot1 |  0.08s |  0.04s |  0.01s | 57.7 MB |    823,197,222 |    191,387,975 |    66/11 |
-| Hot2 |  0.08s |  0.04s |  0.01s | 57.7 MB |    820,827,962 |    186,763,997 |     50/7 |
-| Hot3 |  0.08s |  0.04s |  0.01s | 57.7 MB |    821,123,306 |    187,992,888 |    56/25 |
+| Cold |  0.32s |  0.04s |  0.02s | 57.7 MB |    846,243,800 |    213,827,790 |    5/408 |
+| Hot1 |  0.07s |  0.04s |  0.01s | 57.7 MB |    816,818,802 |    201,153,531 |     7/79 |
+| Hot2 |  0.06s |  0.04s |  0.01s | 57.7 MB |    813,982,816 |    194,739,354 |     5/43 |
+| Hot3 |  0.07s |  0.04s |  0.01s | 57.7 MB |    819,019,916 |    197,710,634 |     5/37 |
 
 [5/5] Output Verification:
-      [NOTICE] test/output.txt has changed!
-      If this is an intentional formatting or feature change, review the diff:
-       test/output.txt | 734565 ++++++++++++++++++++++++-----------------------------
-       1 file changed, 327582 insertions(+), 406983 deletions(-)
+      [OK] No changes in test/output.txt. Output exactly matches baseline.
 ======================================================================
