@@ -9,6 +9,11 @@ pub const IPv6Range = IPRange(u128);
 
 pub const HOLE: u16 = 0xFFFF;
 
+pub fn isPrivateIPv6(ip: u128) bool {
+    return (ip & 0xFE000000000000000000000000000000) == 0xFC000000000000000000000000000000 or // fc00::/7
+        (ip & 0xFFC00000000000000000000000000000) == 0xFE800000000000000000000000000000; // fe80::/10
+}
+
 pub fn isPrivateIPv4(ip: u32) bool {
     return (ip & 0xFF000000) == 0x7F000000 or // 127.0.0.0/8
         (ip & 0xFFFF0000) == 0xA9FE0000 or // 169.254.0.0/16
