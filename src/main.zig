@@ -18,12 +18,33 @@ pub fn main(init: std.process.Init) void {
         }
     };
 
-    run(init.io, alloc, config) catch {
+    const result = run(init.io, alloc, config) catch {
         std.process.exit(1);
     };
+    printTelemetry(result);
 }
 
-pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !void {
+pub const RunResult = struct {
+    elapsed_ms: i64,
+    v4_stats: lib.parse.Stats,
+    v6_stats: lib.parse.Stats,
+    static_stats: lib.parse.Stats,
+    v4_cidrs: usize,
+    v6_cidrs: usize,
+    v4_countries: usize,
+    v6_countries: usize,
+    v4_flattened: usize,
+    v6_flattened: usize,
+    v4_segments: usize,
+    v6_segments: usize,
+    v4_segments_filtered: usize,
+    v6_segments_filtered: usize,
+    time_io_ms: i64,
+    time_flatten_ms: i64,
+    time_cidr_ms: i64,
+};
+
+pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !RunResult {
     const ts_start = std.Io.Timestamp.now(io, .awake).nanoseconds;
 
     const out_file = try std.Io.Dir.cwd().createFile(io, config.output, .{});
@@ -120,55 +141,77 @@ pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !voi
     const ts_end = std.Io.Timestamp.now(io, .awake).nanoseconds;
     const elapsed_ms = @divTrunc(ts_end - ts_start, 1_000_000);
 
-    const total_skipped = static_stats.lines_skipped + v4_stats.lines_skipped + v6_stats.lines_skipped;
-    const total_cidrs = v4_cidrs + v6_cidrs;
+    return .{
+        .elapsed_ms = @intCast(elapsed_ms),
+        .v4_stats = v4_stats,
+        .v6_stats = v6_stats,
+        .static_stats = static_stats,
+        .v4_cidrs = v4_cidrs,
+        .v6_cidrs = v6_cidrs,
+        .v4_countries = v4_countries,
+        .v6_countries = v6_countries,
+        .v4_flattened = v4_flattened,
+        .v6_flattened = v6_flattened,
+        .v4_segments = v4_segments,
+        .v6_segments = v6_segments,
+        .v4_segments_filtered = v4_segments_filtered,
+        .v6_segments_filtered = v6_segments_filtered,
+        .time_io_ms = @intCast(@divTrunc(time_io_ns, 1_000_000)),
+        .time_flatten_ms = @intCast(@divTrunc(time_flatten_ns, 1_000_000)),
+        .time_cidr_ms = @intCast(@divTrunc(time_cidr_ns, 1_000_000)),
+    };
+}
 
-    std.debug.print("Done in {} ms.\n", .{elapsed_ms});
+pub fn printTelemetry(r: RunResult) void {
+    const total_skipped = r.static_stats.lines_skipped + r.v4_stats.lines_skipped + r.v6_stats.lines_skipped;
+    const total_cidrs = r.v4_cidrs + r.v6_cidrs;
+
+    std.debug.print("Done in {} ms.\n", .{r.elapsed_ms});
     std.debug.print("  Inputs (ranges parsed): IPv4: {}, IPv6: {}, Static: {}, Skipped: {}\n", .{
-        v4_stats.lines_parsed,
-        v6_stats.lines_parsed,
-        static_stats.lines_parsed,
+        r.v4_stats.lines_parsed,
+        r.v6_stats.lines_parsed,
+        r.static_stats.lines_parsed,
         total_skipped,
     });
     std.debug.print("  Phase 1 (Sweep Line): Topological Collisions: IPv4: {}, IPv6: {}\n", .{
-        v4_stats.collisions,
-        v6_stats.collisions,
+        r.v4_stats.collisions,
+        r.v6_stats.collisions,
     });
     std.debug.print("  Phase 1 (Sweep Line): Disjoint Segments: IPv4: {}, IPv6: {}\n", .{
-        v4_flattened,
-        v6_flattened,
+        r.v4_flattened,
+        r.v6_flattened,
     });
     std.debug.print("  Phase 1 (Sweep Line): Segments filtered: IPv4: {}, IPv6: {}\n", .{
-        v4_segments_filtered,
-        v6_segments_filtered,
+        r.v4_segments_filtered,
+        r.v6_segments_filtered,
     });
     std.debug.print("  Phase 2 (CIDR Gen): Segments processed: IPv4: {}, IPv6: {}\n", .{
-        v4_segments,
-        v6_segments,
+        r.v4_segments,
+        r.v6_segments,
     });
     std.debug.print("  Phase 2 (CIDR Gen): Static Overrides: IPv4: {}, IPv6: {}\n", .{
-        v4_stats.overrides,
-        v6_stats.overrides,
+        r.v4_stats.overrides,
+        r.v6_stats.overrides,
     });
     std.debug.print("  Phase 2 (CIDR Gen): Unique countries mapped: IPv4: {}, IPv6: {}\n", .{
-        v4_countries,
-        v6_countries,
+        r.v4_countries,
+        r.v6_countries,
     });
     std.debug.print("  Outputs (CIDR networks generated): IPv4: {}, IPv6: {}, Total: {}\n", .{
-        v4_cidrs,
-        v6_cidrs,
+        r.v4_cidrs,
+        r.v6_cidrs,
         total_cidrs,
     });
-    if (static_stats.lines_parsed > 0) {
-        std.debug.print("  Outputs (static lines echoed, not CIDRs): {}\n", .{static_stats.lines_parsed});
+    if (r.static_stats.lines_parsed > 0) {
+        std.debug.print("  Outputs (static lines echoed, not CIDRs): {}\n", .{r.static_stats.lines_parsed});
     }
 
-    const est_ram_mb = lib.nginx.estimateRamMB(v4_cidrs, v6_cidrs);
+    const est_ram_mb = lib.nginx.estimateRamMB(r.v4_cidrs, r.v6_cidrs);
     std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (97B/CIDR, verified via profiling)\n", .{est_ram_mb});
 
     std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (CIDR Gen): {}ms\n", .{
-        @divTrunc(time_io_ns, 1_000_000),
-        @divTrunc(time_flatten_ns, 1_000_000),
-        @divTrunc(time_cidr_ns, 1_000_000),
+        r.time_io_ms,
+        r.time_flatten_ms,
+        r.time_cidr_ms,
     });
 }

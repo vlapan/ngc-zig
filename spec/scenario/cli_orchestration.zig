@@ -23,7 +23,7 @@ test "SCENARIO-008: basic v4 run produces CIDR output" {
         .output = out_path,
     };
 
-    try main_runner.run(io, alloc, config);
+    _ = try main_runner.run(io, alloc, config);
 
     const file = try dir.openFile(io, out_path, .{});
     defer file.close(io);
@@ -58,7 +58,7 @@ test "SCENARIO-009: v4 run with static file echoes lines" {
         .output = out_path,
     };
 
-    try main_runner.run(io, alloc, config);
+    _ = try main_runner.run(io, alloc, config);
 
     const file = try dir.openFile(io, out_path, .{});
     defer file.close(io);
