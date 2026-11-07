@@ -1,5 +1,5 @@
 # Knowledge Index
-Updated: 2026-06-05
+Updated: 2026-11-08
 
 
 ## Rules
@@ -56,3 +56,4 @@ Updated: 2026-06-05
   - The output of `make bench` overwrites `test/baseline-benchmarks.log` with the current snapshot.
   - Do NOT manually run `/usr/bin/time -al` and paste walls of raw output into notes or chat. Always use `make bench` for performance proofs.
   - When committing an optimization, commit the updated `test/baseline-benchmarks.log` alongside your source code to permanently document the performance improvement at that commit.
+  - Baseline-first rule: before a performance change, preserve the clean baseline (git history is sufficient); apply one change; rerun the same benchmark/profiling commands; compare `git diff` against the saved baseline; keep or discard based on that comparison before commit.
