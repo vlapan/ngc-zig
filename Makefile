@@ -45,12 +45,12 @@ profile2: profile-build $(TEST_V4) $(TEST_V6)
 
 release:
 	@echo "MAKE:INFO: Compiling the project (optimised stamped/release version)..."
-	zig build --release=fast -Dcpu=native -Dtarget=native --summary all -Dstamp=true 2>&1
+	zig build --release=fast -Dcpu=native -Dtarget=native --summary all -Dstamp=true -Dstrip=true 2>&1
 	@echo "MAKE:INFO: binary '${BINARY}' compilation done!"
 
 debug:
 	@echo "MAKE:INFO: Compiling the project (debug version)..."
-	zig build -Dcpu=native -Dtarget=native --summary all -Dstamp=false 2>&1
+	zig build -Dcpu=native -Dtarget=native --summary all -Dstamp=false -Dstrip=false 2>&1
 	@echo "MAKE:INFO: binary '${BINARY}' compilation done!"
 
 clean:
