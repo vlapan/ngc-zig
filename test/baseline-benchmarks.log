@@ -1,5 +1,5 @@
 ======================================================================
-Date: 2026-11-07 20:59:54 UTC | Commit: b63e6a3  | Mode: baseline
+Date: 2026-11-07 21:15:23 UTC | Commit: f419a5a  | Mode: baseline
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
@@ -15,14 +15,14 @@ Date: 2026-11-07 20:59:54 UTC | Commit: b63e6a3  | Mode: baseline
       Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 252, IPv6: 253
       Outputs (CIDR networks generated): IPv4: 396838, IPv6: 466004, Total: 862842
       Estimated Nginx RAM footprint: ~79 MB (97B/CIDR, verified via profiling)
-      Pipeline Profiling: I/O & Parsing: 18ms, Phase 1 (Flatten): 17ms, Phase 2 (CIDR Gen): 23ms
+      Pipeline Profiling: I/O & Parsing: 21ms, Phase 1 (Flatten): 17ms, Phase 2 (CIDR Gen): 23ms
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.15s |  0.05s |  0.01s | 60.5 MB |    761,555,933 |    175,307,553 |     0/19 |
-| Hot1 |  0.05s |  0.04s |  0.01s | 60.5 MB |    758,636,984 |    174,068,757 |      0/4 |
-| Hot2 |  0.05s |  0.04s |  0.01s | 60.5 MB |    760,953,922 |    175,416,215 |      1/5 |
-| Hot3 |  0.05s |  0.04s |  0.01s | 60.5 MB |    758,507,371 |    173,990,127 |     4/10 |
+| Cold |  0.15s |  0.05s |  0.01s | 60.5 MB |    828,103,475 |    183,050,487 |     6/25 |
+| Hot1 |  0.06s |  0.04s |  0.01s | 60.5 MB |    825,812,018 |    182,367,613 |      6/9 |
+| Hot2 |  0.06s |  0.04s |  0.01s | 60.5 MB |    825,467,758 |    181,125,031 |      4/8 |
+| Hot3 |  0.06s |  0.04s |  0.01s | 60.5 MB |    826,127,776 |    182,362,901 |      7/5 |
 
 [5/5] Output Verification:
       [OK] No changes in test/output.txt. Output exactly matches baseline.
