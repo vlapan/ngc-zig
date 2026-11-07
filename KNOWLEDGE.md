@@ -37,6 +37,7 @@ Updated: 2026-11-08
 
 ## Files
 - `knowledge/performance-testing.md` - Repeatable benchmark/profiling and before/after comparison rules
+- `knowledge/naming.md` - Naming conventions for modules, functions, types, constants, and commits - Repeatable benchmark/profiling and before/after comparison rules
 - `knowledge/tasks.md` - The single source of truth for the project roadmap, open tasks, backlog, and feature ideas. **Must be read at the start of every session.**
 - `knowledge/release-process.md` - The strict, step-by-step checklist required for tagging and deploying new versions.
 - `knowledge/commit-conventions.md` - Conventional Commits format, types, scopes, and rules.
