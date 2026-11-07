@@ -20,6 +20,7 @@ pub fn staticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: s
     defer file.close(io);
     const stat = try file.stat(io);
     if (stat.size == 0) return Stats{};
+    if (stat.size > 1 << 30) return error.FileTooLarge;
     const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
     defer std.posix.munmap(mapped);
     std.posix.madvise(mapped.ptr, mapped.len, std.posix.MADV.SEQUENTIAL) catch {};
@@ -205,6 +206,7 @@ pub fn csvFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Arra
     // using a generic /30 for u128 under-estimates and forces reallocs.
     const stat = try file.stat(io);
     if (stat.size == 0) return Stats{};
+    if (stat.size > 1 << 30) return error.FileTooLarge;
     const bytes_per_line: usize = if (T == u128) 60 else 30;
     const estimated_lines = stat.size / bytes_per_line;
     try ranges.ensureTotalCapacity(alloc, @intCast(estimated_lines));
