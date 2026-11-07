@@ -72,8 +72,8 @@ pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !Run
     var time_flatten_ns: i128 = 0;
     var time_cidr_ns: i128 = 0;
 
-    var seen_v4 = [_]bool{false} ** 65536;
-    var seen_v6 = [_]bool{false} ** 65536;
+    var seen_v4: [65536]bool = @splat(false);
+    var seen_v6: [65536]bool = @splat(false);
     var static_v4_ranges = std.ArrayList(lib.ip.IPv4Range).empty;
     defer static_v4_ranges.deinit(alloc);
     var static_v6_ranges = std.ArrayList(lib.ip.IPv6Range).empty;

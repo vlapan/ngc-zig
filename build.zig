@@ -21,7 +21,7 @@ pub fn build(b: *Build) void {
 
     // Capture Git Hash safely
     var git_hash: []const u8 = "release";
-    if (optimize == .Debug) {
+    if (optimize == .debug) {
         const result = std.process.run(b.allocator, b.graph.io, .{
             .argv = &.{ "git", "rev-parse", "--short", "HEAD" },
         }) catch null;
@@ -95,10 +95,7 @@ pub fn build(b: *Build) void {
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
-
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    }
+    run_cmd.addPassthruArgs();
 
     const step = b.step("run", "Run NGC");
     step.dependOn(&run_cmd.step);

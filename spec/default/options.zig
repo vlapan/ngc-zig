@@ -149,8 +149,8 @@ test "setupMaps: groups file populates country_map" {
     try dir.writeFile(io, .{ .sub_path = groups_path, .data = "EU:FR,DE\nNA:US,CA,MX\n" });
     defer dir.deleteFile(io, groups_path) catch {};
 
-    var country_map = [_]u16{0} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var country_map: [65536]u16 = @splat(0);
+    var filter_map: [65536]bool = @splat(false);
     const parsed = lib.config.Config{
         .output = "out.conf",
         .groups_file = groups_path,
@@ -176,8 +176,8 @@ test "setupMaps: filters file populates filter_map" {
     try dir.writeFile(io, .{ .sub_path = filters_path, .data = "US,CA\nFR\n" });
     defer dir.deleteFile(io, filters_path) catch {};
 
-    var country_map = [_]u16{0} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var country_map: [65536]u16 = @splat(0);
+    var filter_map: [65536]bool = @splat(false);
     const parsed = lib.config.Config{
         .output = "out.conf",
         .filters_file = filters_path,
@@ -195,22 +195,22 @@ test "setupMaps: filters file populates filter_map" {
 }
 
 test "parseGroupLine: whitespace and empty lines handled" {
-    var cmap = [_]u16{0} ** 65536;
+    var cmap: [65536]u16 = @splat(0);
     try lib.config.parseGroupLine("   \t  \n ", &cmap);
     try lib.config.parseGroupLine("", &cmap);
     try lib.config.parseGroupLine("# comment", &cmap);
 }
 
 test "parseFilterLine: whitespace and empty lines handled" {
-    var fmap = [_]bool{false} ** 65536;
+    var fmap: [65536]bool = @splat(false);
     try lib.config.parseFilterLine("   \t  \n ", &fmap);
     try lib.config.parseFilterLine("", &fmap);
     try lib.config.parseFilterLine("# comment", &fmap);
 }
 
 test "setupMaps initializes identity mapping" {
-    var country_map = [_]u16{0} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var country_map: [65536]u16 = @splat(0);
+    var filter_map: [65536]bool = @splat(false);
     const parsed = lib.config.Config{ .output = "out.conf" };
     try helpers.setupMapsInline(parsed, &country_map, &filter_map);
     for (0..65536) |i| {
@@ -219,8 +219,8 @@ test "setupMaps initializes identity mapping" {
 }
 
 test "setupMaps: filter map all true when no filters configured" {
-    var country_map = [_]u16{0} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var country_map: [65536]u16 = @splat(0);
+    var filter_map: [65536]bool = @splat(false);
     const parsed = lib.config.Config{ .output = "out.conf" };
     try helpers.setupMapsInline(parsed, &country_map, &filter_map);
     for (0..65536) |i| {
@@ -229,8 +229,8 @@ test "setupMaps: filter map all true when no filters configured" {
 }
 
 test "setupMaps: inline groups remap countries" {
-    var country_map = [_]u16{0} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var country_map: [65536]u16 = @splat(0);
+    var filter_map: [65536]bool = @splat(false);
     const groups = [_][]const u8{"EU:FR,DE"};
     const parsed = lib.config.Config{ .output = "out.conf", .groups = &groups };
     try helpers.setupMapsInline(parsed, &country_map, &filter_map);
@@ -242,8 +242,8 @@ test "setupMaps: inline groups remap countries" {
 }
 
 test "setupMaps: inline filters set specific countries" {
-    var country_map = [_]u16{0} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var country_map: [65536]u16 = @splat(0);
+    var filter_map: [65536]bool = @splat(false);
     const filters = [_][]const u8{"US,CA"};
     const parsed = lib.config.Config{ .output = "out.conf", .filters = &filters };
     try helpers.setupMapsInline(parsed, &country_map, &filter_map);
@@ -292,7 +292,7 @@ test "parseArgList: all cases" {
 
 test "parseGroupLine: all cases" {
     for (parse_group_line_rows) |row| {
-        var cmap = [_]u16{0} ** 65536;
+        var cmap: [65536]u16 = @splat(0);
         if (row.expect_error) {
             try testing.expectError(error.InvalidGroupFormat, lib.config.parseGroupLine(row.line, &cmap));
         } else {
@@ -311,7 +311,7 @@ test "parseGroupLine: all cases" {
 
 test "parseFilterLine: all cases" {
     for (parse_filter_line_rows) |row| {
-        var fmap = [_]bool{false} ** 65536;
+        var fmap: [65536]bool = @splat(false);
         if (row.expect_error) {
             try testing.expectError(error.InvalidFilterFormat, lib.config.parseFilterLine(row.line, &fmap));
         } else {

@@ -25,8 +25,8 @@ pub const TestEnv = struct {
         for (0..65536) |i| country_map[i] = @intCast(i);
         return .{
             .country_map = country_map,
-            .filter_map = [_]bool{true} ** 65536,
-            .seen_countries = [_]bool{false} ** 65536,
+            .filter_map = @splat(true),
+            .seen_countries = @splat(false),
             .aw = .init(std.testing.allocator),
         };
     }

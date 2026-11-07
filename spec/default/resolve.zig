@@ -162,8 +162,8 @@ test "filterSegments: filter with group remap" {
     try segments.append(testing.allocator, .{ .start = 0, .end = 255, .country = eu_idx });
     try segments.append(testing.allocator, .{ .start = 256, .end = 1023, .country = eu_idx });
 
-    var seen_countries = [_]bool{false} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var seen_countries: [65536]bool = @splat(false);
+    var filter_map: [65536]bool = @splat(false);
     filter_map[eu_idx] = true;
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
@@ -185,8 +185,8 @@ test "filterSegments: adjacent same-country segments merge" {
     try segments.append(testing.allocator, .{ .start = 256, .end = 1023, .country = xx_idx });
     try segments.append(testing.allocator, .{ .start = 1024, .end = 2047, .country = xx_idx });
 
-    var seen_countries = [_]bool{false} ** 65536;
-    var filter_map = [_]bool{true} ** 65536;
+    var seen_countries: [65536]bool = @splat(false);
+    var filter_map: [65536]bool = @splat(true);
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
@@ -206,8 +206,8 @@ test "filterSegments: different-country segments not merged" {
     try segments.append(testing.allocator, .{ .start = 0, .end = 255, .country = au_idx });
     try segments.append(testing.allocator, .{ .start = 256, .end = 1023, .country = cn_idx });
 
-    var seen_countries = [_]bool{false} ** 65536;
-    var filter_map = [_]bool{true} ** 65536;
+    var seen_countries: [65536]bool = @splat(false);
+    var filter_map: [65536]bool = @splat(true);
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
@@ -226,8 +226,8 @@ test "filterSegments: filtered segment leaves gap (no false merge)" {
     try segments.append(testing.allocator, .{ .start = 256, .end = 511, .country = de_idx });
     try segments.append(testing.allocator, .{ .start = 512, .end = 767, .country = au_idx });
 
-    var seen_countries = [_]bool{false} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var seen_countries: [65536]bool = @splat(false);
+    var filter_map: [65536]bool = @splat(false);
     filter_map[au_idx] = true;
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
@@ -244,8 +244,8 @@ test "filterSegments: all segments filtered out" {
     defer segments.deinit(testing.allocator);
     try segments.append(testing.allocator, .{ .start = 0, .end = 255, .country = au_idx });
 
-    var seen_countries = [_]bool{false} ** 65536;
-    var filter_map = [_]bool{false} ** 65536;
+    var seen_countries: [65536]bool = @splat(false);
+    var filter_map: [65536]bool = @splat(false);
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
