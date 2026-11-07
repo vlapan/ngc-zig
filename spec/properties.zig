@@ -169,3 +169,57 @@ test "PROP-008: formatIPv6Line output is always newline-terminated" {
         try testing.expect(line[line.len - 1] == '\n');
     }
 }
+
+test "PROP-009: parseInt round-trips valid decimal integers" {
+    const seed: u64 = 12345;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+    var buf: [20]u8 = undefined;
+
+    for (0..19) |_| {
+        const n: u32 = rand.int(u32);
+        const text = try std.fmt.bufPrint(&buf, "{d}", .{n});
+        try testing.expectEqual(n, try lib.parse.parseInt(u32, text));
+    }
+}
+
+test "PROP-010: parseInt rejects malformed numeric spellings" {
+    try testing.expectError(error.InvalidCharacter, lib.parse.parseInt(u32, ""));
+    try testing.expectError(error.InvalidCharacter, lib.parse.parseInt(u32, "12A45"));
+    try testing.expectError(error.InvalidCharacter, lib.parse.parseInt(u32, " 123"));
+    try testing.expectError(error.InvalidCharacter, lib.parse.parseInt(u32, "123 "));
+}
+
+test "PROP-011: flatten output is ordered and non-overlapping" {
+    const seed: u64 = 98765;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+    var ranges = std.ArrayList(lib.ip.IPRange(u32)).empty;
+    defer ranges.deinit(std.testing.allocator);
+
+    for (0..50) |_| {
+        ranges.clearRetainingCapacity();
+        const count = rand.int(u8) % 12 + 1;
+        for (0..count) |_| {
+            const start = rand.int(u32) % 96;
+            const width = rand.int(u32) % 32 + 1;
+            const end = if (start + width - 1 < start) std.math.maxInt(u32) else start + width - 1;
+            try ranges.append(std.testing.allocator, .{
+                .start = start,
+                .end = end,
+                .country = @as(u16, @intCast(rand.int(u8) % 8)),
+                .size = end -% start +% 1,
+            });
+        }
+
+        var segments = std.ArrayList(lib.flatten.Segment(u32)).empty;
+        defer segments.deinit(std.testing.allocator);
+        _ = try lib.flatten.flatten(u32, std.testing.allocator, ranges.items, &segments);
+
+        var prev_end: ?u32 = null;
+        for (segments.items) |seg| {
+            if (prev_end) |p| try testing.expect(seg.start > p);
+            prev_end = seg.end;
+        }
+    }
+}

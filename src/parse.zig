@@ -78,7 +78,7 @@ pub fn staticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: s
 // Destroys ~124 Million logic instructions over 1.1M parsed ranges.
 pub fn parseInt(comptime T: type, str: []const u8) !T {
     if (str.len == 0) return error.InvalidCharacter;
-    var res: T = 0;
+    var res: u128 = 0;
     var i: usize = 0;
     var invalid: u64 = 0;
 
@@ -89,28 +89,29 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
         // Strip ASCII header (convert '0'-'9' to 0-9)
         chunk ^= 0x3030303030303030;
-        // Keep arithmetic behind a validity guard to avoid overflow on invalid input.
+        // Accumulate invalid class bits, but clamp converted digits to 0-15 so
+        // the SWAR reduction remains branch-free and cannot overflow.
         const chunk_invalid = chunk & 0xF0F0F0F0F0F0F0F0;
         invalid |= chunk_invalid;
-        if (chunk_invalid == 0) {
-            // Multiply and accumulate adjacent pairs
-            var lower = (chunk & 0x00FF00FF00FF00FF) * 10;
-            var upper = (chunk >> 8) & 0x00FF00FF00FF00FF;
-            chunk = lower + upper;
+        chunk &= 0x0F0F0F0F0F0F0F0F;
 
-            // Multiply and accumulate 4-digit blocks
-            lower = (chunk & 0x0000FFFF0000FFFF) * 100;
-            upper = (chunk >> 16) & 0x0000FFFF0000FFFF;
-            chunk = lower + upper;
+        // Multiply and accumulate adjacent pairs
+        var lower = (chunk & 0x00FF00FF00FF00FF) * 10;
+        var upper = (chunk >> 8) & 0x00FF00FF00FF00FF;
+        chunk = lower + upper;
 
-            // Multiply and accumulate 8-digit blocks
-            lower = (chunk & 0x00000000FFFFFFFF) * 10000;
-            upper = (chunk >> 32) & 0x00000000FFFFFFFF;
-            chunk = lower + upper;
+        // Multiply and accumulate 4-digit blocks
+        lower = (chunk & 0x0000FFFF0000FFFF) * 100;
+        upper = (chunk >> 16) & 0x0000FFFF0000FFFF;
+        chunk = lower + upper;
 
-            // Shift existing result by 10^8 and add chunk
-            res = res * 100_000_000 + @as(T, @intCast(chunk));
-        }
+        // Multiply and accumulate 8-digit blocks
+        lower = (chunk & 0x00000000FFFFFFFF) * 10000;
+        upper = (chunk >> 32) & 0x00000000FFFFFFFF;
+        chunk = lower + upper;
+
+        // Shift existing result by 10^8 and add chunk
+        res = res * 100_000_000 + @as(T, @intCast(chunk));
     }
 
     // Tail loop for remaining 0-7 characters
@@ -123,7 +124,7 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
         }
     }
     if (invalid != 0) return error.InvalidCharacter;
-    return res;
+    return @intCast(res);
 }
 
 pub fn csvLine(comptime T: type, line: []const u8, country_map: *const [65536]u16) ?ip_mod.IPRange(T) {
