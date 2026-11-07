@@ -21,7 +21,9 @@ pub fn main(init: std.process.Init) void {
     const result = run(init.io, alloc, config) catch {
         std.process.exit(1);
     };
-    printTelemetry(result);
+    if (!config.quiet) {
+        printTelemetry(result);
+    }
 }
 
 pub const RunResult = struct {

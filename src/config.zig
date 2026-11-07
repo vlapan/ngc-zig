@@ -16,6 +16,7 @@ pub const Config = struct {
     groups_file: ?[]const u8 = null,
     filters: []const []const u8 = &[_][]const u8{},
     filters_file: ?[]const u8 = null,
+    quiet: bool = false,
 
     pub fn deinit(self: *Config, alloc: std.mem.Allocator) void {
         if (self.ipv4_csv) |f| alloc.free(f);
@@ -53,6 +54,7 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
     var static_f: ?[]const u8 = null;
     var groups_f: ?[]const u8 = null;
     var filters_f: ?[]const u8 = null;
+    var quiet = false;
     var groups = std.ArrayList([]const u8).empty;
     defer groups.deinit(alloc);
     var filters = std.ArrayList([]const u8).empty;
@@ -77,8 +79,10 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
         } else if (std.mem.eql(u8, arg, "--filter")) {
             const f = iter.next() orelse return error.MissingValue;
             try filters.append(alloc, try alloc.dupe(u8, f));
+        } else if (std.mem.eql(u8, arg, "--quiet") or std.mem.eql(u8, arg, "-q")) {
+            quiet = true;
         } else if (std.mem.eql(u8, arg, "--help") or std.mem.eql(u8, arg, "-h")) {
-            cliPrint("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file>\n", .{});
+            cliPrint("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file> [--quiet]\n", .{});
             return error.HelpRequested;
         } else if (std.mem.eql(u8, arg, "--version") or std.mem.eql(u8, arg, "-v")) {
             cliPrint("v{s}\n", .{build_options.version});
@@ -89,7 +93,7 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
     }
 
     if (out == null) {
-        cliPrint("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file>\n", .{});
+        cliPrint("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file> [--quiet]\n", .{});
         return error.InvalidArgs;
     }
 
