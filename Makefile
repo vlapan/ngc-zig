@@ -28,13 +28,13 @@ run: $(BINARY) $(TEST_V4) $(TEST_V6)
 	/usr/bin/time -al ${BINARY} --ipv4 $(TEST_V4) --ipv6 $(TEST_V6) --output test/output.txt --static test/private.txt 2>&1
 	@echo "MAKE:INFO: Done!"
 
-profile: $(BINARY) $(TEST_V4) $(TEST_V6)
-	@echo "MAKE:INFO: Profiling binary..."
+profile: debug $(TEST_V4) $(TEST_V6)
+	@echo "MAKE:INFO: Profiling debug binary with symbols..."
 	@bash test/profile.sh ${BINARY} --ipv4 $(TEST_V4) --ipv6 $(TEST_V6) --output test/output.txt --static test/private.txt
 	@echo "MAKE:INFO: Done!"
 
-profile2: $(BINARY) $(TEST_V4) $(TEST_V6)
-	@echo "MAKE:INFO: Profiling binary..."
+profile2: debug $(TEST_V4) $(TEST_V6)
+	@echo "MAKE:INFO: Profiling debug binary with symbols..."
 	@bash test/profile2.sh ${BINARY} --ipv4 $(TEST_V4) --ipv6 $(TEST_V6) --output test/output.txt --static test/private.txt
 	@echo "MAKE:INFO: Done!"
 
