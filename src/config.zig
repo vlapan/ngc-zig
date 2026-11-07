@@ -176,8 +176,13 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
             defer std.posix.munmap(mapped);
 
             var it = std.mem.splitScalar(u8, mapped, '\n');
+            var line_no: usize = 1;
             while (it.next()) |line| {
-                try parseGroupLine(line, country_map);
+                parseGroupLine(line, country_map) catch |err| {
+                    cliPrint("Invalid group at {s}:{d}: {s}\n", .{ gf, line_no, @errorName(err) });
+                    return err;
+                };
+                line_no += 1;
             }
         }
     }
@@ -191,8 +196,13 @@ pub fn setupMaps(io: std.Io, config: Config, country_map: *[65536]u16, filter_ma
             defer std.posix.munmap(mapped);
 
             var it = std.mem.splitScalar(u8, mapped, '\n');
+            var line_no: usize = 1;
             while (it.next()) |line| {
-                try parseFilterLine(line, filter_map);
+                parseFilterLine(line, filter_map) catch |err| {
+                    cliPrint("Invalid filter at {s}:{d}: {s}\n", .{ ff, line_no, @errorName(err) });
+                    return err;
+                };
+                line_no += 1;
             }
         }
     }
