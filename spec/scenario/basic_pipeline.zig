@@ -85,5 +85,33 @@ test "SCENARIO-002: IPv6 pipeline with static HOLE override" {
     try testing.expectEqual(@as(usize, 5), result.stats.lines_parsed);
     try testing.expect(result.stats.overrides > 0);
     try testing.expect(result.cidrs > 0);
+    const expected =
+        "2001:2::/48 JP;\n" ++
+        "2001:10::/28 JP;\n" ++
+        "2001:200::/28 AU;\n" ++
+        "2001:210::/29 AU;\n" ++
+        "2001:218::/35 AU;\n" ++
+        "2001:218:2000::/58 AU;\n" ++
+        "2001:218:2000:40::/60 AU;\n" ++
+        "2001:218:2000:50::/63 AU;\n" ++
+        "2001:218:2000:52::/64 JP;\n" ++
+        "2001:218:2000:53::/64 AU;\n" ++
+        "2001:218:2000:54::/62 AU;\n" ++
+        "2001:218:2000:58::/61 AU;\n" ++
+        "2001:218:2000:60::/59 AU;\n" ++
+        "2001:218:2000:80::/57 AU;\n" ++
+        "2001:218:2000:100::/56 AU;\n" ++
+        "2001:218:2000:200::/55 AU;\n" ++
+        "2001:218:2000:400::/54 AU;\n" ++
+        "2001:218:2000:800::/53 AU;\n" ++
+        "2001:218:2000:1000::/52 AU;\n" ++
+        "2001:218:2000:2000::/51 AU;\n" ++
+        "2001:218:2000:4000::/50 AU;\n" ++
+        "2001:218:2000:8000::/49 AU;\n" ++
+        "2001:218:2001::/48 AU;\n" ++
+        "2001:218:2002::/47 AU;\n" ++
+        "2001:218:2004::/46 AU;\n" ++
+        "";
+    try testing.expectEqualStrings(expected, env.aw.writer.buffered());
     try helpers.validateOutputFormat(env.aw.writer.buffered());
 }
