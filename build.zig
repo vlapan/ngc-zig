@@ -64,7 +64,7 @@ pub fn build(b: *Build) void {
     options.addOption([]const u8, "version", zon.version);
     options.addOption([]const u8, "git_hash", clean_hash);
     options.addOption([]const u8, "build_iso_date", iso_string);
-    options.addOption(std.builtin.OptimizeMode, "optimize", optimize);
+    options.addOption(std.lang.Optimize, "optimize", optimize);
 
     const lib_module = b.createModule(.{
         .root_source_file = .{ .cwd_relative = "src/lib.zig" },
