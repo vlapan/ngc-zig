@@ -78,9 +78,8 @@ pub fn staticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: s
 // Destroys ~124 Million logic instructions over 1.1M parsed ranges.
 pub fn parseInt(comptime T: type, str: []const u8) !T {
     if (str.len == 0) return error.InvalidCharacter;
-    var res: u128 = 0;
+    var res: T = 0;
     var i: usize = 0;
-    var invalid: u64 = 0;
 
     // Process 8 characters at a time via SWAR
     while (i + 8 <= str.len) : (i += 8) {
@@ -89,11 +88,8 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
         // Strip ASCII header (convert '0'-'9' to 0-9)
         chunk ^= 0x3030303030303030;
-        // Accumulate invalid class bits, but clamp converted digits to 0-15 so
-        // the SWAR reduction remains branch-free and cannot overflow.
-        const chunk_invalid = chunk & 0xF0F0F0F0F0F0F0F0;
-        invalid |= chunk_invalid;
-        chunk &= 0x0F0F0F0F0F0F0F0F;
+        // Reject non-digit characters after conversion.
+        if (chunk & 0xF0F0F0F0F0F0F0F0 != 0) return error.InvalidCharacter;
 
         // Multiply and accumulate adjacent pairs
         var lower = (chunk & 0x00FF00FF00FF00FF) * 10;
@@ -116,15 +112,10 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
     // Tail loop for remaining 0-7 characters
     while (i < str.len) : (i += 1) {
-        const c = str[i];
-        if (c < '0' or c > '9') {
-            invalid |= 1;
-        } else {
-            res = res * 10 + (c - '0');
-        }
+        if (str[i] < '0' or str[i] > '9') return error.InvalidCharacter;
+        res = res * 10 + (str[i] - '0');
     }
-    if (invalid != 0) return error.InvalidCharacter;
-    return @intCast(res);
+    return res;
 }
 
 pub fn csvLine(comptime T: type, line: []const u8, country_map: *const [65536]u16) ?ip_mod.IPRange(T) {
