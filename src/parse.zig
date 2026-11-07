@@ -7,6 +7,7 @@ pub const Stats = struct {
     lines_skipped: usize = 0,
     collisions: usize = 0,
     overrides: usize = 0,
+    static_invalid: usize = 0,
 };
 
 /// Reads a static file, echoes valid lines to writer, and appends parsed CIDR
@@ -63,6 +64,8 @@ pub fn staticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: s
                     .size = 0,
                 }),
             }
+        } else {
+            stats.static_invalid += 1;
         }
     }
     return stats;

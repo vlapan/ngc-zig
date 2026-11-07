@@ -222,6 +222,10 @@ pub fn printTelemetry(r: RunResult) void {
     const est_ram_mb = lib.nginx.estimateRamMB(r.v4_cidrs, r.v6_cidrs);
     std.debug.print("  Estimated Nginx RAM footprint: ~{} MB (97B/CIDR, verified via profiling)\n", .{est_ram_mb});
 
+    if (r.static_stats.static_invalid > 0) {
+        std.debug.print("  Warning: {} static override lines did not produce HOLE ranges\n", .{r.static_stats.static_invalid});
+    }
+
     std.debug.print("  Pipeline Profiling: I/O & Parsing: {}ms, Phase 1 (Flatten): {}ms, Phase 2 (CIDR Gen): {}ms\n", .{
         r.time_io_ms,
         r.time_flatten_ms,
