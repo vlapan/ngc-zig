@@ -191,10 +191,12 @@ pub fn csvFile(comptime T: type, io: std.Io, path: []const u8, ranges: *std.Arra
     defer file.close(io);
 
     // Heuristically pre-allocate array capacity based on file size.
-    // IPv4/IPv6 CSV lines average ~30-40 bytes each. Overestimating capacity prevents O(N) reallocs.
+    // IPv4 CSV lines average ~30 bytes; IPv6 lines are wider (~60 bytes), so
+    // using a generic /30 for u128 under-estimates and forces reallocs.
     const stat = try file.stat(io);
     if (stat.size == 0) return Stats{};
-    const estimated_lines = stat.size / 30;
+    const bytes_per_line: usize = if (T == u128) 60 else 30;
+    const estimated_lines = stat.size / bytes_per_line;
     try ranges.ensureTotalCapacity(alloc, @intCast(estimated_lines));
 
     const mapped = try std.posix.mmap(null, stat.size, .{ .READ = true }, .{ .TYPE = .PRIVATE }, file.handle, 0);
