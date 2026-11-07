@@ -25,12 +25,12 @@ jobs:
           - aarch64-freebsd
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup Zig
-        uses: mlugg/setup-zig@v2
+        uses: mlugg/setup-zig@v2.2.1
 
       - name: Run Tests
         run: zig fmt --check src/*.zig build.zig spec/ && zig build test
