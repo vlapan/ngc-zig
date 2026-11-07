@@ -45,6 +45,8 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mo
         }
     }.less);
 
+    // active_ids depth is shallow in upstream BGP data (typically 1-3),
+    // so the linear membership scan stays in L1 and beats a hash/map lookup.
     var active_ids = try std.ArrayList(u32).initCapacity(alloc, 64);
     defer active_ids.deinit(alloc);
 
