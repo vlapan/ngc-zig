@@ -1,5 +1,3 @@
-const std = @import("std");
-
 pub const cidr = @import("cidr.zig");
 pub const config = @import("config.zig");
 pub const flatten = @import("flatten.zig");
