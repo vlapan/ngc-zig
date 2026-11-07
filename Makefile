@@ -28,12 +28,17 @@ run: $(BINARY) $(TEST_V4) $(TEST_V6)
 	/usr/bin/time -al ${BINARY} --ipv4 $(TEST_V4) --ipv6 $(TEST_V6) --output test/output.txt --static test/private.txt 2>&1
 	@echo "MAKE:INFO: Done!"
 
-profile: $(BINARY) $(TEST_V4) $(TEST_V6)
+profile-build:
+	@echo "MAKE:INFO: Compiling release binary with debug symbols..."
+	zig build --release=fast -Dcpu=native -Dtarget=native --summary all -Dstamp=false -Dstrip=false 2>&1
+	@echo "MAKE:INFO: binary '${BINARY}' compilation done!"
+
+profile: profile-build $(TEST_V4) $(TEST_V6)
 	@echo "MAKE:INFO: Profiling release binary with debug symbols..."
 	@bash test/profile.sh ${BINARY} --ipv4 $(TEST_V4) --ipv6 $(TEST_V6) --output test/output.txt --static test/private.txt
 	@echo "MAKE:INFO: Done!"
 
-profile2: $(BINARY) $(TEST_V4) $(TEST_V6)
+profile2: profile-build $(TEST_V4) $(TEST_V6)
 	@echo "MAKE:INFO: Profiling release binary with debug symbols..."
 	@bash test/profile2.sh ${BINARY} --ipv4 $(TEST_V4) --ipv6 $(TEST_V6) --output test/output.txt --static test/private.txt
 	@echo "MAKE:INFO: Done!"
