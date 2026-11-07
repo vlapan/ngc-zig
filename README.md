@@ -4,6 +4,18 @@ A highly optimized, pure Zig CLI tool for converting integer-range GeoIP CSV dat
 
 It handles "dirty" upstream data via a 1D sweep-line algorithm to resolve overlapping blocks (enforcing specificity priorities), then converts disjoint segments directly to minimum CIDRs. Static overrides are baked into the sweep-line as highest-priority entries, automatically fracturing IP ranges into valid Nginx CIDRs and merging contiguous sibling subnets.
 
+## Build
+
+```bash
+zig build --release=fast -Dstrip=true
+# binary: zig-out/bin/ngc
+```
+
+```bash
+zig build test
+make check
+```
+
 ## Usage
 
 ```bash
