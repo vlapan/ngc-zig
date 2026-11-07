@@ -343,3 +343,28 @@ test "PROP-015: filterSegments never keeps a filtered country" {
         }
     }
 }
+
+test "PROP-016: staticLine normalizes a valid IPv4 CIDR to its aligned range" {
+    const seed: u64 = 112233;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+    var buf: [64]u8 = undefined;
+
+    for (0..200) |_| {
+        const ip = rand.int(u32);
+        const prefix: u8 = @intCast(rand.int(u8) % 33);
+        const b1: u8 = @intCast((ip >> 24) & 0xFF);
+        const b2: u8 = @intCast((ip >> 16) & 0xFF);
+        const b3: u8 = @intCast((ip >> 8) & 0xFF);
+        const b4: u8 = @intCast(ip & 0xFF);
+        const line = try std.fmt.bufPrint(&buf, "{d}.{d}.{d}.{d}/{d}", .{ b1, b2, b3, b4, prefix });
+        const actual = lib.parse.staticLine(line) orelse return error.TestFailed;
+        try testing.expect(actual == .v4);
+
+        const mask: u32 = if (prefix == 0) 0 else ~(@as(u32, 0)) << @intCast(32 - prefix);
+        const expected_start = ip & mask;
+        const expected_end = expected_start | ~mask;
+        try testing.expectEqual(expected_start, actual.v4.start);
+        try testing.expectEqual(expected_end, actual.v4.end);
+    }
+}
