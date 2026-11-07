@@ -4,7 +4,7 @@ Updated: 2026-06-05
 
 ## Rules
 - **Conventional Commits:** All commit messages MUST strictly adhere to the Conventional Commits specification. See `knowledge/commit-conventions.md`.
-- Pure Zig 0.16.0, NO C interop
+- Pure Zig 0.17.1, NO C interop
 - No `-lc` link flag
 - Read changelogs from `ZIG-CHANGELOG-*.md`
 - Use real test data from `test/geo-whois-asn-country-ipv4-num.csv` and `test/geo-whois-asn-country-ipv6-num.csv`
@@ -39,7 +39,7 @@ Updated: 2026-06-05
 - `knowledge/tasks.md` - The single source of truth for the project roadmap, open tasks, backlog, and feature ideas. **Must be read at the start of every session.**
 - `knowledge/release-process.md` - The strict, step-by-step checklist required for tagging and deploying new versions.
 - `knowledge/commit-conventions.md` - Conventional Commits format, types, scopes, and rules.
-- `knowledge/zig-api.md` - Zig 0.16.0 API patterns and gotchas
+- `knowledge/zig-api.md` - Zig 0.17.1 API patterns and gotchas
 - `knowledge/architecture.md` - Core system design and CIDR generation pipeline
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps, including Nginx RAM footprint verification
 - `knowledge/testing-framework.md` - Abstract five-tier testing framework: Spec (SDD), IAE (TDD/KDT), Scenario (STDD), Property (PDD/MDD), Regression (reusable, project-agnostic)
