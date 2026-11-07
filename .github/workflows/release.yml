@@ -32,6 +32,9 @@ jobs:
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
 
+      - name: Run Tests
+        run: zig fmt --check src/*.zig build.zig spec/ && zig build test
+
       - name: Build Release
         run: |
             zig build -Dtarget=${{ matrix.target }} --release=fast -Dstamp=true -Dstrip=true

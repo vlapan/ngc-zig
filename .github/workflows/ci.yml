@@ -14,6 +14,8 @@ jobs:
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
       - name: Check formatting
-        run: zig fmt --check src/*.zig build.zig
+        run: zig fmt --check src/*.zig build.zig spec/
+      - name: Build binary
+        run: zig build --release=fast
       - name: Run Tests
         run: zig build test
