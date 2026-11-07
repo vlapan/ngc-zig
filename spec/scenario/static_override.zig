@@ -42,7 +42,7 @@ test "SCENARIO-007: static + filter — output format invariant" {
     );
 
     try testing.expectEqual(@as(usize, 9), result.cidrs);
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
     try testing.expectEqual(@as(usize, 4), result.stats.lines_parsed);
     try testing.expect(result.stats.overrides > 0);
     try testing.expectEqualStrings(

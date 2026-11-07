@@ -51,7 +51,7 @@ test "SCENARIO-001: filter + group — group remap causes filtering" {
 
     try testing.expectEqual(@as(usize, 4), result.stats.lines_parsed);
     try testing.expectEqual(@as(usize, 2), result.cidrs);
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
     try testing.expectEqual(@as(usize, 2), result.segments_filtered);
     try testing.expectEqualStrings("1.0.0.0/24 AU;\n1.0.4.0/22 AU;\n", env.aw.writer.buffered());
 }

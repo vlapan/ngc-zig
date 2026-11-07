@@ -7,7 +7,7 @@ const cidr_mod = @import("cidr.zig");
 pub const StreamResult = struct {
     stats: parse.Stats,
     cidrs: usize,
-    countries: usize,
+    country_count: usize,
     flattened: usize,
     segments: usize,
     segments_filtered: usize,
@@ -67,7 +67,7 @@ pub fn processStream(
     return StreamResult{
         .stats = stats,
         .cidrs = cidrs,
-        .countries = filter_result.countries,
+        .country_count = filter_result.country_count,
         .flattened = flattened,
         .segments = seg_count,
         .segments_filtered = filter_result.segments_filtered,
@@ -79,7 +79,7 @@ pub fn processStream(
 
 pub const FilterResult = struct {
     segments_filtered: usize,
-    countries: usize,
+    country_count: usize,
 };
 
 pub fn filterSegments(
@@ -119,5 +119,5 @@ pub fn filterSegments(
         }
     }
     segments.shrinkRetainingCapacity(write_idx);
-    return .{ .segments_filtered = segments_filtered, .countries = countries };
+    return .{ .segments_filtered = segments_filtered, .country_count = countries };
 }

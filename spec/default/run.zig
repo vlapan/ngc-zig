@@ -60,7 +60,7 @@ test "lib.pipeline.processStream: IPv4 basic pipeline" {
 
     try testing.expect(result.stats.lines_parsed > 0);
     try testing.expect(result.cidrs > 0);
-    try testing.expect(result.countries > 0);
+    try testing.expect(result.country_count > 0);
     try testing.expect(result.time_io_ns > 0);
     try testing.expect(result.time_flatten_ns > 0);
     try testing.expect(result.time_cidr_ns > 0);
@@ -86,7 +86,7 @@ test "lib.pipeline.processStream: IPv6 basic pipeline" {
 
     try testing.expect(result.stats.lines_parsed > 0);
     try testing.expect(result.cidrs > 0);
-    try testing.expect(result.countries > 0);
+    try testing.expect(result.country_count > 0);
 }
 
 test "lib.pipeline.processStream: static ranges appended and override CSV" {
@@ -145,7 +145,7 @@ test "lib.pipeline.processStream: filter excludes countries" {
 
     try testing.expect(result.stats.lines_parsed > 0);
     try testing.expect(result.segments_filtered > 0);
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
 }
 
 test "lib.pipeline.processStream: country grouping remaps" {
@@ -173,7 +173,7 @@ test "lib.pipeline.processStream: country grouping remaps" {
     );
 
     try testing.expect(result.stats.lines_parsed > 0);
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
     try testing.expect(env.seen_countries[eu_idx]);
 }
 
@@ -199,7 +199,7 @@ test "lib.pipeline.processStream: country counter matches manual iteration" {
     for (env.seen_countries) |seen| {
         if (seen) manual_count += 1;
     }
-    try testing.expectEqual(manual_count, result.countries);
+    try testing.expectEqual(manual_count, result.country_count);
 }
 
 test "lib.pipeline.processStream: short country code (c_val=0)" {
@@ -247,7 +247,7 @@ test "lib.pipeline.processStream: empty CSV produces zero CIDRs" {
 
     try testing.expectEqual(@as(usize, 0), result.stats.lines_parsed);
     try testing.expectEqual(@as(usize, 0), result.cidrs);
-    try testing.expectEqual(@as(usize, 0), result.countries);
+    try testing.expectEqual(@as(usize, 0), result.country_count);
 }
 
 test "lib.pipeline.processStream: all countries filtered out" {
@@ -272,7 +272,7 @@ test "lib.pipeline.processStream: all countries filtered out" {
 
     try testing.expect(result.stats.lines_parsed > 0);
     try testing.expectEqual(@as(usize, 0), result.cidrs);
-    try testing.expectEqual(@as(usize, 0), result.countries);
+    try testing.expectEqual(@as(usize, 0), result.country_count);
     try testing.expect(result.segments_filtered > 0);
 }
 

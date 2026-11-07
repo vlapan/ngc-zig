@@ -48,7 +48,7 @@ test "SCENARIO-003: static HOLE + filter — both effects visible" {
     try testing.expectEqual(@as(usize, 1), result.stats.overrides);
     try testing.expectEqual(@as(usize, 1), result.stats.collisions);
     try testing.expectEqual(@as(usize, 9), result.cidrs);
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
     try testing.expectEqualStrings(
         "1.0.0.1/32 AU;\n1.0.0.2/31 AU;\n1.0.0.4/30 AU;\n1.0.0.8/29 AU;\n1.0.0.16/28 AU;\n1.0.0.32/27 AU;\n1.0.0.64/26 AU;\n1.0.0.128/25 AU;\n1.0.4.0/22 AU;\n",
         env.aw.writer.buffered(),

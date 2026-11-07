@@ -106,7 +106,7 @@ pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !Run
         );
         v4_stats = v4_result.stats;
         v4_cidrs = v4_result.cidrs;
-        v4_countries = v4_result.countries;
+        v4_countries = v4_result.country_count;
         v4_flattened = v4_result.flattened;
         v4_segments = v4_result.segments;
         v4_segments_filtered = v4_result.segments_filtered;
@@ -129,7 +129,7 @@ pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !Run
         );
         v6_stats = v6_result.stats;
         v6_cidrs = v6_result.cidrs;
-        v6_countries = v6_result.countries;
+        v6_countries = v6_result.country_count;
         v6_flattened = v6_result.flattened;
         v6_segments = v6_result.segments;
         v6_segments_filtered = v6_result.segments_filtered;

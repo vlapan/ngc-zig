@@ -168,7 +168,7 @@ test "filterSegments: filter with group remap" {
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
     try testing.expectEqual(@as(usize, 0), result.segments_filtered);
     try testing.expectEqual(@as(usize, 1), segments.items.len);
     try testing.expectEqual(eu_idx, segments.items[0].country);
@@ -190,7 +190,7 @@ test "filterSegments: adjacent same-country segments merge" {
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
     try testing.expectEqual(@as(usize, 0), result.segments_filtered);
     try testing.expectEqual(@as(usize, 1), segments.items.len);
     try testing.expectEqual(@as(u32, 0), segments.items[0].start);
@@ -211,7 +211,7 @@ test "filterSegments: different-country segments not merged" {
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
-    try testing.expectEqual(@as(usize, 2), result.countries);
+    try testing.expectEqual(@as(usize, 2), result.country_count);
     try testing.expectEqual(@as(usize, 0), result.segments_filtered);
     try testing.expectEqual(@as(usize, 2), segments.items.len);
 }
@@ -232,7 +232,7 @@ test "filterSegments: filtered segment leaves gap (no false merge)" {
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
-    try testing.expectEqual(@as(usize, 1), result.countries);
+    try testing.expectEqual(@as(usize, 1), result.country_count);
     try testing.expectEqual(@as(usize, 1), result.segments_filtered);
     try testing.expectEqual(@as(usize, 2), segments.items.len);
 }
@@ -249,7 +249,7 @@ test "filterSegments: all segments filtered out" {
 
     const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen_countries);
 
-    try testing.expectEqual(@as(usize, 0), result.countries);
+    try testing.expectEqual(@as(usize, 0), result.country_count);
     try testing.expectEqual(@as(usize, 1), result.segments_filtered);
     try testing.expectEqual(@as(usize, 0), segments.items.len);
 }
