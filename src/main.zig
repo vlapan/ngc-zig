@@ -21,7 +21,9 @@ pub fn main(init: std.process.Init) void {
     const result = run(init.io, alloc, config) catch {
         std.process.exit(1);
     };
-    if (!config.quiet) {
+    if (config.json) {
+        std.debug.print("{{\"elapsed_ms\":{d},\"v4_cidrs\":{d},\"v6_cidrs\":{d},\"total_cidrs\":{d}}}\n", .{ result.elapsed_ms, result.v4_cidrs, result.v6_cidrs, result.v4_cidrs + result.v6_cidrs });
+    } else if (!config.quiet) {
         printTelemetry(result);
     }
 }
