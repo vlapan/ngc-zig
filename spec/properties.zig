@@ -402,3 +402,36 @@ test "PROP-017: an all-true filter leaves flattened segments unchanged" {
         try testing.expectEqual(@as(usize, segments.items.len), segments.items.len);
     }
 }
+
+test "PROP-018: staticLine normalizes a valid IPv6 CIDR to its aligned range" {
+    const seed: u64 = 314159;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+    var buf: [160]u8 = undefined;
+
+    for (0..100) |_| {
+        var bytes: [16]u8 = undefined;
+        for (0..16) |j| bytes[j] = rand.int(u8);
+        const prefix: u8 = @intCast(rand.int(u8) % 129);
+        const line = try std.fmt.bufPrint(&buf, "{x:0>4}:{x:0>4}:{x:0>4}:{x:0>4}:{x:0>4}:{x:0>4}:{x:0>4}:{x:0>4}/{d}", .{
+            std.mem.readInt(u16, bytes[0..2], .big),
+            std.mem.readInt(u16, bytes[2..4], .big),
+            std.mem.readInt(u16, bytes[4..6], .big),
+            std.mem.readInt(u16, bytes[6..8], .big),
+            std.mem.readInt(u16, bytes[8..10], .big),
+            std.mem.readInt(u16, bytes[10..12], .big),
+            std.mem.readInt(u16, bytes[12..14], .big),
+            std.mem.readInt(u16, bytes[14..16], .big),
+            prefix,
+        });
+        const ip = std.mem.readInt(u128, bytes[0..16], .big);
+        const actual = lib.parse.staticLine(line) orelse return error.TestFailed;
+        try testing.expect(actual == .v6);
+
+        const mask: u128 = if (prefix == 0) 0 else ~(@as(u128, 0)) << @intCast(128 - prefix);
+        const expected_start = ip & mask;
+        const expected_end = expected_start | ~mask;
+        try testing.expectEqual(expected_start, actual.v6.start);
+        try testing.expectEqual(expected_end, actual.v6.end);
+    }
+}
