@@ -30,6 +30,9 @@ pub fn flatten(comptime T: type, alloc: std.mem.Allocator, ranges: []const ip_mo
 
     for (ranges, 0..) |r, i| {
         events.appendAssumeCapacity(.{ .val = r.start, .is_end = false, .id = @intCast(i) });
+        // A range ending at maxInt(T) has no representable end+1 event; omitting it is
+        // correct because the final active range extends to the end of address space.
+        // filterSegments explicitly avoids wrapping this boundary.
         if (r.end < std.math.maxInt(T)) {
             events.appendAssumeCapacity(.{ .val = r.end + 1, .is_end = true, .id = @intCast(i) });
         }
