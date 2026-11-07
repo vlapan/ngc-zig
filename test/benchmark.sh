@@ -120,6 +120,23 @@ parse_time /tmp/ngc_time_hot3.txt "Hot3"
 echo ""
 
 echo -e "${BOLD}[5/5] Output Verification:${RESET}"
+# Verify output integrity: line count must match reported Total CIDR count.
+expected_total=$(grep "Outputs (CIDR" /tmp/ngc_time_cold.txt | sed 's/.*Total: //' | sed 's/[^0-9].*//')
+static_lines=$(grep "Inputs (ranges parsed)" /tmp/ngc_time_cold.txt | sed 's/.*Static: //' | sed 's/[^0-9].*//')
+static_lines=${static_lines:-0}
+expected_total=$((expected_total + static_lines))
+actual_lines=$(wc -l < "$OUTPUT_FILE" | tr -d ' ')
+if [ -n "$expected_total" ] && [ "$expected_total" != "0" ]; then
+    if [ "$actual_lines" != "$expected_total" ]; then
+        echo -e "      ${RED}[FAIL] Output integrity mismatch: expected $expected_total lines, found $actual_lines.${RESET}"
+        exit 1
+    else
+        echo -e "      ${GREEN}[OK] Output line count matches Total CIDR count ($expected_total).${RESET}"
+    fi
+else
+    echo -e "      ${YELLOW}[SKIP] Could not parse expected total CIDR count.${RESET}"
+fi
+
 if git ls-files --error-unmatch $OUTPUT_FILE > /dev/null 2>&1; then
     if git diff --quiet $OUTPUT_FILE; then
         echo -e "      ${GREEN}[OK] No changes in $OUTPUT_FILE. Output exactly matches baseline.${RESET}"
