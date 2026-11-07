@@ -10,8 +10,11 @@ pub const Stats = struct {
 };
 
 /// Reads a static file, echoes valid lines to writer, and appends parsed CIDR
-/// ranges as HOLE entries to static_v4/static_v6. Dual concern: both output
-/// echo and HOLE range extraction happen in a single pass over the mmap'd file.
+/// ranges as HOLE entries to static_v4/static_v6.
+///
+/// Dual concern (documented): output echo and HOLE extraction occur in one
+/// pass. Echo always happens for every non-empty line; HOLE creation happens
+/// only for valid parsed static CIDRs, and must stay in this call order.
 pub fn staticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: std.mem.Allocator, static_v4: *std.ArrayList(ip_mod.IPv4Range), static_v6: *std.ArrayList(ip_mod.IPv6Range)) !Stats {
     var file = try std.Io.Dir.cwd().openFile(io, path, .{});
     defer file.close(io);
