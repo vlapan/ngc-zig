@@ -1,52 +1,52 @@
 TIME (ms)    PROBES       REL %    OFFSET       SYMBOL / SOURCE LINE
 ---------    ------       -----    ------       --------------------
-3.99ms       3991         2.9%     0x100003b38  ngc`ip.formatIPv6__func_47 + 496 [inlined] ip.formatIPv6Line + 456 at ip.zig
-3.41ms       3410         2.5%     0x100004fd0  ngc`main.run + 4704 [inlined] array_list.Aligned(ip.IPRange(u128),null).append + 412 at array_list.zig:1028:13
-3.37ms       3371         2.4%     0x100004d9c  ngc`main.run + 4140 [inlined] parse.parseInt__func_741 + 172 at parse.zig:105:30
-3.10ms       3095         2.2%     0x1000058f8  ngc`main.run + 7048 [inlined] array_list.Aligned(flatten.flatten__func_42.Event,null).appendAssumeCapacity + 4 at array_list.zig:1037:38
-2.82ms       2822         2.1%     0x100004ca0  ngc`main.run + 3888 [inlined] parse.parseInt__func_741 + 56 at parse.zig:100:33
-2.71ms       2707         2.0%     0x100004cd8  ngc`main.run + 3944 [inlined] parse.parseInt__func_741 + 112 at parse.zig:105:30
-2.69ms       2688         2.0%     0x100003f24  ngc`main.run + 436 [inlined] config.setupMapsInline + 88 at config.zig:199:5
-2.60ms       2600         1.9%     0x100004d58  ngc`main.run + 4072 [inlined] parse.parseInt__func_741 + 104 at parse.zig:100:33
-2.57ms       2566         1.9%     0x100004a08  ngc`main.run + 3224 [inlined] mem.findScalarPos__func_92 + 52 at mem.zig:1335:56
-2.45ms       2446         1.8%     0x100041444  ngc`sort.block.block__func_762 + 8108 at block.zig:628:49
-2.25ms       2247         1.6%     0x10000fe08  ngc`debug.writeCurrentStackTrace + 10776 [inlined] Io.Writer.write + 32 at Writer.zig:615:26
-2.01ms       2008         1.5%     0x1000049f0  ngc`main.run + 3200 [inlined] mem.findScalarPos__func_92 + 28 at mem.zig:1335:56
-1.81ms       1806         1.3%     0x100003f0c  ngc`main.run + 412 [inlined] config.setupMapsInline + 64 at config.zig
-1.79ms       1793         1.3%     0x100003b48  ngc`ip.formatIPv6__func_47 + 512 [inlined] ip.formatIPv6Line + 472 at ip.zig:158:13
-1.64ms       1636         1.2%     0x100003f1c  ngc`main.run + 428 [inlined] config.setupMapsInline + 80 at config.zig:199:5
-1.45ms       1448         1.1%     0x100005b88  ngc`main.run + 7704 [inlined] flatten.flatten__func_42 + 132 at flatten.zig:55:56
-1.22ms       1225         0.9%     0x100007e80  ngc`main.run + 16656 [inlined] cidr.computeCidrBlock__func_38 at cidr.zig:16:5
-1.12ms       1122         0.8%     0x100003d64  ngc`ip.formatIPv6__func_47 + 1052 at ip.zig:215:5
-1.11ms       1106         0.8%     0x10000393c  ngc`ip.formatIPv4__func_37 + 584 at ip.zig:61:5
-1.10ms       1101         0.8%     0x100003a48  ngc`ip.formatIPv6__func_47 + 256 [inlined] ip.formatIPv6Line + 216 at ip.zig:115:21
-1.06ms       1063         0.8%     0x100003cd4  ngc`ip.formatIPv6__func_47 + 908 [inlined] Io.Writer.write at Writer.zig:609:10
-1.01ms       1009         0.7%     0x100003b68  ngc`ip.formatIPv6__func_47 + 544 [inlined] ip.formatIPv6Line + 504 at ip.zig:169:13
-1.00ms       1004         0.7%     0x100004bf8  ngc`main.run + 3720 [inlined] parse.csvLine__func_41 + 188 at parse.zig
-0.99ms       994          0.7%     0x100046248  ngc`symbol stub for: memcpy + 4
-0.96ms       958          0.7%     0x100004b9c  ngc`main.run + 3628 [inlined] mem.readInt at mem.zig:1960:5
-0.95ms       955          0.7%     0x10000562c  ngc`main.run + 6332 [inlined] ip.isPrivateIPv6 at ip.zig:13:5
-0.95ms       950          0.7%     0x10003ee3c  ngc`sort.block.block__func_723 + 16692 [inlined] mem.swap__func_724 at mem.zig:3943:13
-0.93ms       934          0.7%     0x10003eea4  ngc`sort.block.block__func_723 + 16796 [inlined] mem.swap__func_724 at mem.zig:3943:13
-0.92ms       919          0.7%     0x10004148c  ngc`sort.block.block__func_762 + 8180 [inlined] sort.block.blockSwap__func_770 + 40 at block.zig:844:41
-0.90ms       903          0.7%     0x100007eb0  ngc`main.run + 16704 [inlined] ip.isPrivateIPv4 + 20 at ip.zig:18:5
-0.86ms       857          0.6%     0x100041888  ngc`sort.block.block__func_762 + 9200 [inlined] mem.swap__func_763 + 28 at mem.zig:3945:13
-0.85ms       855          0.6%     0x100004b50  ngc`main.run + 3552 [inlined] mem.readInt at mem.zig:1960:5
-0.84ms       841          0.6%     0x100003a64  ngc`ip.formatIPv6__func_47 + 284 [inlined] ip.formatIPv6Line + 244 at ip.zig:125:17
-0.83ms       833          0.6%     0x100003c88  ngc`ip.formatIPv6__func_47 + 832 [inlined] ip.formatU8Int + 32 at ip.zig:97:25
-0.82ms       818          0.6%     0x100004e30  ngc`main.run + 4288 [inlined] parse.csvFile__func_40 + 16 at parse.zig
-0.81ms       815          0.6%     0x100003814  ngc`ip.formatIPv4__func_37 + 288 [inlined] ip.formatU8Int + 24 at ip.zig:97:25
-0.81ms       810          0.6%     0x100005ddc  ngc`main.run + 8300 [inlined] flatten.flatten__func_42 + 728 at flatten.zig:96:57
-0.80ms       803          0.6%     0x100005688  ngc`main.run + 6424 [inlined] cidr.rangeToCidrs__func_46 + 52 at cidr.zig
-0.80ms       797          0.6%     0x1000054c4  ngc`main.run + 5972 [inlined] pipeline.filterSegments__func_45 + 184 at pipeline.zig
-0.78ms       781          0.6%     0x10003d9cc  ngc`sort.block.block__func_723 + 11460 [inlined] mem.swap__func_724 at mem.zig:3943:13
-0.77ms       771          0.6%     0x10003d99c  ngc`sort.block.block__func_723 + 11412 [inlined] mem.swap__func_724 at mem.zig:3943:13
-0.76ms       765          0.6%     0x100005b1c  ngc`main.run + 7596 [inlined] array_list.Aligned(flatten.Segment(u128),null).append + 24 at array_list.zig:1028:13
-0.76ms       763          0.6%     0x100003f2c  ngc`main.run + 444 [inlined] config.setupMapsInline + 96 at config.zig:201:20
-0.73ms       732          0.5%     0x100004b90  ngc`main.run + 3616 [inlined] scan.findByte + 16 at scan.zig:13:29
-0.73ms       731          0.5%     0x100004cb0  ngc`main.run + 3904 [inlined] parse.parseInt__func_741 + 72 at parse.zig:77:24
-0.72ms       725          0.5%     0x1000055d8  ngc`main.run + 6248 [inlined] cidr.computeCidrBlock__func_48 at cidr.zig:16:5
-0.72ms       715          0.5%     0x100004dc8  ngc`main.run + 4184 [inlined] parse.csvLine__func_41 at parse.zig:138:5
-0.70ms       705          0.5%     0x100003bb0  ngc`ip.formatIPv6__func_47 + 616 [inlined] ip.formatIPv6Line + 576 at ip.zig:176:47
-0.69ms       691          0.5%     0x100003a04  ngc`ip.formatIPv6__func_47 + 188 [inlined] ip.formatIPv6Line + 148 at ip.zig:125:17
-0.69ms       688          0.5%     0x100003a9c  ngc`ip.formatIPv6__func_47 + 340 [inlined] ip.formatIPv6Line + 300 at ip.zig:125:17
+4.29ms       4295         3.8%     0x100003b38  ngc`ip.formatIPv6__func_47 + 496 [inlined] ip.formatIPv6Line + 456 at ip.zig
+2.61ms       2609         2.3%     0x100005028  ngc`main.run + 4792 [inlined] array_list.Aligned(ip.IPRange(u128),null).append + 400 at array_list.zig:1028:13
+2.55ms       2550         2.3%     0x100004d00  ngc`main.run + 3984 [inlined] parse.parseInt__func_741 + 88 at parse.zig:111:24
+2.53ms       2530         2.2%     0x100003f24  ngc`main.run + 436 [inlined] config.setupMapsInline + 88 at config.zig:199:5
+2.27ms       2266         2.0%     0x100004df0  ngc`main.run + 4224 [inlined] parse.parseInt__func_741 + 212 at parse.zig:111:24
+1.89ms       1894         1.7%     0x1000049e8  ngc`main.run + 3192 [inlined] mem.findScalarPos__func_92 + 52 at mem.zig:1335:56
+1.87ms       1867         1.7%     0x100003f1c  ngc`main.run + 428 [inlined] config.setupMapsInline + 80 at config.zig:199:5
+1.78ms       1776         1.6%     0x100003b48  ngc`ip.formatIPv6__func_47 + 512 [inlined] ip.formatIPv6Line + 472 at ip.zig:158:13
+1.61ms       1608         1.4%     0x100003f0c  ngc`main.run + 412 [inlined] config.setupMapsInline + 64 at config.zig
+1.57ms       1568         1.4%     0x100004d9c  ngc`main.run + 4140 [inlined] parse.parseInt__func_741 + 128 at parse.zig:78:24
+1.47ms       1467         1.3%     0x10000fe08  ngc`debug.writeCurrentStackTrace + 10576 [inlined] Io.Writer.writeAll + 120 at Writer.zig
+1.39ms       1388         1.2%     0x100004c30  ngc`main.run + 3776 [inlined] parse.parseInt__func_741 + 104 at parse.zig:78:24
+1.37ms       1372         1.2%     0x100003d64  ngc`ip.formatIPv6__func_47 + 1052 at ip.zig:215:5
+1.35ms       1353         1.2%     0x1000049d0  ngc`main.run + 3168 [inlined] mem.findScalarPos__func_92 + 28 at mem.zig:1335:56
+1.30ms       1303         1.2%     0x100004c20  ngc`main.run + 3760 [inlined] parse.parseInt__func_741 + 88 at parse.zig:104:33
+1.23ms       1228         1.1%     0x100007efc  ngc`main.run + 16780 [inlined] cidr.computeCidrBlock__func_38 at cidr.zig:16:5
+1.20ms       1203         1.1%     0x100003a48  ngc`ip.formatIPv6__func_47 + 256 [inlined] ip.formatIPv6Line + 216 at ip.zig:115:21
+1.14ms       1144         1.0%     0x100005b80  ngc`main.run + 7696 [inlined] array_list.Aligned(flatten.Segment(u128),null).append + 24 at array_list.zig:1028:13
+1.08ms       1083         1.0%     0x100004d04  ngc`main.run + 3988 [inlined] parse.parseInt__func_741 + 92 at parse.zig:108:19
+1.02ms       1022         0.9%     0x100005690  ngc`main.run + 6432 [inlined] ip.isPrivateIPv6 at ip.zig:13:5
+1.01ms       1008         0.9%     0x100007f2c  ngc`main.run + 16828 [inlined] ip.isPrivateIPv4 + 20 at ip.zig:18:5
+0.99ms       995          0.9%     0x100003cd4  ngc`ip.formatIPv6__func_47 + 908 [inlined] Io.Writer.write at Writer.zig:609:10
+0.98ms       980          0.9%     0x100005b78  ngc`main.run + 7688 [inlined] array_list.Aligned(flatten.Segment(u128),null).append + 16 at array_list.zig:1028:13
+0.96ms       959          0.8%     0x100005b74  ngc`main.run + 7684 [inlined] array_list.Aligned(flatten.Segment(u128),null).append + 12 at array_list.zig:1028:13
+0.95ms       951          0.8%     0x100046310  ngc`symbol stub for: memcpy + 4
+0.94ms       944          0.8%     0x100003bb0  ngc`ip.formatIPv6__func_47 + 616 [inlined] ip.formatIPv6Line + 576 at ip.zig:176:47
+0.94ms       936          0.8%     0x10000393c  ngc`ip.formatIPv4__func_37 + 584 at ip.zig:61:5
+0.93ms       928          0.8%     0x100003b68  ngc`ip.formatIPv6__func_47 + 544 [inlined] ip.formatIPv6Line + 504 at ip.zig:169:13
+0.93ms       927          0.8%     0x1000056ec  ngc`main.run + 6524 [inlined] cidr.rangeToCidrs__func_46 + 52 at cidr.zig
+0.92ms       923          0.8%     0x100003c88  ngc`ip.formatIPv6__func_47 + 832 [inlined] ip.formatU8Int + 32 at ip.zig:97:25
+0.89ms       893          0.8%     0x100004c28  ngc`main.run + 3768 [inlined] parse.parseInt__func_741 + 96 at parse.zig:78:24
+0.88ms       881          0.8%     0x100005524  ngc`main.run + 6068 [inlined] pipeline.filterSegments__func_45 + 184 at pipeline.zig
+0.84ms       836          0.7%     0x100004de8  ngc`main.run + 4216 [inlined] parse.parseInt__func_741 + 204 at parse.zig:111:29
+0.83ms       831          0.7%     0x100003a80  ngc`ip.formatIPv6__func_47 + 312 [inlined] ip.formatIPv6Line + 272 at ip.zig:115:21
+0.81ms       811          0.7%     0x10003ef6c  ngc`sort.block.block__func_723 + 16796 [inlined] mem.swap__func_724 at mem.zig:3943:13
+0.80ms       804          0.7%     0x1000038ac  ngc`ip.formatIPv4__func_37 + 440 [inlined] Io.Writer.write at Writer.zig:609:10
+0.80ms       803          0.7%     0x100004df4  ngc`main.run + 4228 [inlined] parse.parseInt__func_741 + 216 at parse.zig:108:19
+0.79ms       794          0.7%     0x100007eac  ngc`main.run + 16700 [inlined] pipeline.processStream__func_29 + 92 at pipeline.zig
+0.77ms       767          0.7%     0x100005be8  ngc`main.run + 7800 [inlined] flatten.flatten__func_42 + 128 at flatten.zig:58:56
+0.76ms       761          0.7%     0x100003d6c  ngc`ip.formatIPv6__func_47 + 1060 at ip.zig:215:5
+0.76ms       761          0.7%     0x100003784  ngc`ip.formatIPv4__func_37 + 144 [inlined] ip.formatU8Int + 20 at ip.zig:97:25
+0.72ms       724          0.6%     0x100003a64  ngc`ip.formatIPv6__func_47 + 284 [inlined] ip.formatIPv6Line + 244 at ip.zig:125:17
+0.70ms       699          0.6%     0x100003af0  ngc`ip.formatIPv6__func_47 + 424 [inlined] ip.formatIPv6Line + 384 at ip.zig:135:9
+0.69ms       691          0.6%     0x10000385c  ngc`ip.formatIPv4__func_37 + 360 [inlined] ip.formatU8Int + 24 at ip.zig:97:25
+0.69ms       690          0.6%     0x100004d88  ngc`main.run + 4120 [inlined] parse.parseInt__func_741 + 108 at parse.zig:104:19
+0.67ms       674          0.6%     0x100003814  ngc`ip.formatIPv4__func_37 + 288 [inlined] ip.formatU8Int + 24 at ip.zig:97:25
+0.66ms       656          0.6%     0x10000563c  ngc`main.run + 6348 [inlined] cidr.computeCidrBlock__func_48 at cidr.zig:16:5
+0.64ms       644          0.6%     0x100003f2c  ngc`main.run + 444 [inlined] config.setupMapsInline + 96 at config.zig:201:20
+0.64ms       638          0.6%     0x100003a9c  ngc`ip.formatIPv6__func_47 + 340 [inlined] ip.formatIPv6Line + 300 at ip.zig:125:17
+0.62ms       624          0.6%     0x100004de0  ngc`main.run + 4208 [inlined] parse.parseInt__func_741 + 196 at parse.zig:111:19

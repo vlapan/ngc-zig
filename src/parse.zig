@@ -72,6 +72,7 @@ pub fn staticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: s
 pub fn parseInt(comptime T: type, str: []const u8) !T {
     var res: T = 0;
     var i: usize = 0;
+    var invalid: u64 = 0;
 
     // Process 8 characters at a time via SWAR
     while (i + 8 <= str.len) : (i += 8) {
@@ -80,8 +81,9 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
         // Strip ASCII header (convert '0'-'9' to 0-9)
         chunk ^= 0x3030303030303030;
-        // Reject non-digit characters after conversion.
-        if (chunk & 0xF0F0F0F0F0F0F0F0 != 0) return error.InvalidCharacter;
+        // Accumulate digit validity; reject once after the loop to keep the
+        // SWAR body branch-free.
+        invalid |= chunk & 0xF0F0F0F0F0F0F0F0;
 
         // Multiply and accumulate adjacent pairs
         var lower = (chunk & 0x00FF00FF00FF00FF) * 10;
@@ -104,9 +106,11 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
     // Tail loop for remaining 0-7 characters
     while (i < str.len) : (i += 1) {
-        if (str[i] < '0' or str[i] > '9') return error.InvalidCharacter;
-        res = res * 10 + (str[i] - '0');
+        const c = str[i];
+        invalid |= @as(u64, if (c < '0' or c > '9') 1 else 0);
+        res = res * 10 + (c - '0');
     }
+    if (invalid != 0) return error.InvalidCharacter;
     return res;
 }
 
