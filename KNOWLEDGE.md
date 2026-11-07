@@ -40,6 +40,7 @@ Updated: 2026-11-08
 - `knowledge/release-process.md` - The strict, step-by-step checklist required for tagging and deploying new versions.
 - `knowledge/commit-conventions.md` - Conventional Commits format, types, scopes, and rules.
 - `knowledge/zig-api.md` - Zig 0.17.1 API patterns and gotchas
+- `knowledge/error-handling.md` - Error handling conventions and failure propagation rules
 - `knowledge/architecture.md` - Core system design and CIDR generation pipeline
 - `knowledge/data-analysis.md` - Protocol for analyzing dirty upstream data and overlaps, including Nginx RAM footprint verification
 - `knowledge/testing-framework.md` - Abstract five-tier testing framework: Spec (SDD), IAE (TDD/KDT), Scenario (STDD), Property (PDD/MDD), Regression (reusable, project-agnostic)
