@@ -1,5 +1,5 @@
 ======================================================================
-Date: 2026-11-07 20:02:37 UTC | Commit: 56a26af  | Mode: filter
+Date: 2026-11-07 20:59:55 UTC | Commit: b63e6a3  | Mode: filter
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
@@ -19,14 +19,11 @@ Date: 2026-11-07 20:02:37 UTC | Commit: 56a26af  | Mode: filter
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.14s |  0.04s |  0.01s | 60.5 MB |    564,055,064 |    136,764,099 |     2/17 |
-| Hot1 |  0.04s |  0.03s |  0.00s | 60.5 MB |    561,079,797 |    134,990,828 |      3/4 |
-| Hot2 |  0.04s |  0.03s |  0.00s | 60.5 MB |    561,218,072 |    134,821,135 |      3/4 |
-| Hot3 |  0.04s |  0.03s |  0.01s | 60.5 MB |    565,064,392 |    139,563,959 |      3/4 |
+| Cold |  0.14s |  0.03s |  0.01s | 60.5 MB |    561,992,060 |    136,344,559 |     0/20 |
+| Hot1 |  0.04s |  0.03s |  0.00s | 60.5 MB |    560,676,019 |    135,061,602 |      0/4 |
+| Hot2 |  0.04s |  0.03s |  0.00s | 60.5 MB |    561,171,087 |    136,013,543 |      0/4 |
+| Hot3 |  0.04s |  0.03s |  0.00s | 60.5 MB |    560,775,208 |    136,175,924 |      0/4 |
 
 [5/5] Output Verification:
-      [NOTICE] test/output-filter.txt has changed!
-      If this is an intentional formatting or feature change, review the diff:
-       test/output-filter.txt | 116960 +++++++++++++++-------------------------------
-       1 file changed, 37047 insertions(+), 79913 deletions(-)
+      [OK] No changes in test/output-filter.txt. Output exactly matches baseline.
 ======================================================================

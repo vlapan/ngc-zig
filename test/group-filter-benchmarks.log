@@ -1,5 +1,5 @@
 ======================================================================
-Date: 2026-11-07 20:02:39 UTC | Commit: 56a26af  | Mode: group-filter
+Date: 2026-11-07 20:59:57 UTC | Commit: b63e6a3  | Mode: group-filter
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
@@ -19,14 +19,11 @@ Date: 2026-11-07 20:02:39 UTC | Commit: 56a26af  | Mode: group-filter
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.14s |  0.03s |  0.01s | 57.1 MB |    567,971,812 |    138,660,340 |     2/18 |
-| Hot1 |  0.04s |  0.03s |  0.00s | 57.1 MB |    564,445,733 |    137,625,553 |      2/5 |
-| Hot2 |  0.04s |  0.03s |  0.00s | 57.1 MB |    564,145,042 |    138,666,953 |      2/5 |
-| Hot3 |  0.04s |  0.03s |  0.00s | 57.1 MB |    564,523,918 |    137,196,825 |      4/4 |
+| Cold |  0.14s |  0.03s |  0.01s | 57.1 MB |    562,942,737 |    138,901,230 |     2/18 |
+| Hot1 |  0.04s |  0.03s |  0.00s | 57.1 MB |    561,028,820 |    140,435,066 |     2/25 |
+| Hot2 |  0.04s |  0.03s |  0.01s | 57.1 MB |    565,788,030 |    149,548,145 |     4/43 |
+| Hot3 |  0.05s |  0.03s |  0.01s | 57.1 MB |    564,115,926 |    146,976,871 |     3/39 |
 
 [5/5] Output Verification:
-      [NOTICE] test/output-group-filter.txt has changed!
-      If this is an intentional formatting or feature change, review the diff:
-       test/output-group-filter.txt | 113247 ++++++++++++++--------------------------
-       1 file changed, 39716 insertions(+), 73531 deletions(-)
+      [OK] No changes in test/output-group-filter.txt. Output exactly matches baseline.
 ======================================================================
