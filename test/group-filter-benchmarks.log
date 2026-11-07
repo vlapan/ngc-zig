@@ -1,29 +1,32 @@
 ======================================================================
-Date: 2026-06-23 07:29:16 UTC | Commit: db77e3a  | Mode: group-filter
+Date: 2026-11-07 20:02:39 UTC | Commit: 56a26af  | Mode: group-filter
 ----------------------------------------------------------------------
 [1/5] Compiling Release Binary...
       OK
 [2/5] File Metrics:
-      Binary: 231K | IPv4 CSV: 6.5M | IPv6 CSV: 19M | Output: 8.9M
+      Binary: 232K | IPv4 CSV: 6.6M | IPv6 CSV: 20M | Output: 7.7M
 [3/5] Application Stats (Cold Run):
-      Inputs (ranges parsed): IPv4: 274284, IPv6: 251480, Static: 5, Skipped: 3
+      Inputs (ranges parsed): IPv4: 281834, IPv6: 263639, Static: 5, Skipped: 3
       Phase 1 (Sweep Line): Topological Collisions: IPv4: 0, IPv6: 0
-      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 209119, IPv6: 199179
-      Phase 1 (Sweep Line): Segments filtered: IPv4: 129997, IPv6: 123016
-      Phase 2 (CIDR Gen): Segments processed: IPv4: 79122, IPv6: 76163
+      Phase 1 (Sweep Line): Disjoint Segments: IPv4: 214813, IPv6: 207757
+      Phase 1 (Sweep Line): Segments filtered: IPv4: 132085, IPv6: 128264
+      Phase 2 (CIDR Gen): Segments processed: IPv4: 82728, IPv6: 79493
       Phase 2 (CIDR Gen): Static Overrides: IPv4: 5, IPv6: 0
       Phase 2 (CIDR Gen): Unique countries mapped: IPv4: 2, IPv6: 2
-      Outputs (CIDR networks generated): IPv4: 149159, IPv6: 235698, Total: 384857
-      Estimated Nginx RAM footprint: ~35 MB (97B/CIDR, verified via profiling)
-      Pipeline Profiling: I/O & Parsing: 30ms, Phase 1 (Flatten): 23ms, Phase 2 (CIDR Gen): 24ms
+      Outputs (CIDR networks generated): IPv4: 155360, IPv6: 195682, Total: 351042
+      Estimated Nginx RAM footprint: ~32 MB (97B/CIDR, verified via profiling)
+      Pipeline Profiling: I/O & Parsing: 17ms, Phase 1 (Flatten): 17ms, Phase 2 (CIDR Gen): 10ms
 [4/5] Performance Metrics:
 | Type | Real   | User   | Sys    | Max RSS |   Instructions |         Cycles | Ctx Sw   |
 |------|--------|--------|--------|---------|----------------|----------------|----------|
-| Cold |  0.33s |  0.05s |  0.01s | 54.6 MB |    607,013,821 |    163,556,193 |   38/101 |
-| Hot1 |  0.05s |  0.03s |  0.01s | 54.6 MB |    603,068,014 |    148,845,015 |    22/30 |
-| Hot2 |  0.05s |  0.03s |  0.01s | 54.6 MB |    601,951,268 |    149,496,802 |    16/25 |
-| Hot3 |  0.06s |  0.03s |  0.01s | 54.6 MB |    604,048,707 |    151,253,787 |    25/32 |
+| Cold |  0.14s |  0.03s |  0.01s | 57.1 MB |    567,971,812 |    138,660,340 |     2/18 |
+| Hot1 |  0.04s |  0.03s |  0.00s | 57.1 MB |    564,445,733 |    137,625,553 |      2/5 |
+| Hot2 |  0.04s |  0.03s |  0.00s | 57.1 MB |    564,145,042 |    138,666,953 |      2/5 |
+| Hot3 |  0.04s |  0.03s |  0.00s | 57.1 MB |    564,523,918 |    137,196,825 |      4/4 |
 
 [5/5] Output Verification:
-      [OK] No changes in test/output-group-filter.txt. Output exactly matches baseline.
+      [NOTICE] test/output-group-filter.txt has changed!
+      If this is an intentional formatting or feature change, review the diff:
+       test/output-group-filter.txt | 113247 ++++++++++++++--------------------------
+       1 file changed, 39716 insertions(+), 73531 deletions(-)
 ======================================================================
