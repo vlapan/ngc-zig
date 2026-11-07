@@ -1,244 +1,282 @@
 TIME (ms)    PROBES       REL %    OFFSET       SYMBOL / SOURCE LINE (INLINED)
 ---------    ------       -----    ------       ------------------------------
-2.29ms       2287         4.3%     0x100004a08  mem.findScalarPos__func_92 (in ngc) (mem.zig:1335)
-                                                mem.SplitIterator(u8,.scalar).next (in ngc) (mem.zig:3472)
-                                                parse.csvFile__func_40 (in ngc) (parse.zig:207)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-2.11ms       2106         4.0%     0x100003b38  ip.formatIPv6Line (in ngc) (ip.zig:0)
+4.32ms       4317         3.1%     0x100003b38  ip.formatIPv6Line (in ngc) (ip.zig:0)
                                                 ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
                                                 
 --------------------------------------------------------------------------------
-1.98ms       1976         3.7%     0x10000fbfc  Io.Writer.write (in ngc) (Writer.zig:615)
-                                                Io.Writer.writeAll (in ngc) (Writer.zig:627)
-                                                Io.Writer.print__func_89 (in ngc) (Writer.zig:744)
-                                                debug.printLineInfo (in ngc) (debug.zig:1301)
-                                                debug.printSourceAtAddress (in ngc) (debug.zig:1284)
-                                                debug.writeCurrentStackTrace (in ngc) (debug.zig:811)
-                                                
---------------------------------------------------------------------------------
-1.89ms       1890         3.6%     0x1000049f0  mem.findScalarPos__func_92 (in ngc) (mem.zig:1335)
-                                                mem.SplitIterator(u8,.scalar).next (in ngc) (mem.zig:3472)
-                                                parse.csvFile__func_40 (in ngc) (parse.zig:207)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-1.10ms       1099         2.1%     0x100003524  heap.ArenaAllocator.Node.Size.toInt (in ngc) (ArenaAllocator.zig:244)
-                                                heap.ArenaAllocator.Node.allocatedSliceUnsafe (in ngc) (ArenaAllocator.zig:275)
-                                                heap.ArenaAllocator.deinit (in ngc) (ArenaAllocator.zig:59)
-                                                
---------------------------------------------------------------------------------
-0.87ms       873          1.6%     0x10000351c  heap.ArenaAllocator.Node.allocatedSliceUnsafe (in ngc) (ArenaAllocator.zig:275)
-                                                heap.ArenaAllocator.deinit (in ngc) (ArenaAllocator.zig:59)
-                                                
---------------------------------------------------------------------------------
-0.84ms       840          1.6%     0x10000350c  heap.ArenaAllocator.deinit (in ngc) (ArenaAllocator.zig:51)
-                                                
---------------------------------------------------------------------------------
-0.80ms       795          1.5%     0x100041434  sort.block.block__func_762 (in ngc) (block.zig:628)
-                                                
---------------------------------------------------------------------------------
-0.79ms       794          1.5%     0x100003b48  ip.formatIPv6Line (in ngc) (ip.zig:158)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.70ms       699          1.3%     0x100046030  DYLD-STUB$$memcpy (in ngc) + 4
-                                                
---------------------------------------------------------------------------------
-0.69ms       694          1.3%     0x100003a48  ip.formatIPv6Line (in ngc) (ip.zig:115)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.68ms       676          1.3%     0x100007e80  cidr.computeCidrBlock__func_38 (in ngc) (cidr.zig:16)
-                                                cidr.rangeToCidrs__func_36 (in ngc) (cidr.zig:45)
-                                                pipeline.processStream__func_29 (in ngc) (pipeline.zig:59)
-                                                main.run (in ngc) (main.zig:94)
-                                                
---------------------------------------------------------------------------------
-0.65ms       646          1.2%     0x100005688  cidr.rangeToCidrs__func_46 (in ngc) (cidr.zig:0)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:59)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.64ms       635          1.2%     0x100003d64  ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.63ms       633          1.2%     0x10000562c  ip.isPrivateIPv6 (in ngc) (ip.zig:13)
-                                                cidr.rangeToCidrs__func_46 (in ngc) (cidr.zig:55)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:59)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.61ms       612          1.2%     0x100003c88  ip.formatU8Int (in ngc) (ip.zig:97)
-                                                ip.formatIPv6Line (in ngc) (ip.zig:199)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.60ms       595          1.1%     0x10000393c  ip.formatIPv4__func_37 (in ngc) (ip.zig:61)
-                                                
---------------------------------------------------------------------------------
-0.58ms       582          1.1%     0x100005b88  flatten.flatten__func_42 (in ngc) (flatten.zig:55)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.58ms       578          1.1%     0x100007148  mem.findScalarPos__func_92 (in ngc) (mem.zig:1335)
-                                                mem.SplitIterator(u8,.scalar).next (in ngc) (mem.zig:3472)
-                                                parse.csvFile__func_30 (in ngc) (parse.zig:207)
-                                                pipeline.processStream__func_29 (in ngc) (pipeline.zig:34)
-                                                main.run (in ngc) (main.zig:94)
-                                                
---------------------------------------------------------------------------------
-0.56ms       556          1.0%     0x100003cd4  Io.Writer.write (in ngc) (Writer.zig:609)
-                                                Io.Writer.writeAll (in ngc) (Writer.zig:627)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.52ms       521          1.0%     0x100003b68  ip.formatIPv6Line (in ngc) (ip.zig:169)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.51ms       505          1.0%     0x100003bb0  ip.formatIPv6Line (in ngc) (ip.zig:176)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.50ms       499          0.9%     0x1000038ac  Io.Writer.write (in ngc) (Writer.zig:609)
-                                                Io.Writer.writeAll (in ngc) (Writer.zig:627)
-                                                ip.formatIPv4__func_37 (in ngc) (ip.zig:61)
-                                                
---------------------------------------------------------------------------------
-0.45ms       454          0.9%     0x1000055d8  cidr.computeCidrBlock__func_48 (in ngc) (cidr.zig:16)
-                                                cidr.rangeToCidrs__func_46 (in ngc) (cidr.zig:45)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:59)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.42ms       417          0.8%     0x100003a64  ip.formatIPv6Line (in ngc) (ip.zig:125)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.40ms       395          0.7%     0x100003814  ip.formatU8Int (in ngc) (ip.zig:97)
-                                                ip.formatIPv4Line (in ngc) (ip.zig:42)
-                                                ip.formatIPv4__func_37 (in ngc) (ip.zig:61)
-                                                
---------------------------------------------------------------------------------
-0.39ms       387          0.7%     0x100003b80  ip.formatIPv6Line (in ngc) (ip.zig:0)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.38ms       380          0.7%     0x100005b14  array_list.Aligned(flatten.Segment(u128),null).append (in ngc) (array_list.zig:1028)
-                                                flatten.flatten__func_42 (in ngc) (flatten.zig:104)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.38ms       378          0.7%     0x100005b10  array_list.Aligned(flatten.Segment(u128),null).append (in ngc) (array_list.zig:1028)
-                                                flatten.flatten__func_42 (in ngc) (flatten.zig:104)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.37ms       370          0.7%     0x100003a80  ip.formatIPv6Line (in ngc) (ip.zig:115)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.36ms       365          0.7%     0x100003a9c  ip.formatIPv6Line (in ngc) (ip.zig:125)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.36ms       360          0.7%     0x10000555c  pipeline.processStream__func_39 (in ngc) (pipeline.zig:0)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.34ms       343          0.6%     0x100003784  ip.formatU8Int (in ngc) (ip.zig:97)
-                                                ip.formatIPv4Line (in ngc) (ip.zig:36)
-                                                ip.formatIPv4__func_37 (in ngc) (ip.zig:61)
-                                                
---------------------------------------------------------------------------------
-0.34ms       341          0.6%     0x100003a20  ip.formatIPv6Line (in ngc) (ip.zig:124)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.33ms       331          0.6%     0x100041878  mem.swap__func_763 (in ngc) (mem.zig:3945)
-                                                sort.block.blockSwap__func_770 (in ngc) (block.zig:845)
-                                                sort.block.block__func_762 (in ngc) (block.zig:662)
-                                                
---------------------------------------------------------------------------------
-0.33ms       328          0.6%     0x1000054c4  pipeline.filterSegments__func_45 (in ngc) (pipeline.zig:0)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:55)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.33ms       327          0.6%     0x100005b1c  array_list.Aligned(flatten.Segment(u128),null).append (in ngc) (array_list.zig:1028)
-                                                flatten.flatten__func_42 (in ngc) (flatten.zig:104)
-                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
-                                                main.run (in ngc) (main.zig:117)
-                                                
---------------------------------------------------------------------------------
-0.33ms       326          0.6%     0x10004147c  sort.block.blockSwap__func_770 (in ngc) (block.zig:844)
-                                                sort.block.block__func_762 (in ngc) (block.zig:632)
-                                                
---------------------------------------------------------------------------------
-0.33ms       325          0.6%     0x100003ab8  ip.formatIPv6Line (in ngc) (ip.zig:124)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.32ms       323          0.6%     0x100003a04  ip.formatIPv6Line (in ngc) (ip.zig:125)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.32ms       317          0.6%     0x100007130  mem.findScalarPos__func_92 (in ngc) (mem.zig:1335)
-                                                mem.SplitIterator(u8,.scalar).next (in ngc) (mem.zig:3472)
-                                                parse.csvFile__func_30 (in ngc) (parse.zig:207)
-                                                pipeline.processStream__func_29 (in ngc) (pipeline.zig:34)
-                                                main.run (in ngc) (main.zig:94)
-                                                
---------------------------------------------------------------------------------
-0.32ms       315          0.6%     0x10000385c  ip.formatU8Int (in ngc) (ip.zig:97)
-                                                ip.formatIPv4Line (in ngc) (ip.zig:45)
-                                                ip.formatIPv4__func_37 (in ngc) (ip.zig:61)
-                                                
---------------------------------------------------------------------------------
-0.31ms       309          0.6%     0x100007eb0  ip.isPrivateIPv4 (in ngc) (ip.zig:18)
-                                                cidr.rangeToCidrs__func_36 (in ngc) (cidr.zig:49)
-                                                pipeline.processStream__func_29 (in ngc) (pipeline.zig:59)
-                                                main.run (in ngc) (main.zig:94)
-                                                
---------------------------------------------------------------------------------
-0.30ms       302          0.6%     0x100008138  array_list.Aligned(flatten.Segment(u32),null).append (in ngc) (array_list.zig:1028)
-                                                flatten.flatten__func_32 (in ngc) (flatten.zig:104)
-                                                pipeline.processStream__func_29 (in ngc) (pipeline.zig:45)
-                                                main.run (in ngc) (main.zig:94)
-                                                
---------------------------------------------------------------------------------
-0.30ms       297          0.6%     0x100003b60  ip.formatIPv6Line (in ngc) (ip.zig:164)
-                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
-                                                
---------------------------------------------------------------------------------
-0.30ms       296          0.6%     0x10000352c  mem.Allocator.rawFree (in ngc) (Allocator.zig:165)
-                                                heap.ArenaAllocator.deinit (in ngc) (ArenaAllocator.zig:59)
-                                                
---------------------------------------------------------------------------------
-0.30ms       295          0.6%     0x100004d9c  parse.parseInt__func_741 (in ngc) (parse.zig:105)
+3.29ms       3290         2.4%     0x100004d9c  parse.parseInt__func_741 (in ngc) (parse.zig:105)
                                                 parse.csvLine__func_41 (in ngc) (parse.zig:130)
                                                 parse.csvFile__func_40 (in ngc) (parse.zig:208)
                                                 pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
                                                 main.run (in ngc) (main.zig:117)
                                                 
 --------------------------------------------------------------------------------
-0.29ms       289          0.5%     0x100003bb4  ip.formatIPv6Line (in ngc) (ip.zig:176)
+3.09ms       3087         2.2%     0x100004fd0  array_list.Aligned(ip.IPRange(u128),null).append (in ngc) (array_list.zig:1028)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:209)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+2.91ms       2913         2.1%     0x1000058f8  array_list.Aligned(flatten.flatten__func_42.Event,null).appendAssumeCapacity (in ngc) (array_list.zig:1037)
+                                                flatten.flatten__func_42 (in ngc) (flatten.zig:34)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+2.90ms       2901         2.1%     0x100004cd8  parse.parseInt__func_741 (in ngc) (parse.zig:105)
+                                                parse.csvLine__func_41 (in ngc) (parse.zig:129)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+2.80ms       2801         2.0%     0x100004d58  parse.parseInt__func_741 (in ngc) (parse.zig:100)
+                                                parse.csvLine__func_41 (in ngc) (parse.zig:130)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+2.77ms       2765         2.0%     0x100004ca0  parse.parseInt__func_741 (in ngc) (parse.zig:100)
+                                                parse.csvLine__func_41 (in ngc) (parse.zig:129)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+2.71ms       2710         1.9%     0x100041444  sort.block.block__func_762 (in ngc) (block.zig:628)
+                                                
+--------------------------------------------------------------------------------
+2.57ms       2572         1.8%     0x100004a08  mem.findScalarPos__func_92 (in ngc) (mem.zig:1335)
+                                                mem.SplitIterator(u8,.scalar).next (in ngc) (mem.zig:3472)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:207)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+2.39ms       2388         1.7%     0x100003f24  config.setupMapsInline (in ngc) (config.zig:199)
+                                                config.setupMaps (in ngc) (config.zig:157)
+                                                main.run (in ngc) (main.zig:85)
+                                                
+--------------------------------------------------------------------------------
+2.16ms       2157         1.5%     0x10000fe08  Io.Writer.write (in ngc) (Writer.zig:615)
+                                                Io.Writer.writeAll (in ngc) (Writer.zig:627)
+                                                Io.Writer.alignBuffer (in ngc) (Writer.zig:1122)
+                                                Io.Writer.alignBufferOptions (in ngc) (Writer.zig:1144)
+                                                Io.Writer.printIntAny__func_97 (in ngc) (Writer.zig:1694)
+                                                Io.Writer.printInt (in ngc) (Writer.zig:1626)
+                                                Io.Writer.printValue__func_102 (in ngc) (Writer.zig:1184)
+                                                Io.Writer.print__func_89 (in ngc) (Writer.zig:805)
+                                                debug.printLineInfo (in ngc) (debug.zig:1301)
+                                                debug.printSourceAtAddress (in ngc) (debug.zig:1284)
+                                                debug.writeCurrentStackTrace (in ngc) (debug.zig:811)
+                                                
+--------------------------------------------------------------------------------
+1.82ms       1823         1.3%     0x1000049f0  mem.findScalarPos__func_92 (in ngc) (mem.zig:1335)
+                                                mem.SplitIterator(u8,.scalar).next (in ngc) (mem.zig:3472)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:207)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+1.82ms       1817         1.3%     0x100003f1c  config.setupMapsInline (in ngc) (config.zig:199)
+                                                config.setupMaps (in ngc) (config.zig:157)
+                                                main.run (in ngc) (main.zig:85)
+                                                
+--------------------------------------------------------------------------------
+1.80ms       1797         1.3%     0x100003b48  ip.formatIPv6Line (in ngc) (ip.zig:158)
                                                 ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
                                                 
 --------------------------------------------------------------------------------
-0.29ms       287          0.5%     0x100041dec  mem.reverse__func_779 (in ngc) (mem.zig:3999)
+1.34ms       1338         1.0%     0x100003f0c  config.setupMapsInline (in ngc) (config.zig:0)
+                                                config.setupMaps (in ngc) (config.zig:157)
+                                                main.run (in ngc) (main.zig:85)
+                                                
+--------------------------------------------------------------------------------
+1.19ms       1193         0.9%     0x100003b68  ip.formatIPv6Line (in ngc) (ip.zig:169)
+                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
+                                                
+--------------------------------------------------------------------------------
+1.18ms       1179         0.8%     0x100041888  mem.swap__func_763 (in ngc) (mem.zig:3945)
+                                                sort.block.blockSwap__func_770 (in ngc) (block.zig:845)
+                                                sort.block.block__func_762 (in ngc) (block.zig:662)
+                                                
+--------------------------------------------------------------------------------
+1.17ms       1170         0.8%     0x10004148c  sort.block.blockSwap__func_770 (in ngc) (block.zig:844)
+                                                sort.block.block__func_762 (in ngc) (block.zig:632)
+                                                
+--------------------------------------------------------------------------------
+1.12ms       1120         0.8%     0x100003a48  ip.formatIPv6Line (in ngc) (ip.zig:115)
+                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
+                                                
+--------------------------------------------------------------------------------
+1.12ms       1119         0.8%     0x10000393c  ip.formatIPv4__func_37 (in ngc) (ip.zig:61)
+                                                
+--------------------------------------------------------------------------------
+1.09ms       1093         0.8%     0x10000562c  ip.isPrivateIPv6 (in ngc) (ip.zig:13)
+                                                cidr.rangeToCidrs__func_46 (in ngc) (cidr.zig:55)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:59)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+1.08ms       1082         0.8%     0x100005b88  flatten.flatten__func_42 (in ngc) (flatten.zig:55)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+1.05ms       1050         0.8%     0x10003ee3c  mem.swap__func_724 (in ngc) (mem.zig:3943)
+                                                mem.reverse__func_740 (in ngc) (mem.zig:4000)
+                                                mem.rotate__func_727 (in ngc) (mem.zig:4125)
+                                                sort.block.block__func_723 (in ngc) (block.zig:733)
+                                                
+--------------------------------------------------------------------------------
+1.04ms       1042         0.7%     0x100007e80  cidr.computeCidrBlock__func_38 (in ngc) (cidr.zig:16)
+                                                cidr.rangeToCidrs__func_36 (in ngc) (cidr.zig:45)
+                                                pipeline.processStream__func_29 (in ngc) (pipeline.zig:59)
+                                                main.run (in ngc) (main.zig:94)
+                                                
+--------------------------------------------------------------------------------
+1.02ms       1016         0.7%     0x100003cd4  Io.Writer.write (in ngc) (Writer.zig:609)
+                                                Io.Writer.writeAll (in ngc) (Writer.zig:627)
+                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
+                                                
+--------------------------------------------------------------------------------
+1.00ms       1000         0.7%     0x100005b1c  array_list.Aligned(flatten.Segment(u128),null).append (in ngc) (array_list.zig:1028)
+                                                flatten.flatten__func_42 (in ngc) (flatten.zig:104)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.99ms       992          0.7%     0x10003d9cc  mem.swap__func_724 (in ngc) (mem.zig:3943)
+                                                mem.reverse__func_740 (in ngc) (mem.zig:4000)
+                                                mem.rotate__func_727 (in ngc) (mem.zig:4127)
+                                                sort.block.block__func_723 (in ngc) (block.zig:522)
+                                                
+--------------------------------------------------------------------------------
+0.98ms       982          0.7%     0x100005688  cidr.rangeToCidrs__func_46 (in ngc) (cidr.zig:0)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:59)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.97ms       975          0.7%     0x100004e30  parse.csvFile__func_40 (in ngc) (parse.zig:0)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.96ms       960          0.7%     0x100007eb0  ip.isPrivateIPv4 (in ngc) (ip.zig:18)
+                                                cidr.rangeToCidrs__func_36 (in ngc) (cidr.zig:49)
+                                                pipeline.processStream__func_29 (in ngc) (pipeline.zig:59)
+                                                main.run (in ngc) (main.zig:94)
+                                                
+--------------------------------------------------------------------------------
+0.95ms       946          0.7%     0x100004b9c  mem.readInt (in ngc) (mem.zig:1960)
+                                                scan.findByte (in ngc) (scan.zig:14)
+                                                parse.csvLine__func_41 (in ngc) (parse.zig:117)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.94ms       945          0.7%     0x100004bf8  parse.csvLine__func_41 (in ngc) (parse.zig:0)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.92ms       923          0.7%     0x100041dfc  mem.reverse__func_779 (in ngc) (mem.zig:3999)
                                                 mem.rotate__func_766 (in ngc) (mem.zig:4125)
                                                 sort.block.block__func_762 (in ngc) (block.zig:733)
                                                 
 --------------------------------------------------------------------------------
-0.28ms       284          0.5%     0x1000055c0  pipeline.processStream__func_39 (in ngc) (pipeline.zig:0)
+0.91ms       911          0.7%     0x100003d64  ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
+                                                
+--------------------------------------------------------------------------------
+0.89ms       891          0.6%     0x10003eea4  mem.swap__func_724 (in ngc) (mem.zig:3943)
+                                                mem.reverse__func_740 (in ngc) (mem.zig:4000)
+                                                mem.rotate__func_727 (in ngc) (mem.zig:4127)
+                                                sort.block.block__func_723 (in ngc) (block.zig:733)
+                                                
+--------------------------------------------------------------------------------
+0.86ms       860          0.6%     0x100004b90  scan.findByte (in ngc) (scan.zig:13)
+                                                parse.csvLine__func_41 (in ngc) (parse.zig:117)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
                                                 main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.86ms       859          0.6%     0x100041e80  mem.reverse__func_779 (in ngc) (mem.zig:3999)
+                                                mem.rotate__func_766 (in ngc) (mem.zig:4127)
+                                                sort.block.block__func_762 (in ngc) (block.zig:733)
+                                                
+--------------------------------------------------------------------------------
+0.85ms       849          0.6%     0x1000038ac  Io.Writer.write (in ngc) (Writer.zig:609)
+                                                Io.Writer.writeAll (in ngc) (Writer.zig:627)
+                                                ip.formatIPv4__func_37 (in ngc) (ip.zig:61)
+                                                
+--------------------------------------------------------------------------------
+0.84ms       838          0.6%     0x100040b34  mem.reverse__func_779 (in ngc) (mem.zig:3999)
+                                                mem.rotate__func_766 (in ngc) (mem.zig:4126)
+                                                sort.block.block__func_762 (in ngc) (block.zig:522)
+                                                
+--------------------------------------------------------------------------------
+0.84ms       836          0.6%     0x100005b14  array_list.Aligned(flatten.Segment(u128),null).append (in ngc) (array_list.zig:1028)
+                                                flatten.flatten__func_42 (in ngc) (flatten.zig:104)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.83ms       826          0.6%     0x100046248  DYLD-STUB$$memcpy (in ngc) + 4
+                                                
+--------------------------------------------------------------------------------
+0.82ms       822          0.6%     0x1000054c4  pipeline.filterSegments__func_45 (in ngc) (pipeline.zig:0)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:55)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.81ms       812          0.6%     0x100005b10  array_list.Aligned(flatten.Segment(u128),null).append (in ngc) (array_list.zig:1028)
+                                                flatten.flatten__func_42 (in ngc) (flatten.zig:104)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:45)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.81ms       809          0.6%     0x100004dc8  parse.csvLine__func_41 (in ngc) (parse.zig:138)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.79ms       789          0.6%     0x100040b6c  mem.reverse__func_779 (in ngc) (mem.zig:3999)
+                                                mem.rotate__func_766 (in ngc) (mem.zig:4127)
+                                                sort.block.block__func_762 (in ngc) (block.zig:522)
+                                                
+--------------------------------------------------------------------------------
+0.77ms       773          0.6%     0x100004b50  mem.readInt (in ngc) (mem.zig:1960)
+                                                scan.findByte (in ngc) (scan.zig:14)
+                                                parse.csvLine__func_41 (in ngc) (parse.zig:116)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.75ms       746          0.5%     0x10003d99c  mem.swap__func_724 (in ngc) (mem.zig:3943)
+                                                mem.reverse__func_740 (in ngc) (mem.zig:4000)
+                                                mem.rotate__func_727 (in ngc) (mem.zig:4126)
+                                                sort.block.block__func_723 (in ngc) (block.zig:522)
+                                                
+--------------------------------------------------------------------------------
+0.72ms       722          0.5%     0x1000055cc  cidr.rangeToCidrs__func_46 (in ngc) (cidr.zig:30)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:59)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.72ms       721          0.5%     0x100004cb0  parse.parseInt__func_741 (in ngc) (parse.zig:77)
+                                                parse.csvLine__func_41 (in ngc) (parse.zig:129)
+                                                parse.csvFile__func_40 (in ngc) (parse.zig:208)
+                                                pipeline.processStream__func_39 (in ngc) (pipeline.zig:34)
+                                                main.run (in ngc) (main.zig:117)
+                                                
+--------------------------------------------------------------------------------
+0.72ms       721          0.5%     0x100003a64  ip.formatIPv6Line (in ngc) (ip.zig:125)
+                                                ip.formatIPv6__func_47 (in ngc) (ip.zig:215)
                                                 
 --------------------------------------------------------------------------------
