@@ -41,7 +41,7 @@ jobs:
             mv zig-out/bin/ngc zig-out/bin/ngc-${{ matrix.target }}
 
       - name: Upload Release Artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: zig-out/bin/ngc-${{ matrix.target }}
