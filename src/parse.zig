@@ -74,6 +74,7 @@ pub fn staticFile(io: std.Io, path: []const u8, writer: *std.Io.Writer, alloc: s
 // performs binary reduction via bit-shifting to calculate the base-10 value.
 // Destroys ~124 Million logic instructions over 1.1M parsed ranges.
 pub fn parseInt(comptime T: type, str: []const u8) !T {
+    if (str.len == 0) return error.InvalidCharacter;
     var res: T = 0;
     var i: usize = 0;
     var invalid: u64 = 0;
