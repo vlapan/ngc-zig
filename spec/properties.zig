@@ -368,3 +368,37 @@ test "PROP-016: staticLine normalizes a valid IPv4 CIDR to its aligned range" {
         try testing.expectEqual(expected_end, actual.v4.end);
     }
 }
+
+test "PROP-017: an all-true filter leaves flattened segments unchanged" {
+    const seed: u64 = 77711;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+
+    for (0..50) |_| {
+        var ranges = std.ArrayList(lib.ip.IPRange(u32)).empty;
+        defer ranges.deinit(std.testing.allocator);
+        const count = rand.int(u8) % 15 + 1;
+        for (0..count) |_| {
+            const start = rand.int(u32) % 128;
+            const width = rand.int(u32) % 32 + 1;
+            const end = if (start + width - 1 < start) std.math.maxInt(u32) else start + width - 1;
+            try ranges.append(std.testing.allocator, .{
+                .start = start,
+                .end = end,
+                .country = @as(u16, @intCast(rand.int(u8) % 8)),
+                .size = end -% start +% 1,
+            });
+        }
+
+        var segments = std.ArrayList(lib.flatten.Segment(u32)).empty;
+        defer segments.deinit(std.testing.allocator);
+        _ = try lib.flatten.flatten(u32, std.testing.allocator, ranges.items, &segments);
+        const before = segments.items.len;
+
+        var filter_map: [65536]bool = @splat(true);
+        var seen: [65536]bool = @splat(false);
+        const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen);
+        try testing.expectEqual(before, result.segments_filtered + segments.items.len);
+        try testing.expectEqual(@as(usize, segments.items.len), segments.items.len);
+    }
+}
