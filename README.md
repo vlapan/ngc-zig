@@ -22,6 +22,7 @@ make check
 ngc --ipv4 ipv4.csv --ipv6 ipv6.csv --static private.txt --group EU:FR,DE --filter US,CA,EU --output geo.conf
 ngc --ipv4 ipv4.csv --output geo.conf --quiet   # suppress telemetry output for CI/scripted runs
 ngc --ipv4 ipv4.csv --output geo.conf --json     # emit machine-readable telemetry
+ngc --ipv4 ipv4.csv --output geo.conf --dry-run  # validate/process without writing output
 ```
 *(At least one input file is required. All flags are optional).*
 
