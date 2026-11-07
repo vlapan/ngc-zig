@@ -1,9 +1,7 @@
 # Define phony targets so Make doesn't look for files named 'all' or 'clean'
 .PHONY: all build release clean run test perf perf-record fetch-data bench bench-filter bench-group bench-group-filter bench-record bench-check bench-compare check
 
-SHELL := /bin/zsh
-.SHELLFLAGS := -e -o pipefail -c
-
+# Use the system default shell for portability.
 # The first target is the default one run by 'make'
 all: build run
 
