@@ -223,3 +223,123 @@ test "PROP-011: flatten output is ordered and non-overlapping" {
         }
     }
 }
+
+test "PROP-012: csvLine returns a valid range for well-formed integer lines" {
+    const seed: u64 = 13579;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+
+    var cmap: [65536]u16 = undefined;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    for (0..32) |_| {
+        const start = rand.int(u32) % 1_000_000;
+        const width = rand.int(u32) % 10_000 + 1;
+        const end = if (start + width -% 1 < start) std.math.maxInt(u32) else start + width - 1;
+        var line_buf: [64]u8 = undefined;
+        const line = try std.fmt.bufPrint(&line_buf, "{d},{d},US", .{ start, end });
+        const range = lib.parse.csvLine(u32, line, &cmap);
+        try testing.expect(range != null);
+        try testing.expectEqual(start, range.?.start);
+        try testing.expectEqual(end, range.?.end);
+        try testing.expect(range.?.start <= range.?.end);
+        try testing.expectEqual((@as(u16, 'U') << 8) | @as(u16, 'S'), range.?.country);
+    }
+}
+
+test "PROP-013: csvLine rejects malformed inputs" {
+    var cmap: [65536]u16 = undefined;
+    for (0..65536) |i| cmap[i] = @intCast(i);
+
+    const rows = [_][]const u8{
+        "",
+        "badline",
+        "0,255",
+        "0,foo,AU",
+        "abc,def,AU",
+        ",,AU",
+    };
+    for (rows) |row| {
+        try testing.expect(lib.parse.csvLine(u32, row, &cmap) == null);
+    }
+}
+
+test "PROP-014: rangeToCidrs emits CIDRs covering the input exactly" {
+    const seed: u64 = 24680;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+    var aw: std.Io.Writer.Allocating = .init(std.testing.allocator);
+    defer aw.deinit();
+
+    for (0..48) |_| {
+        const start = rand.int(u32) % (1 << 28);
+        const width = rand.int(u32) % (1 << 20) + 1;
+        const end = if (start + width -% 1 < start) std.math.maxInt(u32) else start + width - 1;
+        aw.clearRetainingCapacity();
+        _ = try lib.cidr.rangeToCidrs(u32, &aw.writer, start, end, (@as(u16, 'U') << 8) | @as(u16, 'S'));
+
+        var position: u32 = start;
+        var line_iter = std.mem.splitScalar(u8, aw.writer.buffered(), '\n');
+        var line_count: usize = 0;
+        while (line_iter.next()) |line| {
+            if (line.len == 0) continue;
+            line_count += 1;
+            const slash = std.mem.indexOfScalar(u8, line, '/') orelse return error.TestFailed;
+            const space = std.mem.indexOfScalar(u8, line, ' ') orelse return error.TestFailed;
+            const ip_text = line[0..slash];
+            const prefix = try std.fmt.parseInt(u8, line[slash + 1 .. space], 10);
+            const addr = (try std.Io.net.IpAddress.parseIp4(ip_text, 0)).ip4;
+            const base = std.mem.readInt(u32, &addr.bytes, .big);
+            try testing.expectEqual(position, base);
+            const CIDR_SIZE: u32 = @as(u32, 1) << @as(u5, @intCast(32 - prefix));
+            const next = base + (CIDR_SIZE - 1);
+            try testing.expect(next >= base);
+            try testing.expect(next <= end);
+            position = next + 1;
+            if (position < base) break;
+        }
+        if (line_count > 0) try testing.expectEqual(end + 1, position);
+    }
+}
+
+test "PROP-015: filterSegments never keeps a filtered country" {
+    const seed: u64 = 90909;
+    var rng = std.Random.DefaultPrng.init(seed);
+    const rand = rng.random();
+
+    const country_rows = [_]u16{
+        (@as(u16, 'U') << 8) | @as(u16, 'S'),
+        (@as(u16, 'C') << 8) | @as(u16, 'N'),
+        (@as(u16, 'D') << 8) | @as(u16, 'E'),
+    };
+
+    for (0..80) |_| {
+        var segments = std.ArrayList(lib.flatten.Segment(u32)).empty;
+        defer segments.deinit(std.testing.allocator);
+        const count = rand.int(u8) % 12 + 1;
+        for (0..count) |_| {
+            try segments.append(std.testing.allocator, .{
+                .start = rand.int(u32) % 1000,
+                .end = rand.int(u32) % 1000,
+                .country = country_rows[rand.int(usize) % country_rows.len],
+            });
+        }
+        // Make ranges valid and sorted-ish by normalizing; flatten is not required.
+        for (segments.items) |*seg| {
+            if (seg.end < seg.start) {
+                const tmp = seg.start;
+                seg.start = seg.end;
+                seg.end = tmp;
+            }
+        }
+        var seen: [65536]bool = @splat(false);
+        var filter_map: [65536]bool = @splat(true);
+        filter_map[country_rows[1]] = false; // reject CN
+        const result = lib.pipeline.filterSegments(u32, &segments, &filter_map, &seen);
+        _ = result;
+        for (segments.items) |seg| {
+            try testing.expect(filter_map[seg.country]);
+            try testing.expect(seg.start <= seg.end);
+        }
+    }
+}
