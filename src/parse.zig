@@ -89,34 +89,38 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
         // Strip ASCII header (convert '0'-'9' to 0-9)
         chunk ^= 0x3030303030303030;
-        // Accumulate digit validity; reject once after the loop to keep the
-        // SWAR body branch-free.
-        invalid |= chunk & 0xF0F0F0F0F0F0F0F0;
+        // Keep arithmetic behind a validity guard to avoid overflow on invalid input.
+        const chunk_invalid = chunk & 0xF0F0F0F0F0F0F0F0;
+        invalid |= chunk_invalid;
+        if (chunk_invalid == 0) {
+            // Multiply and accumulate adjacent pairs
+            var lower = (chunk & 0x00FF00FF00FF00FF) * 10;
+            var upper = (chunk >> 8) & 0x00FF00FF00FF00FF;
+            chunk = lower + upper;
 
-        // Multiply and accumulate adjacent pairs
-        var lower = (chunk & 0x00FF00FF00FF00FF) * 10;
-        var upper = (chunk >> 8) & 0x00FF00FF00FF00FF;
-        chunk = lower + upper;
+            // Multiply and accumulate 4-digit blocks
+            lower = (chunk & 0x0000FFFF0000FFFF) * 100;
+            upper = (chunk >> 16) & 0x0000FFFF0000FFFF;
+            chunk = lower + upper;
 
-        // Multiply and accumulate 4-digit blocks
-        lower = (chunk & 0x0000FFFF0000FFFF) * 100;
-        upper = (chunk >> 16) & 0x0000FFFF0000FFFF;
-        chunk = lower + upper;
+            // Multiply and accumulate 8-digit blocks
+            lower = (chunk & 0x00000000FFFFFFFF) * 10000;
+            upper = (chunk >> 32) & 0x00000000FFFFFFFF;
+            chunk = lower + upper;
 
-        // Multiply and accumulate 8-digit blocks
-        lower = (chunk & 0x00000000FFFFFFFF) * 10000;
-        upper = (chunk >> 32) & 0x00000000FFFFFFFF;
-        chunk = lower + upper;
-
-        // Shift existing result by 10^8 and add chunk
-        res = res * 100_000_000 + @as(T, @intCast(chunk));
+            // Shift existing result by 10^8 and add chunk
+            res = res * 100_000_000 + @as(T, @intCast(chunk));
+        }
     }
 
     // Tail loop for remaining 0-7 characters
     while (i < str.len) : (i += 1) {
         const c = str[i];
-        invalid |= @as(u64, if (c < '0' or c > '9') 1 else 0);
-        res = res * 10 + (c - '0');
+        if (c < '0' or c > '9') {
+            invalid |= 1;
+        } else {
+            res = res * 10 + (c - '0');
+        }
     }
     if (invalid != 0) return error.InvalidCharacter;
     return res;
