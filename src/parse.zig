@@ -80,6 +80,8 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
         // Strip ASCII header (convert '0'-'9' to 0-9)
         chunk ^= 0x3030303030303030;
+        // Reject non-digit characters after conversion.
+        if (chunk & 0xF0F0F0F0F0F0F0F0 != 0) return error.InvalidCharacter;
 
         // Multiply and accumulate adjacent pairs
         var lower = (chunk & 0x00FF00FF00FF00FF) * 10;
@@ -102,6 +104,7 @@ pub fn parseInt(comptime T: type, str: []const u8) !T {
 
     // Tail loop for remaining 0-7 characters
     while (i < str.len) : (i += 1) {
+        if (str[i] < '0' or str[i] > '9') return error.InvalidCharacter;
         res = res * 10 + (str[i] - '0');
     }
     return res;

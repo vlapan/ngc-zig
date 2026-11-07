@@ -35,10 +35,8 @@ const std = @import("std");
 const lib = @import("lib");
 const testing = std.testing;
 
-/// parseInt with non-digit input produces garbage (known limitation).
-/// See tasks.md: Fix parseInt error-union facade.
-/// Non-digit characters survive the SWAR XOR (0x41 'A' ^ 0x30 = 0x71 = 113)
-/// and are treated as valid digits. A validation pass is needed.
+/// parseInt validates every character and returns error.InvalidCharacter
+/// for non-digit input before applying the SWAR conversion.
 const parseInt_bug_rows = [_]struct {
     id: []const u8,
     given: []const u8,
@@ -88,7 +86,7 @@ const parse_csv_line_rows = [_]struct {
     .{ .id = "CSV-004", .given = "empty line returns null", .input = "", .remap_au_to = null, .expected = null, .check_country_only = false },
     .{ .id = "CSV-005", .given = "line without two commas returns null (badline)", .input = "badline", .remap_au_to = null, .expected = null, .check_country_only = false },
     .{ .id = "CSV-006", .given = "line without two commas returns null (0,255)", .input = "0,255", .remap_au_to = null, .expected = null, .check_country_only = false },
-    .{ .id = "CSV-007", .given = "non-numeric input: only country is meaningful", .input = "abc,def,AU", .remap_au_to = null, .expected = .{ .start = 0, .end = 0, .country = (@as(u16, 'A') << 8) | @as(u16, 'U'), .size = 0 }, .check_country_only = true },
+    .{ .id = "CSV-007", .given = "non-numeric input rejected by parseInt validation", .input = "abc,def,AU", .remap_au_to = null, .expected = null, .check_country_only = false },
     .{ .id = "CSV-008", .given = "carriage return stripped from country", .input = "0,255,AU\r", .remap_au_to = null, .expected = .{ .start = 0, .end = 255, .country = (@as(u16, 'A') << 8) | @as(u16, 'U'), .size = 256 }, .check_country_only = false },
     .{ .id = "CSV-009", .given = "wrapping size handles full address space", .input = "0,4294967295,US", .remap_au_to = null, .expected = .{ .start = 0, .end = std.math.maxInt(u32), .country = (@as(u16, 'U') << 8) | @as(u16, 'S'), .size = 0 }, .check_country_only = false },
 };
@@ -151,16 +149,11 @@ test "swar-based CSV ends-with-newline detection" {
     try testing.expect(lib.scan.findByte(without_nl, '\n') == null);
 }
 
-test "parseInt: non-digit input produces garbage (known bug)" {
+test "parseInt: rejects non-digit input" {
     for (parseInt_bug_rows) |r| {
-        const result = lib.parse.parseInt(u32, r.input) catch 0;
-        if (r.expected_produces_garbage) {
-            // Known bug: non-digit input should be rejected but currently
-            // produces nonzero garbage. This test documents the bug so it's
-            // not accidentally "fixed" by making parseInt return 0.
-            try testing.expect(result != 12345); // arbitrary non-zero
-        }
+        try testing.expectError(error.InvalidCharacter, lib.parse.parseInt(u32, r.input));
     }
+    try testing.expectEqual(@as(u32, 12345678), try lib.parse.parseInt(u32, "12345678"));
 }
 
 test "fastParseInt handles normal and edge cases" {
