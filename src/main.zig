@@ -51,12 +51,21 @@ pub const RunResult = struct {
 pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !RunResult {
     const ts_start = std.Io.Timestamp.now(io, .awake).nanoseconds;
 
-    const out_file = try std.Io.Dir.cwd().createFile(io, config.output, .{});
-    defer out_file.close(io);
+    var out_file: ?std.Io.File = null;
+    defer if (out_file) |f| f.close(io);
+
+    var discard_buf: [4096]u8 = undefined;
+    var discarding = std.Io.Writer.Discarding.init(&discard_buf);
 
     var out_buf: [65536]u8 = undefined;
-    var out_file_writer = out_file.writer(io, &out_buf);
-    const writer = &out_file_writer.interface;
+    var out_file_writer: std.Io.File.Writer = undefined;
+
+    const writer: *std.Io.Writer = if (config.dry_run) &discarding.writer else blk: {
+        const f = try std.Io.Dir.cwd().createFile(io, config.output, .{});
+        out_file = f;
+        out_file_writer = f.writer(io, &out_buf);
+        break :blk &out_file_writer.interface;
+    };
 
     var static_stats = lib.parse.Stats{};
     var v4_stats = lib.parse.Stats{};
@@ -140,7 +149,7 @@ pub fn run(io: std.Io, alloc: std.mem.Allocator, config: lib.config.Config) !Run
         time_cidr_ns += v6_result.time_cidr_ns;
     }
 
-    try out_file_writer.flush();
+    if (!config.dry_run) try out_file_writer.flush();
 
     const ts_end = std.Io.Timestamp.now(io, .awake).nanoseconds;
     const elapsed_ms = @divTrunc(ts_end - ts_start, 1_000_000);

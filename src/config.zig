@@ -18,6 +18,7 @@ pub const Config = struct {
     filters_file: ?[]const u8 = null,
     quiet: bool = false,
     json: bool = false,
+    dry_run: bool = false,
 
     pub fn deinit(self: *Config, alloc: std.mem.Allocator) void {
         if (self.ipv4_csv) |f| alloc.free(f);
@@ -57,6 +58,7 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
     var filters_f: ?[]const u8 = null;
     var quiet = false;
     var json = false;
+    var dry_run = false;
     var groups = std.ArrayList([]const u8).empty;
     defer groups.deinit(alloc);
     var filters = std.ArrayList([]const u8).empty;
@@ -85,6 +87,8 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
             quiet = true;
         } else if (std.mem.eql(u8, arg, "--json")) {
             json = true;
+        } else if (std.mem.eql(u8, arg, "--dry-run")) {
+            dry_run = true;
         } else if (std.mem.eql(u8, arg, "--help") or std.mem.eql(u8, arg, "-h")) {
             cliPrint("Usage: ngc [--ipv4 <file>] [--ipv6 <file>] [--static <file>] [--group TARGET:SRC1,SRC2] [--groups-file <file>] [--filter SRC1,SRC2] [--filters-file <file>] --output <file> [--quiet]\n", .{});
             return error.HelpRequested;
@@ -120,6 +124,7 @@ fn parseArgListFromIter(iter: anytype, alloc: std.mem.Allocator) ParseError!Conf
         .filters_file = if (filters_f) |f| try alloc.dupe(u8, f) else null,
         .quiet = quiet,
         .json = json,
+        .dry_run = dry_run,
     };
     errdefer config.deinit(alloc);
     return config;
