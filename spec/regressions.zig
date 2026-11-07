@@ -8,6 +8,7 @@
 ///   - Which commit fixed it (if known)
 ///
 /// Entries:
+///   REG-2026-11-08-01: parseInt accepted non-digit input -> CSV-007
 ///   REG-2026-06-05-01: CR not stripped from CSV country field  → CSV-007
 ///   REG-2026-06-05-02: Short country code (<2 chars) not rejected → CSV-003
 ///
@@ -20,6 +21,13 @@ pub const Entry = struct {
 };
 
 pub const entries = [_]Entry{
+    .{
+        .id = "REG-2026-11-08-01",
+        .date = "2026-11-08",
+        .description = "Non-digit input in CSV numeric fields produced garbage integer ranges",
+        .cause = "parseInt SWAR conversion did not validate digit characters before XOR",
+        .protected_by = &.{"CSV-007"},
+    },
     .{
         .id = "REG-2026-06-05-01",
         .date = "2026-06-05",
