@@ -382,7 +382,7 @@ pub fn main(init: std.process.Init) !void {
     var snapshot = try Snapshot.load(gpa, io);
     defer snapshot.deinit();
 
-    var results = std.ArrayListUnmanaged(MeasuredRow){ .items = &.{}, .capacity = 0 };
+    var results: std.ArrayListUnmanaged(MeasuredRow) = .empty;
 
     try runModule(parse_data.Scan, metric, &snapshot.map, &results, gpa);
     try runModule(parse_data.ParseInt, metric, &snapshot.map, &results, gpa);
